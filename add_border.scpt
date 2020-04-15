@@ -8,44 +8,23 @@
 property type_list : {"JPEG", "TIFF", "PNGf", "8BPS", "BMPf", "GIFf", "PDF ", "PICT"}
 property extension_list : {"jpg", "jpeg", "tif", "tiff", "png", "psd", "bmp", "gif", "jp2", "pdf", "pict", "pct", "sgi", "tga"}
 property typeIDs_list : {"public.jpeg", "public.tiff", "public.png", "com.adobe.photoshop-image", "com.microsoft.bmp", "com.compuserve.gif", "public.jpeg-2000", "com.adobe.pdf", "com.apple.pict", "com.sgi.sgi-image", "com.truevision.tga-image"}
-property padding : 4
+property padding : 4 --set interior border width to 2 pixel on each side - total of 4 pixels 
+
 on open these_items
 	repeat with this_item in these_items
 		set item_info to info for this_item
 		
-		(* get the name of the current file we are processing *)
+		(* get the properties of the current file we are processing as an array theoretically faster *)
 		try
-			set this_filename to name of item_info
-		on error
-			set this_filename to ""
-		end try
-		
-		(* get the extension of the current file we are processing *)
-		try
-			set this_extension to name extension of item_info
-		on error
-			set this_extension to ""
-		end try
-		
-		(* get the type of the current file we are processing *)
-		try
-			set this_filetype to file type of item_info
-		on error
-			set this_filetype to ""
-		end try
-		
-		(* get the type ID of the current file we are processing *)
-		try
-			set this_typeID to type identifier of item_info
-		on error
-			set this_typeID to ""
-		end try
+	set {this_filename, this_extension, this_filetype, this_typeID} to {name, name extension, file type, type identifier} of item_info
+on error
+	set {this_filename, this_extension, this_filetype, this_typeID} to {"", "", "", ""}
+end try
 		
 		(* get the POSIX path of the current file we are processing *)
 		set this_path to quoted form of POSIX path of this_item
 		
-		(* set interior border width to 2 pixel on each side - total of 4 pixels *)
-		--set padding to 40
+		
 		
 		(* only process if we support the image type *)
 		if ((this_filetype is in type_list) or (this_extension is in extension_list) or (this_typeID is in typeIDs_list)) then
