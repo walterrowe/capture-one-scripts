@@ -16,10 +16,10 @@ on open these_items
 		
 		(* get the properties of the current file we are processing as an array theoretically faster *)
 		try
-	set {this_filename, this_extension, this_filetype, this_typeID} to {name, name extension, file type, type identifier} of item_info
-on error
-	set {this_filename, this_extension, this_filetype, this_typeID} to {"", "", "", ""}
-end try
+			set {this_filename, this_extension, this_filetype, this_typeID} to {name, name extension, file type, type identifier} of item_info
+		on error
+			set {this_filename, this_extension, this_filetype, this_typeID} to {"", "", "", ""}
+		end try
 		
 		(* get the POSIX path of the current file we are processing *)
 		set this_path to quoted form of POSIX path of this_item
