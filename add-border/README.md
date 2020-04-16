@@ -13,7 +13,7 @@ macOS AppleScript to add borders to image files. This works as a droplet with ma
 
 1. Open add_border.scpt in ScriptEditor
 2. File > Export and save in a place where you can reference it
-	* File Format: Application
+   * File Format: Application
 
 ### Use with macOS Finder
 
@@ -55,7 +55,7 @@ This information was documented in [this article](https://darjeelingsteve.com/ar
 5. Scroll down to and select Full Disk Access
 6. In the right side click the "+" button
 7. In the navigator popup, select the following:
-	* Macintosh HD > System > Library > CoreServices > Image Events
+   * Macintosh HD > System > Library > CoreServices > Image Events
 8. Press the Open button in the bottom right corner
 
 This should add the Image Events service to the list of apps with Full Disk Access permissions.
@@ -63,5 +63,6 @@ This should add the Image Events service to the list of apps with Full Disk Acce
 ## Origins
 
 This script originates from Apple’s Recursive Image File Processing Droplet template. You can read more about it in the [Mac Automation Scripting Guide to Process Dropped Files and Folders](https://developer.apple.com/library/content/documentation/LanguagesUtilities/Conceptual/MacAutomationScriptingGuide/ProcessDroppedFilesandFolders.html). It formats and executes terminal `sips` command to edit the selected image files.
+
 1. Open Apple ScriptEditor
 2. Navigate to menu option File > New from Template > Droplets > Recursive Image File Processing Droplet
