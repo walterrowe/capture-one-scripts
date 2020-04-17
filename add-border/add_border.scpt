@@ -33,11 +33,11 @@ on open these_items
 				set theRes to (do shell script ("sips -g pixelHeight -g pixelWidth " & this_path as string))
 				set {y, x} to {last word of second paragraph, last word of last paragraph} of theRes
 				
-				(* set absolute image width and height to include ÒinteriorÓ white border edge *)
+				(* set absolute image width and height to include interior white border edge *)
 				set pixelHeight to y + padding
 				set pixelWidth to x + padding
 				
-				(* increase image dimensions by padding pixels to add white border *)
+				(* increase image dimensions by 'padding' pixels to add white border *)
 				
 				try
 					do shell script "sips " & this_path & " -p " & pixelHeight & " " & pixelWidth & " --padColor ffffff -i"
@@ -56,7 +56,7 @@ on open these_items
 				set pixelHeight to y + padding
 				set pixelWidth to x + padding
 				
-				(* increase image dimensions by ÒpaddingÓ pixels to add black border *)
+				(* increase image dimensions by 'padding' pixels to add black border *)
 				set theSIP to do shell script "sips " & this_path & " -p " & pixelHeight & " " & pixelWidth & " --padColor 000000 -i"
 				
 			on error errStr number errorNumber
