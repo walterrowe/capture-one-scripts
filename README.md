@@ -7,6 +7,7 @@ This repository is a collection of user-contributed scripts for the Capture One 
 Brief summary of the available scripts.  Details provided in the README files in the script directories.
 
 * **[add-border](add-border/)** - Add borders to exported images.  Works in Process Recipes using Open With, or in macOS Finder.
+* **[apply-keyword-bw](apply-black-white-keyword/)** - Find all images with "Black & White" tool enabled (checked) and add keyword "Black & White" 
 * **[find-offline-files](find-offline-files/)** - Find all offline files in a catalog.
 
 ## Warranty
