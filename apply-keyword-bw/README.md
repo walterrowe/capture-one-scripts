@@ -8,9 +8,13 @@ This script will search all variants in your catalog looking for those with eith
 1. The black and white tool enabled (checked), or
 2. The saturation adjustment of the background layer set to -100
 
-For each variant matching the above criteria, it adds a keyword called ```Black & White```.
+For each variant matching the above criteria, it adds each of the keywords in the list bwKeywords. The default list includes ```Black & White``` and ```Monochrome```.
 
-You can change the keyword applied to your images by finding the line ```set bwKeyword to "Black & White"``` and changing the value to a keyword of your choosing for your monochrome images.
+You can change the list of keywords applied to your images by finding the line that starts with ```set bwKeywords to``` and changing the list of keywords to words of your choosing for your monochrome images. Remember that each keyword must be in double quotes, the list must be comma-separated, and there must be curly braces enclosing the list as shown here.
+
+```
+set bwKeywords to { "Black & White", "Monochrome" }
+```
 
 You may ask why the script only looks at the background layer for the saturation adjustment value of -100. The background layer contains no mask. It always applies the adjustment globally to the entire image. Other layers may have masks that do not cover the entire image. We therefore cannot assume these other layers result in a monochrome image.
 
