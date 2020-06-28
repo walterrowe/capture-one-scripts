@@ -1,4 +1,4 @@
-# apply-keyword-to-bw
+# apply-keywords-to-monochrome
 
 Auth: Walter Rowe<br>
 Date: June 2020
@@ -24,7 +24,7 @@ You may ask why the script only looks at the background layer for the saturation
 
 Follow these steps to execute this script:
 
-1. Download the file [apply-keyword-to-bw.applescript](apply-keyword-to-bw.applescript) to your macOS system.
+1. Download the file [apply-keywords-to-monochrome.applescript](apply-keywords-to-monochrome.applescript) to your macOS system.
 2. Open the Capture One catalog you want to update and select the All Images collection.
 3. Open script in Apple ScriptEditor.
 4. Make any desired changes to the list of keywords applied.
