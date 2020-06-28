@@ -1,12 +1,18 @@
 # apply-keyword-bw
 
-Auth: Walter Rowe
-
+Auth: Walter Rowe<br>
 Date: June 2020
 
-This script will search all variants in your catalog looking for those with the black and white tool enabled (checked). For each variant it finds, it will add a keyword called "Black & White".
+This script will search all variants in your catalog looking for those with either
 
-You can change the keyword the script applies by looking for string "Black & White" and change it to what ever keyword you use for your black and white images.
+1. The black and white tool enabled (checked), or
+2. The saturation adjustment of the background layer set to -100
+
+For each variant matching the above criteria, it adds a keyword called ```Black & White```.
+
+You can change the keyword the applied by finding the line ```set bwKeyword to "Black & White"``` and changing the value to a keyword of your choosing for your monochrome images.
+
+You may ask why the script only looks at the background layer for the saturation adjustment value of -100. The background layer contains no mask. It always applies the adjustment globally to the entire image. Other layers may have masks that do not cover the entire image. We therefore cannot assume these other layers result in a monochrome image.
 
 # Usage
 

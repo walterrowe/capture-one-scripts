@@ -16,8 +16,8 @@
 set bwKeyword to "Black & White"
 
 tell application "Capture One 20"
-	repeat with eachVariant in (variants whose black and white of adjustments is true)
+	repeat with eachVariant in (variants where ((black and white of adjustments is true) or (saturation of adjustments is -100.0)))
 		tell eachVariant to make keyword with properties {name:bwKeyword}
 	end repeat
-	set bwnames to name of (variants whose black and white of adjustments is true)
+	set bwnames to name of (variants where ((black and white of adjustments is true) or (saturation of adjustments is -100.0)))
 end tell
