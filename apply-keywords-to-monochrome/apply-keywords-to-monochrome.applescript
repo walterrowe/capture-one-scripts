@@ -1,25 +1,35 @@
 (*
-    Author: Walter Rowe
-    Create: June 2020
+  Script: apply-keywords-to-monochrome
+  Author: Walter Rowe
+  Create: June 2020
 
-    1) Look for string "Black & White" and change it to what ever keyword you use for your black and white images.
-    2) open the Capture One catalog you want to update and select the All Images collection.
-    3) open run this script from Apple ScriptEditor.
+  Apply a list of monochrome-oriented keywords from images that meet monochrome criteria.
 
-    When the script is completed, it will show a list of image names in the results window.
+  Monochrome criteria:
 
-    If you open the Filters tool before running and scroll down to the Keywords filter and your black and white keyword,
-    you can watch the counter go up as this script finds and applies your keyword to each image that has the Black and White
-    tool enabled (checkbox).
+  * black and white is enabled
+  --OR--
+  * saturation is -100.0
+
 *)
 
-set bwKeywords to { "Black & White", "Monochrome" }
+set bwKeywords to {"Black & White", "Monochrome"}
+set affectedList to {""}
 
 tell application "Capture One 20"
+	set affectedList to name of (variants where ((black and white of adjustments is true) or (saturation of adjustments is -100.0)))
 	repeat with eachVariant in (variants where ((black and white of adjustments is true) or (saturation of adjustments is -100.0)))
 		repeat with bwKeyword in bwKeywords
 			tell eachVariant to make keyword with properties {name:bwKeyword}
 		end repeat
 	end repeat
-	set bwnames to name of (variants where ((black and white of adjustments is true) or (saturation of adjustments is -100.0)))
+	if (length of affectedList) > 0 then
+		set saveTID to AppleScript's text item delimiters
+		set AppleScript's text item delimiters to ", "
+		set Final to affectedList as text
+		set AppleScript's text item delimiters to saveTID
+		display dialog Final with title "Affected Variants"
+	else
+		display dialog "No images affected" as string with title "Affected Variants"
+	end if
 end tell
