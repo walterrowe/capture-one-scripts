@@ -4,9 +4,9 @@
   Create: July 2020
 
   Remove a list of monochrome-oriented keywords from images that do not meet monochrome criteria.
-  
+
   Monochrome criteria:
-  
+
   * black and white is enabled
   --OR--
   * saturation is -100.0
