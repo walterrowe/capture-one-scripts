@@ -43,10 +43,10 @@ and changing the list of keywords to words of your choosing for your monochrome 
 
 Follow these steps to execute this script:
 
-1. Download the file scripts to your macOS system.
+1. Download the scripts or repository to your macOS system.
 2. Open the Capture One catalog you want to update and select the All Images collection.
 3. Open the script you wish to run in Apple ScriptEditor.
-4. Make any desired changes to the list of keywords applied.
+4. Make any desired changes to the list of keywords.
 5. Run the script by pressing the "Run" button (looks like a "Play" button).
 
 When the script is completed, it will show a list of image names in the results window. If no images are changed, a message will appear indicating so.
