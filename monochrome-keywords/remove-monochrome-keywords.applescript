@@ -1,5 +1,5 @@
 (*
-  Script: remove-keywords-non-monochrome
+  Script: remove-monochrome-keywords
   Author: Walter Rowe
   Create: July 2020
 

@@ -1,5 +1,5 @@
 (*
-  Script: apply-keywords-to-monochrome
+  Script: apply-monochrome-keywords
   Author: Walter Rowe
   Create: June 2020
 
