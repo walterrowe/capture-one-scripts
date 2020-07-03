@@ -7,7 +7,7 @@ This repository is a collection of user-contributed scripts for the Capture One 
 Brief summary of the available scripts.  Details provided in the README files in the script directories.
 
 * **[add-border](add-border/)** - Add borders to exported images.  Works in Process Recipes using Open With, or in macOS Finder.
-* **[apply-keywords-to-monochrome](apply-keywords-to-monochrome/)** - apply keywords to all monochrome images
+* **[monochrome-keywords](monochrome-keywords/)** - apply monochrome keywords to or remove monochrome keywords from images
 * **[find-offline-files](find-offline-files/)** - Find all offline files in a catalog.
 
 ## Warranty
