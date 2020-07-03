@@ -5,7 +5,7 @@ Date: June 2020
 
 ## Description
 
-There are two scripts in this dircetory.
+There are two scripts in this directory.
 
 * [apply-monochrome-keywords](apply-monochrome-keywords.applescript) - adds keywords to the images matching the criteria.
 * [remove-monochrome-keywords](remove-monochrome-keywords.applescript) - removes keywords from images not matching the criteria.
