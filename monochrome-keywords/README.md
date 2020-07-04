@@ -10,6 +10,8 @@ There are two scripts in this directory.
 * [apply-monochrome-keywords](apply-monochrome-keywords.applescript) - adds keywords to the images matching the criteria.
 * [remove-monochrome-keywords](remove-monochrome-keywords.applescript) - removes keywords from images not matching the criteria.
 
+These script will run on the currently selected document and collection. It should honor any filters on the view.
+
 ## Monochrome Image Criteria
 
 The criteria for identifying monochrome images are:
@@ -19,13 +21,18 @@ The criteria for identifying monochrome images are:
 
 You may ask why the script only looks at the background layer for the saturation adjustment value of -100. The background layer contains no mask. It applies the adjustment globally to the entire image. Other layers may have masks that do not affect the entire image. We cannot assume these other layers result in a monochrome image.
 
+
 ## apply-monochrome-keywords
 
 For each variant matching the above criteria, it adds each of the keywords in the list ```bwKeywords```.
 
+**WARNING**: RGB grayscale images will not be identified as monochrome. No keywords will be applied. You will have to visually identify and tag these images manually.
+
 ## remove-monochrome-keywords
 
 For each variant NOT matching the above criteria, AND having one of the keywords in the list ```bwKeywords```, the requisite keyword is removed. 
+
+**WARNING**: RGB grayscale images will not be identified as monochrome. Monochrome keywords WILL be removed because they will not match the criteria above. Filter your collection view to exclude these image to avoid this.
 
 ## Change The Keywords
 
