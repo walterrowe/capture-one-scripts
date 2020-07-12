@@ -9,6 +9,7 @@ Brief summary of the available scripts.  Details provided in the README files in
 * **[add-border](add-border/)** - Add borders to exported images.  Works in Process Recipes using Open With, or in macOS Finder.
 * **[monochrome-keywords](monochrome-keywords/)** - apply monochrome keywords to or remove monochrome keywords from images
 * **[find-offline-files](find-offline-files/)** - Find all offline files in a catalog.
+* **[dt-on-set-scripts](dt-on-set-scripts/)** - A collection of scripts for DTs to use on set meant to be used via keyboard shortcuts.
 
 ## Warranty
 
