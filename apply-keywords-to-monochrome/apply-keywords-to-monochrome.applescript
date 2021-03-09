@@ -13,7 +13,7 @@
     tool enabled (checkbox).
 *)
 
-set bwKeywords to { "Black & White", "Monochrome" }
+set bwKeywords to {"Black & White", "Monochrome"}
 
 tell application "Capture One 20"
 	repeat with eachVariant in (variants where ((black and white of adjustments is true) or (saturation of adjustments is -100.0)))
