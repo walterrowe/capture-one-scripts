@@ -23,3 +23,7 @@ The contributors test their scripts to the best of their ability. Any errors or 
 * Eric Valk
 * Rick Allen
 * Walter Rowe
+
+## Other Script Repositories
+
+Dozer Labs - https://github.com/dozer-labs/basics
