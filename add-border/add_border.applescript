@@ -28,7 +28,7 @@ on open these_items
 		if ((this_filetype is in type_list) or (this_extension is in extension_list) or (this_typeID is in typeIDs_list)) then
 			try
 				(* extract the x/y dimensions in pixels *)
-				set theRes to (do shell script (("sips -g pixelHeight -g pixelWidth " & this_path as string) & " | tail -2"))
+				set theRes to (do shell script ("sips -g pixelHeight -g pixelWidth " & this_path as string & " | tail -2"))
 				set {y, x} to {last word of first paragraph, last word of last paragraph} of theRes
 
 				(* set absolute image width and height to include interior white border edge *)
