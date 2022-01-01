@@ -5,7 +5,7 @@ macOS AppleScript to add borders to image files. This works as a droplet with ma
 | Role | Name | Year |
 | ---: | :--- | ---: |
 | Original | Kim Aldis | 2016 |
-| Modified | Walter Rowe | 2020 |
+| Modified | Walter Rowe | 2022 |
 
 ## How To Use This
 
