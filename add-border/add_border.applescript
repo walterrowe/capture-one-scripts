@@ -60,7 +60,7 @@ on open these_items
 				(* CALCULATE OUTER BORDER WIDTH *)
 				(* this uses shortest edge to calculate 4% border width (based on padding = 4 at the top), swap the two formulas to use longest edge *)
 
-				if x is greater than y then -- set outer border width to 2% of shortest edge in pixels
+				if x is greater than y then -- set outer border width to 4% of shortest edge in pixels
 					set border to padding + (padding / 100 * y)
 				else
 					set border to padding + (padding / 100 * x)
