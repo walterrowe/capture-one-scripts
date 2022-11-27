@@ -34,7 +34,7 @@ on open these_items
 				set theRes to (do shell script (("sips -g pixelHeight -g pixelWidth " & this_path as string) & " | tail -2"))
 				set {y, x} to {last word of first paragraph, last word of last paragraph} of theRes
 				
-				display dialog "Original Resolution: " & (x as string) & " x " & (y as string) & " pixels"
+				(* display dialog "Original Resolution: " & (x as string) & " x " & (y as string) & " pixels" *)
 				
 				(* ADD INNER BORDER *)
 				
@@ -44,7 +44,7 @@ on open these_items
 				set pixelHeight to y + padding
 				set pixelWidth to x + padding
 				
-				display dialog "Resolution w/ Inner Border: " & (pixelWidth as integer as string) & " x " & (pixelHeight as integer as string) & " pixels"
+				(* display dialog "Resolution w/ Inner Border: " & (pixelWidth as integer as string) & " x " & (pixelHeight as integer as string) & " pixels" *)
 				
 				(* RESIZE TO NEW DIMENSIONS AND ADD INNER BORDER with padColor *)
 				(* padColor ffffff is white, 000000 is black *)
@@ -74,7 +74,7 @@ on open these_items
 				set pixelHeight to y + border
 				set pixelWidth to x + border
 				
-				display dialog "Resolution w/ Outer Border: " & (pixelWidth as integer as string) & " x " & (pixelHeight as integer as string) & " pixels"
+				(* display dialog "Resolution w/ Outer Border: " & (pixelWidth as integer as string) & " x " & (pixelHeight as integer as string) & " pixels" *)
 				
 				(* RESIZE TO NEW DIMENSIONS AND ADD OUTER BORDER with padColor *)
 				(* increase image dimensions by 'padding' pixels to add black border *)
