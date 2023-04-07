@@ -1,4 +1,4 @@
-# DNG2RAW
+# BACK-to-RAW
 
 For the selected variants try to find matching pairs of DNG and camera native raw files. When matching pairs are found, copy all adjustments, metadata, keywords, ratings, labels from the DNG file back to the matching camera native raw file.
 
