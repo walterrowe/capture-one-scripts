@@ -7,7 +7,9 @@ This repository is a collection of user-contributed scripts for the Capture One 
 Brief summary of the available scripts.  Details provided in the README files in the script directories.
 
 * **[add-border](add-border/)** - Add borders to exported images.  Works in Process Recipes using Open With, or in macOS Finder.
-* **[monochrome-keywords](monochrome-keywords/)** - apply monochrome keywords to or remove monochrome keywords from images
+* **[dng2raw](dng2raw/)** - migrate adjustments, ratings, labels, keywords, metadata from DNG files back to camera native raw files.
+* **[location-from-gps](location-from-gps/)** - look up city, county, state, country, country code from gps data and apply as hierarchical keyword and IPTC metadata.
+* **[monochrome-keywords](monochrome-keywords/)** - apply monochrome keywords to or remove monochrome keywords from images.
 * **[find-offline-files](find-offline-files/)** - Find all offline files in a catalog.
 * **[dt-on-set-scripts](dt-on-set-scripts/)** - A collection of scripts for DTs to use on set meant to be used via keyboard shortcuts.
 
