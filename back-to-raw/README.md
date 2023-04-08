@@ -1,6 +1,6 @@
 # BACK-to-RAW
 
-For the selected variants try to find matching pairs of files. The user chooses the source file extension, one or more target file extensions, and what to sychronize. When matching pairs of source and target are found, copy one or more of adjustments, metadata, keywords, ratings, labels from the souce file to the matching target file(s).
+For the selected variants try to find matching pairs of files. The user chooses the source file extension, one or more target file extensions, and what to sychronize. When matching pairs of source and target are found, copy one or more of adjustments, metadata, keywords, ratings, labels from the source file to the matching target file(s).
 
 Requirements: exiftool
 
