@@ -30,6 +30,7 @@ on run
 	set targetExts to {}
 	
 	set srcExt to first item in sourceExts
+	
 	if srcExt is first item in rawExtensions then set targetExts to items 2 thru end of rawExtensions
 	if srcExt is last item in rawExtensions then set targetExts to items 1 thru -2 of rawExtensions
 	if (count of targetExts) is 0 then
@@ -39,13 +40,14 @@ on run
 			end if
 		end repeat
 	end if
-	set targetExts to choose from list targetExts with title "Choose Target File Format(s)" with multiple selections allowed
+	
+	set targetExts to choose from list targetExts with title "Choose One or More Target File Format(s)" with multiple selections allowed
 	if targetExts is false then
 		display dialog "You must select a target file format."
 		return
 	end if
 	
-	set syncedItems to choose from list syncableItems with title "Choose Items to Synchronize" with multiple selections allowed
+	set syncedItems to choose from list syncableItems with title "Choose What Items to Synchronize" with multiple selections allowed
 	if syncedItems is false then
 		display dialog "You must items to synchronize."
 		return
@@ -62,6 +64,7 @@ on run
 		set targetVariants to {}
 		set targetDates to {}
 		set matchedVariants to {}
+		set skippedVariants to {}
 		
 		-- get all selected variants		
 		set selectedVariants to variants where selected is true
@@ -74,13 +77,17 @@ on run
 			set thisFile to quoted form of POSIX path of (thisParent's file as alias)
 			set thisName to thisParent's name as string
 			set thisDate to do shell script "eval $(/usr/libexec/path_helper -s); exiftool -DateTimeOriginal " & thisFile & "|  cut -c35-"
-			if thisVariant's parent image's extension is in sourceExts then
-				set sourceVariants to sourceVariants & {thisVariant}
-				set sourceDates to sourceDates & {thisDate}
-			end if
-			if thisVariant's parent image's extension is in targetExts then
-				set targetVariants to targetVariants & {thisVariant}
-				set targetDates to targetDates & {thisDate}
+			if thisDate is "" then
+				set skippedVariants to skippedVariants & {thisVariant}
+			else
+				if thisVariant's parent image's extension is in sourceExts then
+					set sourceVariants to sourceVariants & {thisVariant}
+					set sourceDates to sourceDates & {thisDate}
+				end if
+				if thisVariant's parent image's extension is in targetExts then
+					set targetVariants to targetVariants & {thisVariant}
+					set targetDates to targetDates & {thisDate}
+				end if
 			end if
 		end repeat
 		
@@ -155,18 +162,38 @@ on run
 			tell me to progress_step(targetItem)
 		end repeat
 		
-		if (count of matchedVariants) > 0 then
+		set statusMessage to ""
+		
+		if (count of skippedVariants) > 0 then
+			set statusMessage to statusMessage & "Skipped " & (count of skippedVariants) & " variants. \nSee \"BACK-to-RAW Skipped Variants\" User Collection.
+
+"
 			tell current document
-				if exists collection "Matched Variants" then
-					set matchedCollection to collection "Matched Variants"
+				if exists collection "BACK-to-RAW Skipped Variants" then
+					set skippedCollection to collection "BACK-to-RAW Skipped Variants"
 				else
-					set matchedCollection to make new collection with properties {kind:album, name:"Matched Variants"}
+					set skippedCollection to make new collection with properties {kind:album, name:"BACK-to-RAW Skipped Variants"}
+				end if
+				add inside skippedCollection variants skippedVariants
+			end tell
+		end if
+		
+		if (count of matchedVariants) > 0 then
+			set statusMessage to statusMessage & "Synchronized " & ((count of matchedVariants) / 2 as integer) & " Variant Pairs. 
+See \"BACK-to-RAW Matched Variants\" User Collection.
+
+"
+			tell current document
+				if exists collection "BACK-to-RAW Matched Variants" then
+					set matchedCollection to collection "BACK-to-RAW Matched Variants"
+				else
+					set matchedCollection to make new collection with properties {kind:album, name:"BACK-to-RAW Matched Variants"}
 				end if
 				add inside matchedCollection variants matchedVariants
 			end tell
 		end if
 		tell me to progress_end()
-		display dialog "Synchronized " & ((count of matchedVariants) / 2 as integer) & " Variant Pairs. See \"" & name of matchedCollection & "\" User Collection." with title "Syncing Complete"
+		display dialog statusMessage with title "Synchronization Complete!"
 	end tell
 end run
 
