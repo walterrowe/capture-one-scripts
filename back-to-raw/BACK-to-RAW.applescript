@@ -1,12 +1,60 @@
+--
+-- BACK-2-RAW
+--
+-- synchronize adjustments, labels, ratings, keywords, metadata
+-- for selected images use chosen sources to find matching targets
+--
+-- user chooses source extension type, target extension types, what to sync
+-- 
+-- Requirements: exiftool
+--
+-- Author: Walter Rowe
+-- Created: 08-Apr-2023
+--
+
 use AppleScript version "2.8"
 use scripting additions
 
--- candidate source file name extensions
-property sourceExts : {"DNG"}
--- candidate target file name extensions
-property targetExts : {"CR2", "CRW", "ARW", "ARF", "RAF", "NEF"}
+-- candidate source and target file name extensions
+-- https://www.file-extensions.org/filetype/extension/name/digital-camera-raw-files
+property rawExtensions : {"ARW", "ARF", "ARQ", "CR3", "CR2", "CRW", "DCR", "DNG", "FPX", "IIQ", "JPG", "JPEG", "MRW", "NEF", "ORF", "PEF", "PSD", "PTX", "RAF", "RAW", "RW2", "RWL", "SRF", "SR2", "TIFF"}
+
+property syncableItems : {"Everything", "Adjustments", "Keywords", "Labels", "Metadata", "Ratings"}
 
 on run
+	set sourceExts to choose from list rawExtensions with title "Choose a Source File Format"
+	if sourceExts is false then
+		display dialog "You must select a source file format."
+		return
+	end if
+	set targetExts to {}
+	
+	set srcExt to first item in sourceExts
+	if srcExt is first item in rawExtensions then set targetExts to items 2 thru end of rawExtensions
+	if srcExt is last item in rawExtensions then set targetExts to items 1 thru -2 of rawExtensions
+	if (count of targetExts) is 0 then
+		repeat with i from 1 to count of rawExtensions
+			if srcExt is item i of rawExtensions then
+				set targetExts to (items 1 thru (i - 1) of rawExtensions) & (items (i + 1) thru end of rawExtensions) as list
+			end if
+		end repeat
+	end if
+	set targetExts to choose from list targetExts with title "Choose Target File Format(s)" with multiple selections allowed
+	if targetExts is false then
+		display dialog "You must select a target file format."
+		return
+	end if
+	
+	set syncedItems to choose from list syncableItems with title "Choose Items to Synchronize" with multiple selections allowed
+	if syncedItems is false then
+		display dialog "You must items to synchronize."
+		return
+	end if
+	
+	set AppleScript's text item delimiters to ","
+	display dialog "Synchronizing " & (syncedItems as string) buttons {"Cancel", "OK"} with title "Confirm Syncing " & sourceExts & " to " & targetExts
+	set AppleScript's text item delimiters to ""
+	
 	tell application "Capture One 23"
 		-- initialize source and target lists
 		set sourceVariants to {}
@@ -51,48 +99,58 @@ on run
 				set sourceVariant to item sourceItem of sourceVariants
 				set matchedVariants to matchedVariants & {sourceVariant, targetVariant}
 				-- display dialog sourceName & " => " & targetName buttons "Dismiss"
-				set targetVariant's crop to sourceVariant's crop
-				copy adjustments sourceVariant
-				reset adjustments targetVariant
-				apply adjustments targetVariant
-				repeat with sourceKeyword in sourceVariant's keywords
-					apply keyword sourceKeyword to {targetVariant}
-				end repeat
-				set targetVariant's color tag to sourceVariant's color tag
-				set targetVariant's rating to sourceVariant's rating
-				set targetVariant's contact creator to sourceVariant's contact creator
-				set targetVariant's contact creator job title to sourceVariant's contact creator job title
-				set targetVariant's contact address to sourceVariant's contact address
-				set targetVariant's contact city to sourceVariant's contact city
-				set targetVariant's contact state to sourceVariant's contact state
-				set targetVariant's contact postal code to sourceVariant's contact postal code
-				set targetVariant's contact country to sourceVariant's contact country
-				set targetVariant's contact phone to sourceVariant's contact phone
-				set targetVariant's contact email to sourceVariant's contact email
-				set targetVariant's contact website to sourceVariant's contact website
-				set targetVariant's content headline to sourceVariant's content headline
-				set targetVariant's content description to sourceVariant's content description
-				set targetVariant's content category to sourceVariant's content category
-				set targetVariant's content supplemental categories to sourceVariant's content supplemental categories
-				set targetVariant's content subject codes to sourceVariant's content subject codes
-				set targetVariant's content description writer to sourceVariant's content description writer
-				set targetVariant's image intellectual genre to sourceVariant's image intellectual genre
-				set targetVariant's image scenes to sourceVariant's image scenes
-				set targetVariant's image location to sourceVariant's image location
-				set targetVariant's image city to sourceVariant's image city
-				set targetVariant's image state to sourceVariant's image state
-				set targetVariant's image country to sourceVariant's image country
-				set targetVariant's image country code to sourceVariant's image country code
-				set targetVariant's status title to sourceVariant's status title
-				set targetVariant's status job identifier to sourceVariant's status job identifier
-				set targetVariant's status instructions to sourceVariant's status instructions
-				set targetVariant's status provider to sourceVariant's status provider
-				set targetVariant's status source to sourceVariant's status source
-				set targetVariant's status copyright notice to sourceVariant's status copyright notice
-				set targetVariant's status rights usage terms to sourceVariant's status rights usage terms
-				set targetVariant's Getty personalities to sourceVariant's Getty personalities
-				set targetVariant's Getty original filename to sourceVariant's Getty original filename
-				set targetVariant's Getty parent MEID to sourceVariant's Getty parent MEID
+				if syncedItems contains "Everything" or syncedItems contains "Adjustments" then
+					set targetVariant's crop to sourceVariant's crop
+					copy adjustments sourceVariant
+					reset adjustments targetVariant
+					apply adjustments targetVariant
+				end if
+				if syncedItems contains "Everything" or syncedItems contains "Keywords" then
+					repeat with sourceKeyword in sourceVariant's keywords
+						apply keyword sourceKeyword to {targetVariant}
+					end repeat
+				end if
+				if syncedItems contains "Everything" or syncedItems contains "Labels" then
+					set targetVariant's color tag to sourceVariant's color tag
+				end if
+				if syncedItems contains "Everything" or syncedItems contains "Ratings" then
+					set targetVariant's rating to sourceVariant's rating
+				end if
+				if syncedItems contains "Everything" or syncedItems contains "Metadata" then
+					set targetVariant's contact creator to sourceVariant's contact creator
+					set targetVariant's contact creator job title to sourceVariant's contact creator job title
+					set targetVariant's contact address to sourceVariant's contact address
+					set targetVariant's contact city to sourceVariant's contact city
+					set targetVariant's contact state to sourceVariant's contact state
+					set targetVariant's contact postal code to sourceVariant's contact postal code
+					set targetVariant's contact country to sourceVariant's contact country
+					set targetVariant's contact phone to sourceVariant's contact phone
+					set targetVariant's contact email to sourceVariant's contact email
+					set targetVariant's contact website to sourceVariant's contact website
+					set targetVariant's content headline to sourceVariant's content headline
+					set targetVariant's content description to sourceVariant's content description
+					set targetVariant's content category to sourceVariant's content category
+					set targetVariant's content supplemental categories to sourceVariant's content supplemental categories
+					set targetVariant's content subject codes to sourceVariant's content subject codes
+					set targetVariant's content description writer to sourceVariant's content description writer
+					set targetVariant's image intellectual genre to sourceVariant's image intellectual genre
+					set targetVariant's image scenes to sourceVariant's image scenes
+					set targetVariant's image location to sourceVariant's image location
+					set targetVariant's image city to sourceVariant's image city
+					set targetVariant's image state to sourceVariant's image state
+					set targetVariant's image country to sourceVariant's image country
+					set targetVariant's image country code to sourceVariant's image country code
+					set targetVariant's status title to sourceVariant's status title
+					set targetVariant's status job identifier to sourceVariant's status job identifier
+					set targetVariant's status instructions to sourceVariant's status instructions
+					set targetVariant's status provider to sourceVariant's status provider
+					set targetVariant's status source to sourceVariant's status source
+					set targetVariant's status copyright notice to sourceVariant's status copyright notice
+					set targetVariant's status rights usage terms to sourceVariant's status rights usage terms
+					set targetVariant's Getty personalities to sourceVariant's Getty personalities
+					set targetVariant's Getty original filename to sourceVariant's Getty original filename
+					set targetVariant's Getty parent MEID to sourceVariant's Getty parent MEID
+				end if
 			end if
 			tell me to progress_step(targetItem)
 		end repeat
@@ -107,8 +165,9 @@ on run
 				add inside matchedCollection variants matchedVariants
 			end tell
 		end if
+		tell me to progress_end()
+		display dialog "Synchronized " & ((count of matchedVariants) / 2 as integer) & " Variant Pairs. See \"" & name of matchedCollection & "\" User Collection." with title "Syncing Complete"
 	end tell
-	tell me to progress_end()
 end run
 
 
@@ -174,11 +233,11 @@ on binarySearch(aValue, values, iLower, iUpper)
 	set valueIndex to 0
 	
 	-- if search list is narrowed down to only 1 item
-	if (iUpper - iLower) <= 4 then
+	if (iUpper - iLower) ² 4 then
 		repeat with midIndex from iLower to iUpper
-		if aValue = (item midIndex of values) then
-			set valueIndex to midIndex
-		end if
+			if aValue = (item midIndex of values) then
+				set valueIndex to midIndex
+			end if
 		end repeat
 		return valueIndex
 	end if
