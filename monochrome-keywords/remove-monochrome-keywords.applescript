@@ -20,11 +20,13 @@ set bwKeywords to {"Black & White", "Monochrome"}
 set affectedList to {}
 
 tell application "Capture One 23"
-	set candidates to (variants where ("Monochrome" is in name of keywords or "Black & White" is in name of keywords) and (saturation of adjustments is not -100.0) and (black and white of adjustments is false))
+	set updateCount to 0
 	repeat with thisKeyword in bwKeywords
-		repeat with thisVariant in candidates
+		set monoVariants to (variants where (thisKeyword is in name of keywords) and (saturation of adjustments is not -100.0) and (black and white of adjustments is false))
+		repeat with thisVariant in monoVariants
 			delete (every keyword of thisVariant whose name is thisKeyword)
 		end repeat
+		set updateCount to updateCount + (count of monoVariants)
 	end repeat
-	display dialog ((count of candidates) as string) & " images updated." with title "Monochrome Keywords Removed"
+	display dialog (updateCount as string) & " images updated." with title "Monochrome Keywords Removed"
 end tell
