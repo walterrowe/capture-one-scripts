@@ -8,6 +8,7 @@ Brief summary of the available scripts.  Details provided in the README files in
 
 * **[add-border](add-border/)** - Add borders to exported images.  Works in Process Recipes using Open With, or in macOS Finder.
 * **[back-to-raw](back-to-raw/)** - synchronize one or more of adjustments, ratings, labels, keywords, metadata from a source file type to target file types.
+* **[copy-labels-to-finder](copy-labels-to-finder/)** - copy capture one color tags to macos finder color labels.
 * **[location-from-gps](location-from-gps/)** - look up city, county, state, country, country code from gps data and apply as hierarchical keyword and IPTC metadata.
 * **[monochrome-keywords](monochrome-keywords/)** - apply monochrome keywords to or remove monochrome keywords from images.
 * **[find-offline-files](find-offline-files/)** - Find all offline files in a catalog.
