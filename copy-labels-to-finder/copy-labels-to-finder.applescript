@@ -19,39 +19,35 @@ on run
 		repeat with i from 1 to imgCount
 			tell me to progress_update(i, imgCount, "")
 			set thisVariant to item i of imageSel
-			if (color tag of thisVariant is missing value) then
-				set noLabels to noLabels & {name of parent image of thisVariant}
-			else
-				set thisFile to file of parent image of thisVariant as alias
-				set thisLabel to color tag of thisVariant
-				-- map capture one color tags to macOS finder label indexes
-				-- color CO-index Finder-index
-				-- 
-				-- None		0		0
-				-- Red		1		2
-				-- Orange	2		1
-				-- Yellow		3		3
-				-- Green		4		6
-				-- Blue		5		4
-				-- Pink		6		7 (CO pink maps to Finder gray)
-				-- Purple		7		5
-				--
-				if thisLabel is 1 then
-					set thisLabel to 2
-				else if thisLabel is 2 then
-					set thisLabel to 1
-				else if thisLabel is 4 then
-					set thisLabel to 6
-				else if thisLabel is 5 then
-					set thisLabel to 4
-				else if thisLabel is 6 then
-					set thisLabel to 7
-				else if thisLabel is 7 then
-					set thisLabel to 5
-				end if
-				
-				tell application "Finder" to set label index of thisFile to thisLabel
+			set thisFile to file of parent image of thisVariant as alias
+			set thisLabel to color tag of thisVariant
+			-- map capture one color tags to macOS finder label indexes
+			-- color CO-index Finder-index
+			-- 
+			-- None		0		0
+			-- Red		1		2
+			-- Orange	2		1
+			-- Yellow		3		3
+			-- Green		4		6
+			-- Blue		5		4
+			-- Pink		6		7 (CO pink maps to Finder gray)
+			-- Purple		7		5
+			--
+			if thisLabel is 1 then
+				set thisLabel to 2
+			else if thisLabel is 2 then
+				set thisLabel to 1
+			else if thisLabel is 4 then
+				set thisLabel to 6
+			else if thisLabel is 5 then
+				set thisLabel to 4
+			else if thisLabel is 6 then
+				set thisLabel to 7
+			else if thisLabel is 7 then
+				set thisLabel to 5
 			end if
+			
+			tell application "Finder" to set label index of thisFile to thisLabel
 			tell me to progress_step(i)
 		end repeat
 		
@@ -60,10 +56,8 @@ on run
 		tell me to set noLabelsCount to ((count of noLabels) as string)
 		tell me to set timeTaken to ((current date) - startTime)
 		set timeTaken to ((timeTaken / 60 as integer) as string) & ":" & (text -1 thru -2 of ("0" & (timeTaken mod 60 as integer) as string))
-		tell me to set imgsUpdated to imgCount - noLabelsCount
 		
-		display dialog "Updated " & imgsUpdated & " images in " & timeTaken & " (mm:ss).
-There were " & noLabelsCount & " images with no GPS data." with title "Populate Location from GPS" buttons {"Okay"}
+		display dialog "Updated " & imgCount & " images in " & timeTaken & " (mm:ss)." with title "Copy Labels to Finder" buttons {"Okay"}
 		
 	end tell
 end run
