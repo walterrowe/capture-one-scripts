@@ -2,7 +2,7 @@
 
 This AppleScript script copies color tags (labels) from Capture One variants to their corresponding files in macOS Finder.
 
-If you select more than one variant of an image then only the last variant's color tag will be reflected in macOS Finder. Every variant of an image in Capture One represent the same file on disk.
+If you select more than one variant of an image then only the last variant's color tag will be reflected in macOS Finder. Every variant of an image in Capture One refers to the same image file on disk.
 
 The Capture One color tag PINK is mapped to the macOS Finder color tag GRAY.
 
@@ -34,8 +34,8 @@ Use these instructions to install the script in the Capture One scripts folder. 
 1. Download the script to your system.
 2. Open the script in Script Editor.
 3. In Script Editor choose File > Export.
-4. Navigate to the folder Library/Script/Capture One.
-5. Change the File Format field to Script.
+4. Navigate to the folder ~/Library/Scripts/Capture One Scripts.
+5. Set the File Format field to Script.
 6. Press the Save button.
 
 Use these insructions to synchronize Capture One color tags to macOS Finder.
