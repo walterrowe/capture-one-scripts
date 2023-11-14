@@ -1,6 +1,6 @@
 # Label Untitled Variants
 
-Author: Eric NePean (@ericnepean)
+Author: Eric Nepean (@EricNepean)
 
 This script sets the color label to blue (5) for every variant with an empty iptc title.
 
