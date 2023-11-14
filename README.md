@@ -31,4 +31,5 @@ The contributors test their scripts to the best of their ability. Any errors or 
 
 ## Other Script Repositories
 
-Dozer Labs - https://github.com/dozer-labs/basics
+- Dozer Labs - https://github.com/dozer-labs/basics
+- MagickFrames - https://github.com/walterrowe/magick-frames
