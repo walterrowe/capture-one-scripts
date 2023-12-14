@@ -10,6 +10,7 @@ Brief summary of the available scripts.  Details provided in the README files in
 * **[back-to-raw](back-to-raw/)** - synchronize one or more of adjustments, ratings, labels, keywords, metadata from a source file type to target file types.
 * **[copy-labels-to-finder](copy-labels-to-finder/)** - copy capture one color tags to macos finder color labels.
 * **[dt-on-set-scripts](dt-on-set-scripts/)** - A collection of scripts for DigiTechs to use on set via keyboard shortcuts.
+* **[export-import-settings](export-import-settings/)** - Export / Import your Capture One presets, styles, export recipes, etc.
 * **[find-offline-files](find-offline-files/)** - Find all offline files in a catalog.
 * **[label-untitled-variants](label-untitled-variants/)** - add blue color label to variants with empty iptc title.
 * **[location-from-gps](location-from-gps/)** - look up city, county, state, country, country code from gps data and apply as hierarchical keyword and IPTC metadata.
