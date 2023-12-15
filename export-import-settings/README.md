@@ -1,6 +1,6 @@
 # Export / Import Capture One Settings
 
-**Donations**: if you like these scripts and want to support them [buy me a coffee](buymeacoffee.com/walterrowe).
+**Donations**: if you like these scripts and want to support them [buy me a coffee](https://buymeacoffee.com/walterrowe).
 
 This AppleScript creates two scripts in the Capture One scripts menu. The scripts back up and restore the transportable contents of these folders under ~/Library:
 

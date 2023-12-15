@@ -1,6 +1,6 @@
 # add-border
 
-**Donations**: if you like these scripts and want to support them [buy me a coffee](buymeacoffee.com/walterrowe).
+**Donations**: if you like these scripts and want to support them [buy me a coffee](https://buymeacoffee.com/walterrowe).
 
 macOS AppleScript to add borders to image files. This works as a droplet with macOS Finder or with Capture One Pro when added to the Open With field in Output Recipes.
 

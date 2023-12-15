@@ -1,6 +1,6 @@
 # Copy Labels to Finder
 
-**Donations**: if you like these scripts and want to support them [buy me a coffee](buymeacoffee.com/walterrowe).
+**Donations**: if you like these scripts and want to support them [buy me a coffee](https://buymeacoffee.com/walterrowe).
 
 This AppleScript script copies color tags (labels) from Capture One variants to their corresponding files in macOS Finder.
 
