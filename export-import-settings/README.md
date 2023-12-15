@@ -10,6 +10,8 @@ If you are viewing this in GitLab click the script name to see the source of the
 - settings-export creates CaptureOneSettings.zip on the Desktop from ~/Library/
 - settings-import restores CaptureOneSettings.zip from the Desktop to ~/Library/
 
+They DO NOT back up and restore application preferences as it includes non-transportable content. Sadly this also means they do not back up and restore naming templates, current tool tab configuration, navigation bar settings, and other items stored in application preferences.
+
 ## Notes
 
 - System specific subfolders are skipped.
