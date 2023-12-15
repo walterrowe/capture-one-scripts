@@ -3,6 +3,8 @@
 Auth: Walter Rowe<br>
 Date: June 2020
 
+**Donations**: if you like these scripts and want to support them [buy me a coffee](buymeacoffee.com/walterrowe).
+
 ## Description
 
 There are two scripts in this directory.

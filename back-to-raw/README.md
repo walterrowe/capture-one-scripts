@@ -1,5 +1,7 @@
 # BACK-to-RAW
 
+**Donations**: if you like these scripts and want to support them [buy me a coffee](buymeacoffee.com/walterrowe).
+
 The purpose of this script is to synchronize all or a subset of adjustments, metadata, keywords, ratings, and labels from a chosen source file type to one or more chosen target file types. For example, a client could apply labels and star ratings to JPGs you provided as proofs. With this script you can synchronize these back to your original source raw files.
 
 The genesis of this script was me finding thousands of camera native raw files on old disks that I had long ago converted to Adobe DNG format. I wanted to migrate all of the adjustments, metadata, keywords, ratings, and labels from the Adobe DNG files back to their original camera native raw files recovered from the old disk drive. Manually pairing up DNG and RAW files, and manually syncing all of these attributes would be an overwhelming task. It would be much faster if I could select a batch of picture sets and let a script pair them up and perform this synchronization. It would take a fraction of the time and I could let it run while I do other tasks.

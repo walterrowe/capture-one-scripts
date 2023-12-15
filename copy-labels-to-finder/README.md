@@ -1,5 +1,7 @@
 # Copy Labels to Finder
 
+**Donations**: if you like these scripts and want to support them [buy me a coffee](buymeacoffee.com/walterrowe).
+
 This AppleScript script copies color tags (labels) from Capture One variants to their corresponding files in macOS Finder.
 
 If you select more than one variant of an image then only the last variant's color tag will be reflected in macOS Finder. Every variant of an image in Capture One refers to the same image file on disk.
