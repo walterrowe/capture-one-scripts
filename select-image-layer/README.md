@@ -1,6 +1,6 @@
 # Select Image Layer
 
-**Donations**: if you like these scripts and want to support them [buy me a coffee](buymeacoffee.com/walterrowe).
+**Donations**: if you like these scripts and want to support them [buy me a coffee](https://buymeacoffee.com/walterrowe).
 
 This script set the current layer to the base image layer for every selected variant. If no variants are selected then it sets the current layer for all variants in the current document.
 
