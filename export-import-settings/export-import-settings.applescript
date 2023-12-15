@@ -1,3 +1,20 @@
+(*
+
+	export-import-settings
+
+	author: walter rowe walter.rowe@gmail.com
+	create: 13 december 2023
+	update: 15 december 2023
+	
+	This script creates or restores a ZIP of the transportable parts of these folders under ~/Library related to Capture One
+
+		- Application Support/Capture One
+		- Scripts/Capture One Scripts
+
+	When restoring you must restart Capture One afterward for the app to see the restored settings.
+
+*)
+
 use AppleScript version "2.7"
 use scripting additions
 
@@ -17,16 +34,16 @@ on run
 	set pathToMe to path to me
 	set whereAmI to quoted form of POSIX path of pathToMe
 	
-	set settingsFolder to "~/Library/Application\\ Support/"
-	set CaptureOne to "Capture\\ One/"
+	set settingsRoot to "~/Library/"
+	set settingsFolders to "Application\\ Support/Capture\\ One/ Scripts/Capture\\ One\\ Scripts/"
 	set settingsBackup to POSIX path of (path to desktop) & "CaptureOneSettings.zip"
-	set settingsExclude to "-x '**Batch**' '**CaptureCore**' '**Diagnostics**' '**[Ee]rror**' '**IPCamera**' '**Plug-ins**' '**Sync**' '**/.DS_Store'"
+	set settingsExclude to "-x '**Batch**' '**CaptureCore**' '**Diagnostics**' '**[Ee]rror**' '**IPCamera**' '**Plug-ins**' '**Sync**' '**/.DS_Store' '**Disabled**'"
 	
 	-- command to export settings to desktop
-	set exportCmd to "eval $(/usr/libexec/path_helper -s); cd " & settingsFolder & ";zip -r " & settingsBackup & " " & CaptureOne & " " & settingsExclude
+	set exportCmd to "eval $(/usr/libexec/path_helper -s); cd " & settingsRoot & ";zip -r " & settingsBackup & " " & settingsFolders & " " & settingsExclude
 	
 	-- command to import settings from desktop
-	set importCmd to "eval $(/usr/libexec/path_helper -s); unzip -o -d " & settingsFolder & " " & settingsBackup
+	set importCmd to "eval $(/usr/libexec/path_helper -s); unzip -o -d " & settingsRoot & " " & settingsBackup
 	
 	-- convert "path:to:me.scpt:" into "me" (script apps are folders so note the trailing colon thus the -2 below)
 	set appPathList to splitText(pathToMe as string, ":")
