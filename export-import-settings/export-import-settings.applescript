@@ -22,14 +22,6 @@ property exportBase : "settings-export"
 property importBase : "settings-import"
 property exportimport : "export-import-settings"
 
--- split a string based on a specific delimiter
-on splitText(theText, theDelimiter)
-	set AppleScript's text item delimiters to theDelimiter
-	set theTextItems to every text item of theText
-	set AppleScript's text item delimiters to ""
-	return theTextItems
-end splitText
-
 on run
 	set pathToMe to path to me
 	set whereAmI to quoted form of POSIX path of pathToMe
@@ -38,12 +30,6 @@ on run
 	set settingsFolders to "Application\\ Support/Capture\\ One/ Scripts/Capture\\ One\\ Scripts/"
 	set settingsBackup to POSIX path of (path to desktop) & "CaptureOneSettings.zip"
 	set settingsExclude to "-x '**Batch**' '**CaptureCore**' '**Diagnostics**' '**[Ee]rror**' '**IPCamera**' '**Plug-ins**' '**Sync**' '**/.DS_Store' '**Disabled**'"
-	
-	-- command to export settings to desktop
-	set exportCmd to "eval $(/usr/libexec/path_helper -s); cd " & settingsRoot & ";zip -r " & settingsBackup & " " & settingsFolders & " " & settingsExclude
-	
-	-- command to import settings from desktop
-	set importCmd to "eval $(/usr/libexec/path_helper -s); unzip -o -d " & settingsRoot & " " & settingsBackup
 	
 	-- convert "path:to:me.scpt:" into "me" (script apps are folders so note the trailing colon thus the -2 below)
 	set appPathList to splitText(pathToMe as string, ":")
@@ -58,6 +44,13 @@ on run
 	
 	-- if we are running as the name "settings-export", create CaptureOneSettings.zip on the desktop	
 	if appBase is exportBase then
+		-- ask user to choose where to create the backup file
+		set backupFolder to POSIX path of (choose folder with prompt "Select the folder place your backup file:" default location POSIX path of (path to desktop))
+		set settingsBackup to POSIX path of backupFolder & "CaptureOneSettings.zip"
+		
+		-- command to export settings to desktop
+		set exportCmd to "eval $(/usr/libexec/path_helper -s); cd " & settingsRoot & ";zip -r " & settingsBackup & " " & settingsFolders & " " & settingsExclude
+		
 		try
 			do shell script exportCmd
 		on error errStr number errorNumber
@@ -68,18 +61,17 @@ on run
 	
 	-- if we are running as the name "settings-import", restore CaptureOneSettings.zip from the desktop
 	if appBase is importBase then
-		tell application "System Events"
-			if exists file settingsBackup then
-				try
-					do shell script importCmd
-				on error errStr number errorNumber
-					display dialog "ERROR: " & appBase & ": " & errStr & ": " & (errorNumber as text) & " " & settingsBackup
-				end try
-				display dialog "Imported settings from " & settingsBackup & ". Please restart Capture One."
-			else
-				display dialog "File " & settingsBackup & " does not exist." buttons {"OK"}
-			end if
-		end tell
+		-- ask user to choose the backup file to restore
+		set settingsBackup to quoted form of POSIX path of (choose file with prompt "Select the settings backup file to restore" default location POSIX path of (path to desktop))
+		
+		-- command to import settings from desktop
+		set importCmd to "eval $(/usr/libexec/path_helper -s); unzip -o -d " & settingsRoot & " " & settingsBackup
+		try
+			do shell script importCmd
+		on error errStr number errorNumber
+			display dialog "ERROR: " & appBase & ": " & errStr & ": " & (errorNumber as text) & " " & settingsBackup
+		end try
+		display dialog "Imported settings from " & settingsBackup & ". Please restart Capture One."
 	end if
 	
 end run
@@ -112,3 +104,20 @@ on install_script(whereAmI)
 	display dialog "Installed " & importBase
 	
 end install_script
+
+
+-- split a string based on a specific delimiter
+on joinText(theText, theDelimiter)
+	set AppleScript's text item delimiters to theDelimiter
+	set theTextItems to every text item of theText as string
+	set AppleScript's text item delimiters to ""
+	return theTextItems
+end joinText
+
+-- split a string based on a specific delimiter
+on splitText(theText, theDelimiter)
+	set AppleScript's text item delimiters to theDelimiter
+	set theTextItems to every text item of theText
+	set AppleScript's text item delimiters to ""
+	return theTextItems
+end splitText
