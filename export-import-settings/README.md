@@ -9,8 +9,8 @@ This AppleScript creates two scripts in the Capture One scripts menu. The script
 
 If you are viewing this in GitLab click the script name to see the source of the script. The press the download button at the top right of the script view panel. Double-click the downloaded script to open it in Script Editor, then run it. It creates two scripts in the Capture One Scripts folder. Placing them there lets you run them from the Scripts menu inside Capture One.
 
-- settings-export creates CaptureOneSettings.zip from ~/Library/ in the folder you choose
-- settings-import restores CaptureOneSettings.zip to ~/Library/ from the backup you choose
+- settings-export backs up ~/Library/ to CaptureOneSettings.zip in the folder you choose
+- settings-import restores ~/Library/ from the CaptureOneSettings.zip backup you choose
 
 They DO NOT back up and restore application preferences as it includes non-transportable content. Sadly this also means they do not back up and restore naming templates, current tool tab configuration, navigation bar settings, and other items stored in application preferences.
 
@@ -25,5 +25,6 @@ They DO NOT back up and restore application preferences as it includes non-trans
 
 | Author | Updated | Description |
 | --- | --- | --- |
+| Walter Rowe | 2023-12-16 | Added folder and file choosers |
 | Walter Rowe | 2023-12-15 | Added ~/Library/Scripts/Capture One Scripts to backup and restore |
 | Walter Rowe | 2023-12-13 | Backup and restore ~/Library/Application Support/Capture One |
