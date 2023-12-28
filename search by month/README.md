@@ -3,7 +3,7 @@
 Auth: Walter Rowe<br>
 Date: December 2023
 
-This script prompts for a start and end year, and a month name. It then creates a smart album that search for that month in every year in the specified range.
+This script prompts for a start and end year, and a month name. It then creates a smart album that searches for images created in that month in every year in the specified range. The smart album will be named "\<Month\> of \<Start Year\> to \<End Year\>" (eg. "Feb of 2020 to 2023").
 
 ## How To Run It
 
