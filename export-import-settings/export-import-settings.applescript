@@ -4,7 +4,7 @@
 
 	author: walter rowe walter.rowe@gmail.com
 	create: 13 december 2023
-	update: 15 december 2023
+	update: 15 january 2024
 	
 	This script creates or restores a ZIP of the transportable parts of these folders under ~/Library related to Capture One
 
@@ -20,6 +20,9 @@ use scripting additions
 
 property exportBase : "settings-export"
 property importBase : "settings-import"
+property installFolder : "~/Library/Scripts/Capture\\ One\\ Scripts/"
+property installType : ".scpt"
+property appNames : {importBase, exportBase}
 property exportimport : "export-import-settings"
 
 on run
@@ -38,8 +41,9 @@ on run
 	set appBase to item 1 of splitText(appName, ".")
 	
 	-- if we are running as the name "export-import-settings", create scripts in Capture One scripts folder
-	if appBase is exportimport then
-		install_script(whereAmI)
+	if appNames does not contain appBase then
+		install_script(whereAmI, appNames, installFolder, installType)
+		return
 	end if
 	
 	-- if we are running as the name "settings-export", create CaptureOneSettings.zip on the desktop	
@@ -76,35 +80,23 @@ on run
 	
 end run
 
--- install the export/import scripts in the Capture One scripts menu
-on install_script(whereAmI)
+-- comppile myself as a list of app names
+on install_script(sourceScript, targetApps, appFolder, appType)
 	
-	set scriptFolder to "~/Library/Scripts/Capture\\ One\\ Scripts/"
-	
-	set exportScript to scriptFolder & exportBase & ".scpt"
-	set importScript to scriptFolder & importBase & ".scpt"
-	
-	set installExportCmd to "osacompile -x -o " & exportScript & " " & whereAmI
-	set installImportCmd to "osacompile -x -o " & importScript & " " & whereAmI
-	
-	-- execute the shell command to install export-settings.scpt
-	try
-		do shell script installExportCmd
-	on error errStr number errorNumber
-		display dialog "Install ERROR: " & errStr & ": " & (errorNumber as text) & "on file " & exportScript
-	end try
-	display dialog "Installed " & exportBase
-	
-	-- execute the shell command to install import-settings.scpt
-	try
-		do shell script installImportCmd
-	on error errStr number errorNumber
-		display dialog "Install ERROR: " & errStr & ": " & (errorNumber as text) & "on file " & importScript
-	end try
-	display dialog "Installed " & importBase
+	repeat with scriptBase in targetApps
+		set scriptPath to appFolder & (quoted form of scriptBase) & appType
+		set installCommand to "osacompile -x -o " & scriptPath & " " & sourceScript
+		
+		-- execute the shell command to install export-settings.scpt
+		try
+			do shell script installCommand
+		on error errStr number errorNumber
+			display dialog "Install ERROR: " & errStr & ": " & (errorNumber as text) & "on file " & scriptBase
+		end try
+		-- display dialog "Installed " & scriptBase
+	end repeat
 	
 end install_script
-
 
 -- split a string based on a specific delimiter
 on joinText(theText, theDelimiter)
