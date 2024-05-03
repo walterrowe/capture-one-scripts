@@ -1,7 +1,30 @@
 use AppleScript version "2.7"
 use scripting additions
 
-tell application "Capture One"
+property appNames : {"Search By Month"}
+property appType : ".scpt"
+property installFolder : ((POSIX path of (path to home folder)) as string) & "Library/Scripts/Capture One Scripts/"
+
+
+tell application "Capture One Beta"
+	
+	set appBase to my name as string
+	
+	if appNames does not contain appBase then
+		repeat with appName in appNames
+			set scriptSource to quoted form of POSIX path of (path to me)
+			set scriptTarget to quoted form of (installFolder & appName & appType)
+			set installCommand to "osacompile -x -o " & scriptTarget & " " & scriptSource
+			-- execute the shell command to install export-settings.scpt
+			try
+				do shell script installCommand
+			on error errStr number errorNumber
+				display dialog "Install ERROR: " & errStr & ": " & (errorNumber as text) & "on file " & scriptSource
+			end try
+		end repeat
+		display dialog "Installation complete." buttons {"OK"}
+		return
+	end if
 	
 	set monthNames to {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"}
 	set monthName to first item of (choose from list monthNames)
@@ -10,13 +33,13 @@ tell application "Capture One"
 	end repeat
 	
 	set sYear to text returned of (display dialog "Enter Start Year:" default answer "" with icon note buttons {"Continue", "Cancel"} default button "Continue")
-	set eYear to text returned of (display dialog "Enter Start Year:" default answer "" with icon note buttons {"Continue", "Cancel"} default button "Continue")		
+	set eYear to text returned of (display dialog "Enter Start Year:" default answer "" with icon note buttons {"Continue", "Cancel"} default button "Continue")
 	
 	set mySmartName to ((monthName) & " of " & (sYear as string) & " to " & (eYear as string))
-
+	
 	set sYear to sYear as integer
-	set eYear to eYear as integer	
-
+	set eYear to eYear as integer
+	
 	set mySmartRule to my createSmartRule(sYear, eYear, searchMonth)
 	tell front document
 		make new collection with properties {name:mySmartName, kind:smart album, rules:mySmartRule}
