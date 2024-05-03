@@ -9,7 +9,7 @@ For the selected variants scan for GPS coordinates. If GPS coordinates are prese
 
 # Requirements
 
-This script uses JSON Helper and your own Google Maps API Key (via Google Developer portal) to  send GPS latitude and longitude to fetch address information and parse it in JSON format.
+This script uses JSON Helper and your own [Google Maps API Key (via Google Developer portal)](https://developers.google.com/maps/documentation/geocoding/get-api-key) to  send GPS latitude and longitude to fetch address information and parse it in JSON format.
 
 # How To Use
 
