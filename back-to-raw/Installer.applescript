@@ -15,6 +15,11 @@
 use AppleScript version "2.8"
 use scripting additions
 
+property appNames : {"Back To RAW"}
+property appType : ".scpt"
+property installFolder : ((POSIX path of (path to home folder)) as string) & "Library/Scripts/Capture One Scripts/"
+
+
 -- candidate source and target file name extensions
 -- https://www.file-extensions.org/filetype/extension/name/digital-camera-raw-files
 property rawExtensions : {"ARW", "ARF", "ARQ", "CR3", "CR2", "CRW", "DCR", "DNG", "FPX", "IIQ", "JPG", "JPEG", "MRW", "NEF", "ORF", "PEF", "PSD", "PTX", "RAF", "RAW", "RW2", "RWL", "SRF", "SR2", "TIFF"}
@@ -22,6 +27,26 @@ property rawExtensions : {"ARW", "ARF", "ARQ", "CR3", "CR2", "CRW", "DCR", "DNG"
 property syncableItems : {"Everything", "Adjustments", "Keywords", "Labels", "Metadata", "Ratings"}
 
 on run
+
+	set appBase to my name as string
+	
+	if appNames does not contain appBase then
+		repeat with appName in appNames
+			set scriptSource to quoted form of POSIX path of (path to me)
+			set scriptTarget to quoted form of (installFolder & appName & appType)
+			set installCommand to "osacompile -x -o " & scriptTarget & " " & scriptSource
+			-- execute the shell command to install export-settings.scpt
+			try
+				do shell script installCommand
+			on error errStr number errorNumber
+				display dialog "Install ERROR: " & errStr & ": " & (errorNumber as text) & "on file " & scriptSource
+			end try
+		end repeat
+		display dialog "Installation complete." buttons {"OK"}
+		return
+	end if
+
+
 	set sourceExts to choose from list rawExtensions with title "Choose a Source File Format"
 	if sourceExts is false then
 		display dialog "You must select a source file format."
