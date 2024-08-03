@@ -14,6 +14,7 @@ Brief summary of the available scripts.  Details provided in the README files in
 * **[find-offline-files](find-offline-files/)** - Find all offline files in a catalog.
 * **[label-untitled-variants](label-untitled-variants/)** - add blue color label to variants with empty iptc title.
 * **[location-from-gps](location-from-gps/)** - look up city, county, state, country, country code from gps data and apply as hierarchical keyword and IPTC metadata.
+* **[managed-to-referenced](managed-to-referenced/)** - move managed images in a catalog to referenced date-based folders.
 * **[monochrome-keywords](monochrome-keywords/)** - apply monochrome keywords to or remove monochrome keywords from images.
 * **[search by month](search-by-month/)** - create a smart album to search for images created in the same month across a range of years.
 * **[select-image-layer](select-image-layer/)** - set current layer of selected variants (or all of none selected) to background (image layer).
