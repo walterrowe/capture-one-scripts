@@ -2,7 +2,7 @@
 
 **Donations**: if you like these scripts and want to support them [buy me a coffee](https://buymeacoffee.com/walterrowe).
 
-This AppleScript utility moves image files from inside a managed Capture One catalog to a referenced location outside the catalog. The files are moved into folders based on the image EXIF date.
+This AppleScript utility moves image files from inside a managed Capture One catalog to a referenced location outside the catalog. The files are moved into folders based on the image EXIF date. The utility does not use the date folders from the managed folders inside the catalog because the managed folder dates are based on import date.
 
 - Select the images to move from your Capture One catalog.
 - Choose the top level folder where the files will be moved.
