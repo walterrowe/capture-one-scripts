@@ -3,15 +3,48 @@
 --
 -- Author: Walter Rowe
 -- Create: 12-August-2023
+-- Updated: 05-August-2024
 --
 
 use AppleScript version "2.8"
 use scripting additions
 
+property appNames : {"Copy Labels To Finder"}
+property appType : ".scpt"
+property installFolder : ((POSIX path of (path to home folder)) as string) & "Library/Scripts/Capture One Scripts/"
+property docType : "catalog" as string
+
 on run
-	tell application "Capture One 23"
+	
+	set appBase to my name as string
+	set pathToMe to path to me
+	
+	-- do install if not running under app name
+	if appNames does not contain appBase then
+		repeat with appName in appNames
+			set scriptSource to quoted form of POSIX path of (path to me)
+			set scriptTarget to quoted form of (installFolder & appName & appType)
+			set installCommand to "osacompile -x -o " & scriptTarget & " " & scriptSource
+			-- execute the shell command to install script
+			try
+				do shell script installCommand
+			on error errStr number errorNumber
+				set alertResult to (display alert "Install Error" message errStr & ": " & (errorNumber as text) & "on file " & scriptSource buttons {"Stop"} default button "Stop" as critical giving up after 10)
+			end try
+		end repeat
+		set alertResult to (display alert "Installation Complete" buttons {"OK"} default button "OK")
+		return
+	end if
+	
+	tell application "Capture One"
 		set startTime to current date
-		set imageSel to get variants where selected is true
+		set imageSel to get selected variants
+		
+		if (count of imageSel) < 1 then
+			set alertResult to (display alert "No Selection" message "No images are selected." buttons {"Stop"} default button "Stop" as critical giving up after 10)
+			return
+		end if
+		
 		set noLabels to {}
 		tell me to progress_start(0, "Processing ...", "scanning")
 		set imgCount to count of imageSel
@@ -57,7 +90,7 @@ on run
 		tell me to set timeTaken to ((current date) - startTime)
 		set timeTaken to ((timeTaken / 60 as integer) as string) & ":" & (text -1 thru -2 of ("0" & (timeTaken mod 60 as integer) as string))
 		
-		display dialog "Updated " & imgCount & " images in " & timeTaken & " (mm:ss)." with title "Copy Labels to Finder" buttons {"Okay"}
+		set alertResults to (display alert "Copy Labels to Finder Completed" message "Updated " & imgCount & " images in " & timeTaken & " (mm:ss)." buttons {"Okay"} as informational giving up after 10)
 		
 	end tell
 end run
