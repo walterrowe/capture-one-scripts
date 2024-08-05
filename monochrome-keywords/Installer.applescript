@@ -37,10 +37,12 @@ on run
 				display dialog "Install ERROR: " & errStr & ": " & (errorNumber as text) & "on file " & scriptSource
 			end try
 		end repeat
-		display dialog "Installation complete." buttons {"OK"}
+		set alertResult to (display alert "Installation Complete" buttons {"OK"} default button "OK")
 		return
 	end if
-
+	
+	set updateCount to 0
+	
 	tell application "Capture One"
 		
 		if appBase starts with "Apply" then
@@ -59,12 +61,11 @@ on run
 						apply keyword monoKW to monoVariants
 					end tell
 				end repeat
+				set updateCount to (count of monoVariants)
 			end if
-			display dialog ((count of monoVariants) as string) & " images updated." with title "Monochrome Variants Updated"
 		end if
 		
 		if appBase starts with "Remove" then
-			set updateCount to 0
 			repeat with thisKeyword in bwKeywords
 				set monoVariants to (variants where (thisKeyword is in name of keywords) and (saturation of adjustments is not -100.0) and (black and white of adjustments is false))
 				repeat with thisVariant in monoVariants
@@ -72,8 +73,10 @@ on run
 				end repeat
 				set updateCount to updateCount + (count of monoVariants)
 			end repeat
-			display dialog (updateCount as string) & " images updated." with title "Monochrome Keywords Removed"
 		end if
+		
 	end tell
+	
+	display alert appBase message (updateCount as string) & " images updated."
 	
 end run
