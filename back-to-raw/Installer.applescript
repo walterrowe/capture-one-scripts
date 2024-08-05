@@ -49,7 +49,7 @@ on run
 	
 	set sourceExts to choose from list rawExtensions with title "Choose a Source File Format"
 	if sourceExts is false then
-		display alert "Source Format" message "You must select a source file format."
+		display alert "Source Format" message "You must choose a source file format."
 		return
 	end if
 	set targetExts to {}
@@ -68,13 +68,13 @@ on run
 	
 	set targetExts to choose from list targetExts with title "Choose One or More Target File Format(s)" with multiple selections allowed
 	if targetExts is false then
-		display alert "Target Format" message "You must select a target file format."
+		display alert "Target Format" message "You must choose at least one target file format."
 		return
 	end if
 	
 	set syncedItems to choose from list syncableItems with title "Choose What Items to Synchronize" with multiple selections allowed
 	if syncedItems is false then
-		display alert "Items to Synchronize" message "You must items to synchronize."
+		display alert "Items to Synchronize" message "You must choose what items to synchronize."
 		return
 	end if
 	
