@@ -27,7 +27,7 @@ property rawExtensions : {"ARW", "ARF", "ARQ", "CR3", "CR2", "CRW", "DCR", "DNG"
 property syncableItems : {"Everything", "Adjustments", "Keywords", "Labels", "Metadata", "Ratings"}
 
 on run
-
+	
 	set appBase to my name as string
 	
 	if appNames does not contain appBase then
@@ -42,14 +42,14 @@ on run
 				display dialog "Install ERROR: " & errStr & ": " & (errorNumber as text) & "on file " & scriptSource
 			end try
 		end repeat
-		display dialog "Installation complete." buttons {"OK"}
+		set alertResult to (display alert "Installation Complete" buttons {"OK"} default button "OK")
 		return
 	end if
-
-
+	
+	
 	set sourceExts to choose from list rawExtensions with title "Choose a Source File Format"
 	if sourceExts is false then
-		display dialog "You must select a source file format."
+		display alert "Source Format" message "You must select a source file format."
 		return
 	end if
 	set targetExts to {}
@@ -68,21 +68,24 @@ on run
 	
 	set targetExts to choose from list targetExts with title "Choose One or More Target File Format(s)" with multiple selections allowed
 	if targetExts is false then
-		display dialog "You must select a target file format."
+		display alert "Target Format" message "You must select a target file format."
 		return
 	end if
 	
 	set syncedItems to choose from list syncableItems with title "Choose What Items to Synchronize" with multiple selections allowed
 	if syncedItems is false then
-		display dialog "You must items to synchronize."
+		display alert "Items to Synchronize" message "You must items to synchronize."
 		return
 	end if
 	
 	set AppleScript's text item delimiters to ","
-	display dialog "Synchronizing " & (syncedItems as string) buttons {"Cancel", "OK"} with title "Confirm Syncing " & sourceExts & " to " & targetExts
+	set alertResults to (display alert "Confirmation" message "Synchronizing " & (syncedItems as string) & " (" & sourceExts & " to " & targetExts & ")" buttons {"Cancel", "Continue"} default button "Continue" cancel button "Cancel" giving up after 10)
+	
+	if (gave up of alertResults) or (button returned of alertResults is "Cancel") then return
+	
 	set AppleScript's text item delimiters to ""
 	
-	tell application "Capture One 23"
+	tell application "Capture One"
 		-- initialize source and target lists
 		set sourceVariants to {}
 		set sourceDates to {}
@@ -190,7 +193,8 @@ on run
 		set statusMessage to ""
 		
 		if (count of skippedVariants) > 0 then
-			set statusMessage to statusMessage & "Skipped " & (count of skippedVariants) & " variants. \nSee \"BACK-to-RAW Skipped Variants\" User Collection.
+			set statusMessage to statusMessage & "Skipped " & (count of skippedVariants) & " variants. 
+See \"BACK-to-RAW Skipped Variants\" User Collection.
 
 "
 			tell current document
@@ -216,9 +220,11 @@ See \"BACK-to-RAW Matched Variants\" User Collection.
 				end if
 				add inside matchedCollection variants matchedVariants
 			end tell
+		else
+			set statusMessage to "No variants synchronized."
 		end if
 		tell me to progress_end()
-		display dialog statusMessage with title "Synchronization Complete!"
+		set alertResults to (display alert "Synchronization Complete" message statusMessage buttons {"OK"} giving up after 10)
 	end tell
 end run
 
