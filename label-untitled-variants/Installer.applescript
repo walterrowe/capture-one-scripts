@@ -5,6 +5,8 @@ property appNames : {"Label Untitled Variants"}
 property appType : ".scpt"
 property installFolder : ((POSIX path of (path to home folder)) as string) & "Library/Scripts/Capture One Scripts/"
 
+on run
+
 set appBase to my name as string
 
 if appNames does not contain appBase then
@@ -25,3 +27,5 @@ end if
 
 
 tell application "Capture One Beta" to tell (every variant whose content headline is "") to set color tag to 5
+
+end run
