@@ -5,8 +5,7 @@ property appNames : {"Search By Month"}
 property appType : ".scpt"
 property installFolder : ((POSIX path of (path to home folder)) as string) & "Library/Scripts/Capture One Scripts/"
 
-
-tell application "Capture One Beta"
+on run
 	
 	set appBase to my name as string
 	
@@ -26,26 +25,31 @@ tell application "Capture One Beta"
 		return
 	end if
 	
-	set monthNames to {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"}
-	set monthName to first item of (choose from list monthNames)
-	repeat with idx from 1 to (count of monthNames)
-		if item idx of monthNames is monthName then set searchMonth to idx
-	end repeat
 	
-	set sYear to text returned of (display dialog "Enter Start Year:" default answer "" with icon note buttons {"Continue", "Cancel"} default button "Continue")
-	set eYear to text returned of (display dialog "Enter Start Year:" default answer "" with icon note buttons {"Continue", "Cancel"} default button "Continue")
-	
-	set mySmartName to ((monthName) & " of " & (sYear as string) & " to " & (eYear as string))
-	
-	set sYear to sYear as integer
-	set eYear to eYear as integer
-	
-	set mySmartRule to my createSmartRule(sYear, eYear, searchMonth)
-	tell front document
-		make new collection with properties {name:mySmartName, kind:smart album, rules:mySmartRule}
+	tell application "Capture One"
+		
+		set monthNames to {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"}
+		set monthName to first item of (choose from list monthNames)
+		repeat with idx from 1 to (count of monthNames)
+			if item idx of monthNames is monthName then set searchMonth to idx
+		end repeat
+		
+		set sYear to text returned of (display dialog "Enter Start Year:" default answer "" with icon note buttons {"Continue", "Cancel"} default button "Continue")
+		set eYear to text returned of (display dialog "Enter Start Year:" default answer "" with icon note buttons {"Continue", "Cancel"} default button "Continue")
+		
+		set mySmartName to ((monthName) & " of " & (sYear as string) & " to " & (eYear as string))
+		
+		set sYear to sYear as integer
+		set eYear to eYear as integer
+		
+		set mySmartRule to my createSmartRule(sYear, eYear, searchMonth)
+		tell front document
+			make new collection with properties {name:mySmartName, kind:smart album, rules:mySmartRule}
+		end tell
+		
 	end tell
 	
-end tell
+end run
 
 on createSmartRule(sYear, eYear, searchMonth)
 	
