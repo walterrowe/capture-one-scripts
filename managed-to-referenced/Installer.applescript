@@ -32,10 +32,10 @@ on run
 			try
 				do shell script installCommand
 			on error errStr number errorNumber
-				display dialog "Install ERROR: " & errStr & ": " & (errorNumber as text) & "on file " & scriptSource
+				set alertResult to (display alert "Install Error" message errStr & ": " & (errorNumber as text) & "on file " & scriptSource buttons {"Stop"} default button "Stop" as critical giving up after 10)
 			end try
 		end repeat
-		display dialog "Installation complete." buttons {"OK"}
+		set alertResult to (display alert "Installation Complete" buttons {"OK"} default button "OK")
 		return
 	end if
 	
@@ -49,14 +49,15 @@ on run
 	(*
 	-- BUG -- docKind should say "catalog" or "session" but doesn't
 	if docKind is not docType then
-		display dialog "Document Kind: " & (docKind as string) & return & return & "This utility only works with Capture One catalogs." buttons {"Exit"} with icon caution with title "-- ALERT --"
+		display alert "Incorrect Document Type" message "Document Type: " & (docKind as string) & return & return & "This utility only works with Capture One catalogs." as critical buttons {"Exit"}
 		return
 	end if
 	*)
 	
 	-- inform user of what we plan to do and offer to cancel or continue
 	try
-		display dialog "This utility relocates images stored inside a Capture One catalog to a referenced folder of your choice outside the catalog." & return & return & "You will choose the parent referenced folder. The script will create dated (YYYY/MM/DD) subfolders based on the EXIF image date of the selected images." & return & return & "Do you wish to Cancel or Continue?" buttons {"Cancel", "Continue"} with title "INSTRUCTIONS"
+		set alertResult to (display alert "What To Expect" message "This utility relocates images stored inside a Capture One catalog to a referenced folder of your choice outside the catalog. Any selected files that are already referenced will be skipped." & return & return & "You will choose the parent referenced folder. The script will create dated (YYYY/MM/DD) subfolders based on the EXIF image date of the selected images." & return & return & "Do you wish to Cancel or Continue?" as informational buttons {"Cancel", "Continue"} cancel button "Cancel" giving up after 10)
+		if gave up of alertResult then return
 	on error
 		-- graceful exit when user presses Cancel
 		return
@@ -67,7 +68,7 @@ on run
 		-- get all selected variants user wants to move
 		set variantsToMove to get selected variants
 		if (count of variantsToMove) < 1 then
-			display dialog "No images were selected to move." buttons {"OK"} with icon caution with title "-- ALERT --"
+			set alertResult to (display alert "No Selection" message "No images are selected to move." buttons {"Stop"} default button "Stop" as critical giving up after 10)
 			return
 		end if
 		
@@ -155,8 +156,7 @@ on run
 	tell me to progress_end()
 	
 	set doneMessage to "Moved " & ((count of imagesMoved) - skippedCount) & " files." & return & return & "Skipped " & skippedCount & " referenced images."
-	display dialog doneMessage buttons {"Done"} with title "-- MOVED " & (count of imagesMoved) & " FILES --"
-	
+	set alertResult to (display alert "Move Complete" message doneMessage buttons {"Done"} default button "Done" as informational giving up after 10)
 end run
 
 -- Create the initial progress bar.
