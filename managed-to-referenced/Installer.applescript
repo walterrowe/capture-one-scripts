@@ -9,13 +9,13 @@
 
 *)
 
-use AppleScript version "2.7"
+use AppleScript version "2.8"
 use scripting additions
 
 property appNames : {"Move Managed to Referenced"}
 property appType : ".scpt"
 property installFolder : ((POSIX path of (path to home folder)) as string) & "Library/Scripts/Capture One Scripts/"
-property docType : "catalog" as string
+property docType : "catalog" as text
 
 on run
 	
@@ -42,22 +42,21 @@ on run
 	-- only continue if we are working in a catalog
 	tell application "Capture One"
 		tell current document
-			set docKind to kind as string
-			set docPath to (path as string) & name
+			set docKind to kind
+			set docPath to (path as text) & name
 		end tell
 	end tell
-	(*
-	-- BUG -- docKind should say "catalog" or "session" but doesn't
-	if docKind is not docType then
-		display alert "Incorrect Document Type" message "Document Type: " & (docKind as string) & return & return & "This utility only works with Capture One catalogs." as critical buttons {"Exit"}
+	
+	if convertKindList(docKind) is not docType then
+		set alertResult to (display alert "Incorrect Document Type" message "Document Type: " & (docKind as string) & return & return & "This utility only works with Capture One catalogs." as critical buttons {"Exit"})
 		return
 	end if
-	*)
+	
 	
 	-- inform user of what we plan to do and offer to cancel or continue
 	try
 		set alertResult to (display alert "What To Expect" message "This utility relocates images stored inside a Capture One catalog to a referenced folder of your choice outside the catalog. Any selected files that are already referenced will be skipped." & return & return & "You will choose the parent referenced folder. The script will create dated (YYYY/MM/DD) subfolders based on the EXIF image date of the selected images." & return & return & "Do you wish to Cancel or Continue?" as informational buttons {"Cancel", "Continue"} cancel button "Cancel" giving up after 10)
-		if gave up of alertResult then return
+		if (gave up of alertResult) or (button returned of alertResult is "Cancel") then return
 	on error
 		-- graceful exit when user presses Cancel
 		return
@@ -196,3 +195,84 @@ on progress_end()
 	set progress description to ""
 	set progress additional description to ""
 end progress_end
+
+
+on convertKindList(theKind)
+	
+	## Copyright 2020 Eric Valk, Ottawa, Canada   Creative Commons License CC BY-SA    No Warranty.
+	## General Purpose Handler for scripts using Capture One Pro
+	## Capture One returns the chevron form of the "kind" property when AppleScript is run as an Application
+	## Unless care is taken to avoid text conversion of this property, this bug breaks script decisions based on "kind"
+	## This script converts text strings with the chevron form to strings with the expected text form
+	## The input may be a single string, a single enum, a list of strings or a list of enums
+	## The code is not compact but runs very fast, between 60us and 210us per item 
+	
+	local kind_sl, theItem, kindItem_s, code_start, kindItem_s, kind_code, kind_type
+	
+	if list = (class of theKind) then
+		set kind_sl to {}
+		repeat with theItem in theKind
+			set the end of kind_sl to convertKindList(theItem)
+		end repeat
+		return kind_sl
+	else if text = (class of theKind) then
+		if "Ç" ­ (get text 1 of theKind) then return theKind
+		set kindItem_s to theKind
+	else
+		tell application "Capture One" to set kindItem_s to (get theKind as text)
+		if "Ç" ­ (get text 1 of kindItem_s) then return kindItem_s
+	end if
+	
+	set code_start to -5
+	if ("È" ­ (get text -1 of kindItem_s)) or (16 > (count of kindItem_s)) then Â
+		error "convertKindList received an unexpected Kind string: " & kindItem_s
+	
+	set kind_code to get (text code_start thru (code_start + 3) of kindItem_s)
+	set kind_type to get (text code_start thru (code_start + 1) of kindItem_s)
+	
+	if kind_type = "CC" then ## Collection Kinds
+		if kind_code = "CCpj" then
+			return "project"
+		else if kind_code = "CCgp" then
+			return "group"
+		else if kind_code = "CCal" then
+			return "album"
+		else if kind_code = "CCsm" then
+			return "smart album"
+		else if kind_code = "CCfv" then
+			return "favorite"
+		else if kind_code = "CCff" then
+			return "catalog folder"
+		end if
+		
+	else if kind_type = "CL" then ## Layer Kinds
+		if kind_code = "CLbg" then
+			return "background"
+		else if kind_code = "CLnm" then
+			return "adjustment"
+		else if kind_code = "CLcl" then
+			return "clone"
+		else if kind_code = "CLhl" then
+			return "heal"
+		end if
+		
+	else if kind_type = "CR" then ## Watermark Kinds
+		if kind_code = "CRWn" then
+			return "none"
+		else if kind_code = "CRWt" then
+			return "textual"
+		else if kind_code = "CRWi" then
+			return "imagery"
+		end if
+		
+	else if kind_type = "CO" then ## Document Kinds
+		if kind_code = "COct" then
+			return "catalog"
+		else if kind_code = "COsd" then
+			return "session"
+		end if
+	end if
+	
+	error "convertKindList received an unexpected Kind string: " & kindItem_s
+	
+end convertKindList
