@@ -5,16 +5,16 @@ Date: December 2023
 
 This script prompts for a month, and a start and end year. It then creates a smart album that searches for images created in that month in every year in the specified range. The smart album will be named "\<Month\> of \<Start Year\> to \<End Year\>" (eg. "Feb of 2020 to 2023").
 
+# Installation
+
+Installation is simple:
+
+1. Open the AppleScript file in macOS Script Editor and run it.
+2. The script self-installs in the Capture One Scripts folder.
+3. Open Capture One and choose Script > Update Script Menu.
+4. You now can run the script from the Capture One Scripts menu.
+
 ## How To Run It
-
-You can run it two different ways.
-
-### From ScriptEditor
-
-1. Open the script in macOS ScriptEditor
-1. Press the Run button
-
-### From Capture One
 
 1. Open the script in macOS Script Editor.
 1. "Export" as a script to ~/Library/Scripts/Capture One Scripts.

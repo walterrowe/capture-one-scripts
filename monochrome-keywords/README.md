@@ -23,13 +23,13 @@ The criteria for identifying monochrome images are:
 
 You may ask why the script only looks at the background layer for the saturation adjustment value of -100. The background layer contains no mask. It applies the adjustment globally to the entire image. Other layers may have masks that do not affect the entire image. We cannot assume these other layers result in a monochrome image.
 
-## apply-monochrome-keywords
+## Apply Monochrome Keywords
 
 For each variant matching the above criteria, it adds each of the keywords in the list ```bwKeywords```.
 
 **NOTICE**: RGB grayscale color profile images will not be identified as monochrome. No keywords will be applied. You will have to visually identify and tag these images manually.
 
-## remove-monochrome-keywords
+## Remove Monochrome Keywords
 
 For each variant NOT matching the above criteria, AND having one of the keywords in the list ```bwKeywords```, the requisite keyword is removed. 
 
@@ -46,6 +46,15 @@ set bwKeywords to { "Black & White", "Monochrome" }
 ```
 
 and changing the list of keywords to words of your choosing for your monochrome images. Remember that each keyword must be in double quotes, the list must be comma-separated, and there must be curly braces enclosing the list as shown here.
+
+# Installation
+
+Installation is simple:
+
+1. Open the AppleScript file in macOS Script Editor and run it.
+2. The script self-installs in the Capture One Scripts folder.
+3. Open Capture One and choose Script > Update Script Menu.
+4. You now can run the script from the Capture One Scripts menu.
 
 ## Usage
 

@@ -9,3 +9,12 @@ The original version of this script was provided by Zdeněk Macháček in the Ca
 Original: Zdeněk Macháček © 2022
 
 Modifed: Walter Rowe
+
+# Installation
+
+Installation is simple:
+
+1. Open the AppleScript file in macOS Script Editor and run it.
+2. The script self-installs in the Capture One Scripts folder.
+3. Open Capture One and choose Script > Update Script Menu.
+4. You now can run the script from the Capture One Scripts menu.
