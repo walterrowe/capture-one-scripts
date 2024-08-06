@@ -1,4 +1,4 @@
-use AppleScript version "2.7"
+use AppleScript version "2.8"
 use scripting additions
 
 property appNames : {"Search By Month"}
@@ -21,45 +21,68 @@ on run
 				display dialog "Install ERROR: " & errStr & ": " & (errorNumber as text) & "on file " & scriptSource
 			end try
 		end repeat
-		display dialog "Installation complete." buttons {"OK"}
+		set alertResult to (display alert "Installation Complete" buttons {"OK"} default button "OK")
 		return
 	end if
 	
 	
-	tell application "Capture One"
-		
-		set monthNames to {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"}
-		set monthName to first item of (choose from list monthNames)
+	set monthNames to {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"}
+	set monthPicks to (choose from list monthNames with title "CHOOSE MONTH" with multiple selections allowed)
+	if monthPicks is false then return
+	
+	set searchMonths to {}
+	set searchNames to {}
+	repeat with monthName in monthPicks
 		repeat with idx from 1 to (count of monthNames)
-			if item idx of monthNames is monthName then set searchMonth to idx
+			if item idx of monthNames is (monthName as string) then
+				set end of searchMonths to idx
+				set end of searchNames to (monthName as text)
+			end if
 		end repeat
-		
+	end repeat
+	
+	set textDelimiters to text item delimiters
+	set text item delimiters to " "
+	set searchNames to (searchNames as text)
+	set text item delimiters to textDelimiters
+	
+	try
 		set sYear to text returned of (display dialog "Enter Start Year:" default answer "" with icon note buttons {"Continue", "Cancel"} default button "Continue")
 		set eYear to text returned of (display dialog "Enter Start Year:" default answer "" with icon note buttons {"Continue", "Cancel"} default button "Continue")
-		
-		set mySmartName to ((monthName) & " of " & (sYear as string) & " to " & (eYear as string))
-		
-		set sYear to sYear as integer
-		set eYear to eYear as integer
-		
-		set mySmartRule to my createSmartRule(sYear, eYear, searchMonth)
+	on error
+		return
+	end try
+	
+	set mySmartName to ((sYear as string) & " to " & (eYear as string) & " | " & searchNames)
+	
+	set sYear to sYear as integer
+	set eYear to eYear as integer
+	
+	set mySmartRule to my createSmartRule(sYear, eYear, searchMonths)
+	
+	tell application "Capture One"
 		tell front document
-			make new collection with properties {name:mySmartName, kind:smart album, rules:mySmartRule}
+			set current collection to (make new collection with properties {name:mySmartName, kind:smart album, rules:mySmartRule})
 		end tell
-		
 	end tell
 	
 end run
 
-on createSmartRule(sYear, eYear, searchMonth)
+on createSmartRule(sYear, eYear, searchMonths)
 	
-	if searchMonth > 0 and searchMonth < 10 then set searchMonth to "0" & (searchMonth as string)
-	if searchMonth > 9 and searchMonth < 13 then set searchMonth to (searchMonth as string)
+	-- convert each month number into zero-filled two-digit string
+	repeat with idx from 1 to count of searchMonths
+		set searchMonth to (item idx of searchMonths) as string
+		if length of searchMonth < 2 then set searchMonth to "0" & searchMonth
+		set item idx of searchMonths to searchMonth
+	end repeat
 	
 	set searchPrefix to "<?xml version=\"1.0\" encoding=\"UTF-8\"?><MatchOperator Kind=\"AND\"><MatchOperator Kind=\"OR\">"
 	set searchCriteria to ""
-	repeat with thisYear from sYear to eYear
-		set searchCriteria to searchCriteria & "<Condition Enabled=\"YES\"><Key>_date_yearMonth</Key><Operator>0</Operator><Criterion>" & (thisYear as string) & "-" & searchMonth & "</Criterion></Condition>"
+	repeat with idx from 1 to count of searchMonths
+		repeat with thisYear from sYear to eYear
+			set searchCriteria to searchCriteria & "<Condition Enabled=\"YES\"><Key>_date_yearMonth</Key><Operator>0</Operator><Criterion>" & (thisYear as string) & "-" & item idx of searchMonths & "</Criterion></Condition>"
+		end repeat
 	end repeat
 	set searchPostfix to "</MatchOperator></MatchOperator>"
 	set smartRule to searchPrefix & searchCriteria & searchPostfix
