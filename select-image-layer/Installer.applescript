@@ -1,5 +1,5 @@
 -- select image (backgreound) layer of selected variants
-use AppleScript version "2.4" -- Yosemite (10.10) or later 
+use AppleScript version "2.8"
 use scripting additions
 
 
@@ -24,7 +24,7 @@ on run
 				display dialog "Install ERROR: " & errStr & ": " & (errorNumber as text) & "on file " & scriptSource
 			end try
 		end repeat
-		display dialog "Installation complete." buttons {"OK"}
+		set alertResult to (display alert "Installation Complete" buttons {"OK"} default button "OK")
 		return
 	end if
 	
