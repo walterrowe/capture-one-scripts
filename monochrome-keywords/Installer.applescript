@@ -16,6 +16,9 @@
 
 *)
 
+use AppleScript version "2.8"
+use scripting additions
+
 property appNames : {"Apply Monochrome Keywords", "Remove Monochrome Keywords"}
 property appType : ".scpt"
 property installFolder : ((POSIX path of (path to home folder)) as string) & "Library/Scripts/Capture One Scripts/"
