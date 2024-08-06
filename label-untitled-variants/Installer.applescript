@@ -21,7 +21,7 @@ on run
 			try
 				do shell script installCommand
 			on error errStr number errorNumber
-				display dialog "Install ERROR: " & errStr & ": " & (errorNumber as text) & "on file " & scriptSource
+				set alertResult to (display alert "Install Error" message errStr & ": " & (errorNumber as text) & "on file " & scriptSource buttons {"Stop"} default button "Stop" as critical giving up after 10)
 			end try
 		end repeat
 		set alertResult to (display alert "Installation Complete" buttons {"OK"} default button "OK")
