@@ -1,4 +1,4 @@
--- set the color label to blue for every variant with an empty iptc title
+-- set the color label to blue for every variant with an empty IPTC title
 -- Author: Eric Nepean (@ericnepean in Capture One Forums)
 
 property appNames : {"Label Untitled Variants"}
