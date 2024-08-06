@@ -14,6 +14,15 @@ There are two scripts in this directory.
 
 These script will run on the currently selected document and collection. It should honor any filters on the view.
 
+# Installation
+
+The script self-installs in your Capture One Scripts folder.
+
+1. Open the AppleScript file in macOS Script Editor.
+1. Click the "Run this script" (&#9654;) button.
+1. Open Capture One and choose Script > Update Script Menu.
+1. You now can run the script from the Capture One Scripts menu.
+
 ## Monochrome Image Criteria
 
 The criteria for identifying monochrome images are:
@@ -31,7 +40,7 @@ For each variant matching the above criteria, it adds each of the keywords in th
 
 ## Remove Monochrome Keywords
 
-For each variant NOT matching the above criteria, AND having one of the keywords in the list ```bwKeywords```, the requisite keyword is removed. 
+For each variant NOT matching the above criteria, AND having one of the keywords in the list ```bwKeywords```, the requisite keyword is removed.
 
 **NOTICE**: RGB grayscale color profile images will not be identified as monochrome. Monochrome keywords WILL be removed because they will not match the criteria above. Filter your collection view to exclude these image to avoid this.
 
@@ -39,22 +48,13 @@ For each variant NOT matching the above criteria, AND having one of the keywords
 
 The default list includes ```Monochrome``` and ```Black & White```.
 
-You can change the list of keywords by finding the line 
+You can change the list of keywords by finding the line
 
 ```
 set bwKeywords to { "Black & White", "Monochrome" }
 ```
 
 and changing the list of keywords to words of your choosing for your monochrome images. Remember that each keyword must be in double quotes, the list must be comma-separated, and there must be curly braces enclosing the list as shown here.
-
-# Installation
-
-Installation is simple:
-
-1. Open the AppleScript file in macOS Script Editor and run it.
-2. The script self-installs in the Capture One Scripts folder.
-3. Open Capture One and choose Script > Update Script Menu.
-4. You now can run the script from the Capture One Scripts menu.
 
 ## Usage
 

@@ -21,9 +21,9 @@ When the run is complete a status message will pop up showing how many variants 
 
 # Installation
 
-Installation is simple:
+The script self-installs in your Capture One Scripts folder.
 
-1. Open the AppleScript file in macOS Script Editor and run it.
-2. The script self-installs in the Capture One Scripts folder.
-3. Open Capture One and choose Script > Update Script Menu.
-4. You now can run the script from the Capture One Scripts menu.
+1. Open the AppleScript file in macOS Script Editor.
+1. Click the "Run this script" (&#9654;) button.
+1. Open Capture One and choose Script > Update Script Menu.
+1. You now can run the script from the Capture One Scripts menu.
