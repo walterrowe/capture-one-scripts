@@ -14,6 +14,15 @@ If you are viewing this in GitLab click the script name to see the source of the
 
 They DO NOT back up and restore application preferences as it includes non-transportable content. Sadly this also means they do not back up and restore naming templates, current tool tab configuration, navigation bar settings, and other items stored in application preferences.
 
+# Installation
+
+Installation is simple:
+
+1. Open the AppleScript file in macOS Script Editor and run it.
+2. The script self-installs in the Capture One Scripts folder.
+3. Open Capture One and choose Script > Update Script Menu.
+4. You now can run the script from the Capture One Scripts menu.
+
 ## Notes
 
 - System specific subfolders are skipped.

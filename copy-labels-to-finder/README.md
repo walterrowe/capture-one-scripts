@@ -19,6 +19,15 @@ The Capture One color tag PINK is mapped to the macOS Finder color tag GRAY.
 | Pink<br>(GRAY in Finder) | 6 | 7 |
 | Purple | 7 | 5 |
 
+# Installation
+
+Installation is simple:
+
+1. Open the AppleScript file in macOS Script Editor and run it.
+2. The script self-installs in the Capture One Scripts folder.
+3. Open Capture One and choose Script > Update Script Menu.
+4. You now can run the script from the Capture One Scripts menu.
+
 ## Run from Script Editor
 
 Use these instructions to run the script directly in Script Editor.

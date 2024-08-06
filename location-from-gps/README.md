@@ -17,4 +17,9 @@ Select a batch of pictures in Capture One and run the script.
 
 # Installation
 
-Open the AppleScript file in Script Editor. Then use File > Export and save as an AppleScript Script file (.scpt) in `~/Library/Scripts/Capture One Scripts`. Open Capture One and choose Script > Update Script Menu. You then can run it from the Capture One Scripts menu.
+Installation is simple:
+
+1. Open the AppleScript file in macOS Script Editor and run it.
+2. The script self-installs in the Capture One Scripts folder.
+3. Open Capture One and choose Script > Update Script Menu.
+4. You now can run the script from the Capture One Scripts menu.

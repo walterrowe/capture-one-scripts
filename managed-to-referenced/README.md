@@ -14,9 +14,17 @@ The utility has been tested on:
 - Capture One 16.4
 - Moving to internal and external storage
 
+
+# Installation
+
 If you are viewing this in GitLab click the script name to see the source of the script. The press the download button at the top right of the script view panel. Double-click the downloaded script to open it in Script Editor, then run it. 
 
-The script self-installs in the Capture One Scripts folder. Placing it there lets you run it from the Scripts menu inside Capture One.
+Installation is simple:
+
+1. Open the AppleScript file in macOS Script Editor and run it.
+2. The script self-installs in the Capture One Scripts folder.
+3. Open Capture One and choose Script > Update Script Menu.
+4. You now can run the script from the Capture One Scripts menu.
 
 ## Author
 
