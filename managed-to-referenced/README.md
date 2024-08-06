@@ -17,14 +17,13 @@ The utility has been tested on:
 
 # Installation
 
-If you are viewing this in GitLab click the script name to see the source of the script. The press the download button at the top right of the script view panel. Double-click the downloaded script to open it in Script Editor, then run it. 
+The script self-installs in your Capture One Scripts folder.
 
-Installation is simple:
+1. Open the AppleScript file in macOS Script Editor.
+1. Click the "Run this script" (&#9654;) button.
+1. Open Capture One and choose Script > Update Script Menu.
+1. You now can run the script from the Capture One Scripts menu.
 
-1. Open the AppleScript file in macOS Script Editor and run it.
-2. The script self-installs in the Capture One Scripts folder.
-3. Open Capture One and choose Script > Update Script Menu.
-4. You now can run the script from the Capture One Scripts menu.
 
 ## Author
 
