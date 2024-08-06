@@ -15,7 +15,7 @@
 
 *)
 
-use AppleScript version "2.7"
+use AppleScript version "2.8"
 use scripting additions
 
 property appNames : {"Settings Export", "Settings Import"}
@@ -40,7 +40,7 @@ on run
 				display dialog "Install ERROR: " & errStr & ": " & (errorNumber as text) & "on file " & scriptSource
 			end try
 		end repeat
-		display dialog "Installation complete." buttons {"OK"}
+		set alertResult to (display alert "Installation Complete" buttons {"OK"} default button "OK")
 		return
 	end if
 	
