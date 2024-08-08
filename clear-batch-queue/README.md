@@ -34,4 +34,4 @@ The script self-installs in your Capture One Scripts folder.
 
 | Author | Updated | Description |
 | --- | --- | --- |
-| Walter Rowe | 2024-08-03 | Initial version written |
+| Walter Rowe | 2024-08-08 | Initial version written |
