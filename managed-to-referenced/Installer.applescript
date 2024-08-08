@@ -17,25 +17,15 @@ property appType : ".scpt"
 property installFolder : ((POSIX path of (path to home folder)) as string) & "Library/Scripts/Capture One Scripts/"
 property docType : "catalog" as text
 
+property appTesting : false
+
 on run
 	
+	-- do install if not running under app name
 	set appBase to my name as string
 	set pathToMe to path to me
-	
-	-- do install if not running under app name
-	if appNames does not contain appBase then
-		repeat with appName in appNames
-			set scriptSource to quoted form of POSIX path of (path to me)
-			set scriptTarget to quoted form of (installFolder & appName & appType)
-			set installCommand to "osacompile -x -o " & scriptTarget & " " & scriptSource
-			-- execute the shell command to install script
-			try
-				do shell script installCommand
-			on error errStr number errorNumber
-				set alertResult to (display alert "Install Error" message errStr & ": " & (errorNumber as text) & "on file " & scriptSource buttons {"Stop"} default button "Stop" as critical giving up after 10)
-			end try
-		end repeat
-		set alertResult to (display alert "Installation Complete" buttons {"OK"} default button "OK")
+	if appNames does not contain appBase and not appTesting then
+		installMe(appBase, pathToMe, installFolder, appType, appNames)
 		return
 	end if
 	
@@ -157,6 +147,21 @@ on run
 	set doneMessage to "Moved " & ((count of imagesMoved) - skippedCount) & " files." & return & return & "Skipped " & skippedCount & " referenced images."
 	set alertResult to (display alert "Move Complete" message doneMessage buttons {"Done"} default button "Done" as informational giving up after 10)
 end run
+
+on installMe(appBase, pathToMe, installFolder, appType, appNames)
+	repeat with appName in appNames
+		set scriptSource to quoted form of POSIX path of pathToMe
+		set scriptTarget to quoted form of (installFolder & appName & appType)
+		set installCommand to "osacompile -x -o " & scriptTarget & " " & scriptSource
+		-- execute the shell command to install script
+		try
+			do shell script installCommand
+		on error errStr number errorNumber
+			set alertResult to (display alert "Install Error" message errStr & ": " & (errorNumber as text) & "on file " & scriptSource buttons {"Stop"} default button "Stop" as critical giving up after 10)
+		end try
+	end repeat
+	set alertResult to (display alert "Installation Complete" buttons {"OK"} default button "OK")
+end installMe
 
 -- Create the initial progress bar.
 -- @param {int} 	 steps  			The number of steps for the process 
