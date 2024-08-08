@@ -20,7 +20,7 @@ property installFolder : ((POSIX path of (path to home folder)) as string) & "Li
 
 property appTesting : false
 
-property mapApiKey : "YOUR GOOGLE MAPS API KEY"
+property mapApiKey : "YOUR GOOGLE MAPS PROJECT API KEY"
 
 on run
 	
