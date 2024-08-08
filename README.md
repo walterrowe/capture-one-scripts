@@ -6,18 +6,19 @@ This repository is a collection of user-contributed scripts for the Capture One 
 
 Brief summary of the available scripts.  Details provided in the README files in the script directories.
 
-* **[add-border](add-border/)** - Add borders to exported images.  Works in Process Recipes using Open With, or in macOS Finder.
-* **[back-to-raw](back-to-raw/)** - synchronize one or more of adjustments, ratings, labels, keywords, metadata from a source file type to target file types.
-* **[copy-labels-to-finder](copy-labels-to-finder/)** - copy capture one color tags to macos finder color labels.
+* **[Add Border](add-border/)** - Add borders to exported images.  Works in Process Recipes using Open With, or in macOS Finder.
+* **[Back To Raw](back-to-raw/)** - synchronize one or more of adjustments, ratings, labels, keywords, metadata from a source file type to target file types.
+* **[Clear Batch Queue](clear-batch-queue/)** - empty batch queue, delete old batch folders, and clean out current batch queue folder.
+* **[Copy Labels to Finder](copy-labels-to-finder/)** - copy capture one color tags to macos finder color labels.
 * **[dt-on-set-scripts](dt-on-set-scripts/)** - A collection of scripts for DigiTechs to use on set via keyboard shortcuts.
-* **[export-import-settings](export-import-settings/)** - Export / Import your Capture One presets, styles, export recipes, etc.
+* **[Export / Import Settings](export-import-settings/)** - Export / Import your Capture One presets, styles, export recipes, etc.
 * **[find-offline-files](find-offline-files/)** - Find all offline files in a catalog.
-* **[label-untitled-variants](label-untitled-variants/)** - add blue color label to variants with empty iptc title.
-* **[location-from-gps](location-from-gps/)** - look up city, county, state, country, country code from gps data and apply as hierarchical keyword and IPTC metadata.
-* **[managed-to-referenced](managed-to-referenced/)** - move managed images in a catalog to referenced date-based folders.
-* **[monochrome-keywords](monochrome-keywords/)** - apply monochrome keywords to or remove monochrome keywords from images.
-* **[search by month](search-by-month/)** - create a smart album to search for images created in the same month across a range of years.
-* **[select-image-layer](select-image-layer/)** - set current layer of selected variants (or all of none selected) to background (image layer).
+* **[Label Untitled Variants](label-untitled-variants/)** - add blue color label to variants with empty iptc title.
+* **[Location From GPS](location-from-gps/)** - look up city, county, state, country, country code from gps data and apply as hierarchical keyword and IPTC metadata.
+* **[Managed to Referenced](managed-to-referenced/)** - move managed images in a catalog to referenced date-based folders.
+* **[Monochrome Keywords](monochrome-keywords/)** - apply monochrome keywords to or remove monochrome keywords from images.
+* **[Smart Album Search by Month](search-by-month/)** - create a smart album to search for images created in the same month across a range of years.
+* **[Select Image Layer](select-image-layer/)** - set current layer of selected variants (or all of none selected) to background (image layer).
 
 ## Warranty
 
