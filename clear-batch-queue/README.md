@@ -6,7 +6,7 @@ This AppleScript utility deletes old batch queue folders and cleans out the curr
 
 When the script is run from Capture One's Script menu it displays the names of the batch queue folders found, number of files per folder, and size of each folder in MB. It then asks the user for confirmation to continue or to exit.
 
-- If the user chooses to continue, older batch folders and contents of current batch folder are moved to System Trash
+- If the user chooses to continue, older batch folders and contents of current batch folder are moved to System Trash, and the current batch queue is emptied. The batch history will not reflect being empty until Capture One is restarted.
 - If the user chooses to exit, no action is taken.
 
 The utility has been tested on:
