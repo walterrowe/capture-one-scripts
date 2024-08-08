@@ -2,7 +2,11 @@
 
 **Donations**: if you like these scripts and want to support them [buy me a coffee](https://buymeacoffee.com/walterrowe).
 
-This AppleScript utility deletes old batch queue folders, cleans out the current batch queue folder, and empties the current batch job queue for Capture One on macOS.
+This AppleScript utility helps keep the batch queue and its corresponding folder clean.
+
+- empties the current batch job queue
+- deletes batch queue folders from prior versions
+- cleans out the current batch queue folder
 
 When the script is run from Capture One's Script menu it displays the names of the batch queue folders found, number of files per folder, and size of each folder in MB. It then asks the user for confirmation to continue or to exit.
 
