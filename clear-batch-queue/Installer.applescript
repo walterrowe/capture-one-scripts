@@ -58,7 +58,7 @@ on run
 	
 	-- inform user of what we plan to do and offer to cancel or continue
 	try
-		set alertResult to (display alert "What To Expect" message "This utility will stop the batch queue, remove all existing jobs from the queue, move older batch queue folders to system trash, and move the contents of the current batch queue folder to system trash." & return & return & queueMessage & return & "Do you wish to Cancel or Continue?" as informational buttons {"Cancel", "Continue"} cancel button "Cancel" giving up after 10)
+		set alertResult to (display alert appBase message "This utility requires a Capture One session or catalog to be open." & return & return & "It stops the batch queue, removes all existing jobs from the queue, moves older batch queue folders to system trash, and moves the contents of the current batch queue folder to system trash." & return & return & queueMessage & return & "Do you wish to Cancel or Continue?" as informational buttons {"Cancel", "Continue"} cancel button "Cancel" giving up after 10)
 		if (gave up of alertResult) or (button returned of alertResult is "Cancel") then return
 	on error
 		-- graceful exit when user presses Cancel
