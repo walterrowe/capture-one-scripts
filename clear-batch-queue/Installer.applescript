@@ -37,18 +37,18 @@ on run
 	tell application "Finder"
 		set queueAlias to (queueParent as POSIX file as alias)
 		set queueFolders to ((every item of folder queueAlias where name starts with "Batch") sort by name)
-		set queueSizes to {}
-		set queueTotalSize to 0
-		set queueTotalFile to 0
 		set queueFiles to {}
+		set queueSizes to {}
+		set queueTotalFile to 0
+		set queueTotalSize to 0
 		repeat with idx from 1 to count of queueFolders
 			set aFolder to queueParent & name of item idx of queueFolders as POSIX file as alias
-			set end of queueFiles to (count of every item of folder aFolder) as string
 			
+			set end of queueFiles to (count of every item of folder aFolder) as string
 			set end of queueSizes to physical size of item idx of queueFolders
 			
-			set queueTotalSize to queueTotalSize + (physical size of item idx of queueFolders)
 			set queueTotalFile to queueTotalFile + (item idx of queueFiles)
+			set queueTotalSize to queueTotalSize + (item idx of queueSizes)
 			
 			set queueMessage to queueMessage & (((name of item idx of queueFolders & " (" & item idx of queueFiles as string) & " files, " & ((item idx of queueSizes) / 1024 / 1024 as integer) as string) & "MB)") & return
 		end repeat
