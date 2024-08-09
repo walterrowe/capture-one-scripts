@@ -8,7 +8,9 @@ This AppleScript utility helps keep the batch queue and its corresponding folder
 - moves batch queue folders from prior versions to System Trash
 - moves contents of the current batch queue folder to System Trash
 
-When run from Capture One's Script menu this utility first displays the names, number of files, and size in MB of each batch queue folder found. It then asks the user for confirmation to continue or to exit.
+When run from Capture One's Script menu this utility first displays the names, number of files, and size in MB of each batch queue folder found. It may take some time for this screen to appear because it examines every file in every batch queue folder to ensure it gets an accurate space consumed for each folder.
+
+It then asks the user for confirmation to continue or to exit.
 
 - If the user continues, the above actions are taken.
 - If the user chooses to exit, no action is taken.
