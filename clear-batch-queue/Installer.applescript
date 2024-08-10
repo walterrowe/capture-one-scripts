@@ -42,12 +42,12 @@ on run
 		set queueTotalFiles to 0
 		set queueTotalSize to 0
 		repeat with idx from 1 to count of queueFolders
-			set aFolder to queueParent & name of item idx of queueFolders as POSIX file as alias
+			set theFolder to queueParent & name of item idx of queueFolders as POSIX file as alias
 			
 			
-			set end of queueFiles to (count of every item of folder aFolder) as string
+			set end of queueFiles to (count of every item of folder theFolder) as string
 			
-			set theFiles to every item of folder aFolder
+			set theFiles to every item of folder theFolder
 			set folderSize to 0
 			repeat with theFile in theFiles
 				set folderSize to folderSize + (size of theFile)
@@ -88,11 +88,11 @@ on run
 	tell application "Finder"
 		set folderCount to count of queueFolders
 		repeat with idx from 1 to folderCount
-			set aFolder to queueParent & name of item idx of queueFolders as POSIX file as alias
+			set theFolder to queueParent & name of item idx of queueFolders as POSIX file as alias
 			if idx < folderCount then
-				delete folder aFolder
+				delete folder theFolder
 			else
-				delete every item of folder aFolder
+				delete every item of folder theFolder
 			end if
 		end repeat
 	end tell
