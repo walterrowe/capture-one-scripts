@@ -40,7 +40,7 @@ on run
 		set queueFiles to {}
 		set queueSizes to {}
 		set queueTotalFiles to 0
-		set queueTotalSize to 0
+		set queueTotalSizes to 0
 		repeat with idx from 1 to count of queueFolders
 			set theFolder to queueParent & name of item idx of queueFolders as POSIX file as alias
 			
@@ -48,6 +48,7 @@ on run
 			set end of queueFiles to (count of every item of folder theFolder) as string
 			
 			set theFiles to every item of folder theFolder
+			-- set folderSize to sum of size of every item of folder theFolder
 			set folderSize to 0
 			repeat with theFile in theFiles
 				set folderSize to folderSize + (size of theFile)
@@ -55,13 +56,13 @@ on run
 			set end of queueSizes to folderSize
 			
 			set queueTotalFiles to queueTotalFiles + (item idx of queueFiles)
-			set queueTotalSize to queueTotalSize + folderSize
+			set queueTotalSizes to queueTotalSizes + folderSize
 			
 			set queueMessage to queueMessage & (((name of item idx of queueFolders & " (" & item idx of queueFiles as string) & " files, " & ((item idx of queueSizes) / 1024 / 1024 as integer) as string) & "MB)") & return
 		end repeat
 	end tell
 	
-	set queueMessage to (queueMessage & return & "Total Space: " & queueTotalFiles as string) & " files, " & (queueTotalSize / 1024 / 1024 as integer) & "MB" & return
+	set queueMessage to (queueMessage & return & "Total Space: " & queueTotalFiles as string) & " files, " & (queueTotalSizes / 1024 / 1024 as integer) & "MB" & return
 	
 	-- inform user of what we plan to do and offer to cancel or continue
 	try
@@ -116,3 +117,12 @@ on installMe(appBase, pathToMe, installFolder, appType, appNames)
 	end repeat
 	set alertResult to (display alert "Installation Complete" buttons {"OK"} default button "OK")
 end installMe
+
+##
+## sum a list of numbers
+##
+
+to sumItems from L as list
+    if L = {} then return 0
+    (L's first item) + (sumItems from the rest of L)
+end sumItems
