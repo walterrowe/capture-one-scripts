@@ -42,23 +42,26 @@ on run
 		set queueTotalFiles to 0
 		set queueTotalSizes to 0
 		repeat with idx from 1 to count of queueFolders
-			set theFolder to queueParent & name of item idx of queueFolders as POSIX file as alias
 			
+			set theFolder to queueParent & name of item idx of queueFolders as POSIX file as alias
 			
 			set end of queueFiles to (count of every item of folder theFolder) as string
 			
-			set theFiles to every item of folder theFolder
-			-- set folderSize to sum of size of every item of folder theFolder
-			set folderSize to 0
-			repeat with theFile in theFiles
-				set folderSize to folderSize + (size of theFile)
-			end repeat
-			set end of queueSizes to folderSize
+			set theFiles to size of every item of folder theFolder
 			
-			set queueTotalFiles to queueTotalFiles + (item idx of queueFiles)
+			set folderSize to 0
+			repeat with fileIndex from 1 to count of theFiles
+				set folderSize to folderSize + (item fileIndex of theFiles)
+			end repeat
+			
+			set queueTotalFiles to queueTotalFiles + (count of theFiles)
 			set queueTotalSizes to queueTotalSizes + folderSize
 			
+			set end of queueFiles to (count of theFiles) as string
+			set end of queueSizes to folderSize
+			
 			set queueMessage to queueMessage & (((name of item idx of queueFolders & " (" & item idx of queueFiles as string) & " files, " & ((item idx of queueSizes) / 1024 / 1024 as integer) as string) & "MB)") & return
+			
 		end repeat
 	end tell
 	
@@ -101,6 +104,7 @@ on run
 	set doneAlert to appBase & " Finished"
 	set doneMessage to queueMessage
 	set alertResult to (display alert doneAlert message doneMessage buttons {"Done"} default button "Done" as informational giving up after 10)
+	
 end run
 
 on installMe(appBase, pathToMe, installFolder, appType, appNames)
@@ -117,12 +121,3 @@ on installMe(appBase, pathToMe, installFolder, appType, appNames)
 	end repeat
 	set alertResult to (display alert "Installation Complete" buttons {"OK"} default button "OK")
 end installMe
-
-##
-## sum numbers in a list
-##
-
-to sumItems from L as list
-    if L = {} then return 0
-    (L's first item) + (sumItems from the rest of L)
-end sumItems
