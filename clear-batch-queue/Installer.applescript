@@ -48,6 +48,7 @@ on run
 			set end of queueFiles to (count of every item of folder theFolder) as string
 			
 			set theFiles to every item of folder theFolder
+			-- set folderSize to sum of size of every item of folder theFolder
 			set folderSize to 0
 			repeat with theFile in theFiles
 				set folderSize to folderSize + (size of theFile)
@@ -116,3 +117,12 @@ on installMe(appBase, pathToMe, installFolder, appType, appNames)
 	end repeat
 	set alertResult to (display alert "Installation Complete" buttons {"OK"} default button "OK")
 end installMe
+
+##
+## sum numbers in a list
+##
+
+to sumItems from L as list
+    if L = {} then return 0
+    (L's first item) + (sumItems from the rest of L)
+end sumItems
