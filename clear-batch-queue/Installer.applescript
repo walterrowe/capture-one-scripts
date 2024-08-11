@@ -40,7 +40,7 @@ on run
 		set queueFiles to {}
 		set queueSizes to {}
 		set queueTotalFiles to 0
-		set queueTotalSize to 0
+		set queueTotalSizes to 0
 		repeat with idx from 1 to count of queueFolders
 			set theFolder to queueParent & name of item idx of queueFolders as POSIX file as alias
 			
@@ -55,13 +55,13 @@ on run
 			set end of queueSizes to folderSize
 			
 			set queueTotalFiles to queueTotalFiles + (item idx of queueFiles)
-			set queueTotalSize to queueTotalSize + folderSize
+			set queueTotalSizes to queueTotalSizes + folderSize
 			
 			set queueMessage to queueMessage & (((name of item idx of queueFolders & " (" & item idx of queueFiles as string) & " files, " & ((item idx of queueSizes) / 1024 / 1024 as integer) as string) & "MB)") & return
 		end repeat
 	end tell
 	
-	set queueMessage to (queueMessage & return & "Total Space: " & queueTotalFiles as string) & " files, " & (queueTotalSize / 1024 / 1024 as integer) & "MB" & return
+	set queueMessage to (queueMessage & return & "Total Space: " & queueTotalFiles as string) & " files, " & (queueTotalSizes / 1024 / 1024 as integer) & "MB" & return
 	
 	-- inform user of what we plan to do and offer to cancel or continue
 	try
