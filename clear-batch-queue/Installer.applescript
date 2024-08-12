@@ -151,9 +151,10 @@ on installMe(appBase, pathToMe, installFolder, appType, appNames, appIcon)
 		end try
 		
 		if appIcon is true then
-			set iconSource to quoted form of (POSIX path of pathToMe) & "droplet.icns"
-			set iconTarget to quoted form of scriptTarget & "/Contents/Resources/"
-			set copyIcon to "/bin/cp " & iconSource & " " & iconTarget
+			tell application "Finder" to set myFolder to (folder of (pathToMe)) as alias as string
+			set iconSource to POSIX path of (myFolder & "droplet.icns")
+			set iconTarget to scriptTarget & "/Contents/Resources/"
+			set copyIcon to "/bin/cp " & (quoted form of iconSource) & " " & (quoted form of iconTarget)
 			try
 				do shell script copyIcon
 			on error errStr number errorNumber

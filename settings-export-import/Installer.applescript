@@ -22,6 +22,7 @@ property appNames : {"Settings Export", "Settings Import"}
 property appType : ".scpt"
 property installFolder : ((POSIX path of (path to home folder)) as string) & "Library/Scripts/Capture One Scripts/"
 
+property appIcon : false
 property appTesting : false
 property requiresCOrunning : true
 property requiresCOdocument : false
@@ -32,7 +33,7 @@ on run
 	set appBase to my name as string
 	set pathToMe to path to me
 	if appNames does not contain appBase and not appTesting then
-		installMe(appBase, pathToMe, installFolder, appType, appNames)
+		installMe(appBase, pathToMe, installFolder, appType, appNames, appIcon)
 		return
 	end if
 	
@@ -83,20 +84,43 @@ on run
 	
 end run
 
-on installMe(appBase, pathToMe, installFolder, appType, appNames)
+on installMe(appBase, pathToMe, installFolder, appType, appNames, appIcon)
+	
+	## Copyright 2024 Walter Rowe, Maryland, USA		No Warranty
+	## General purpose AppleScript Self-Installer
+	##
+	## Compiles and installs an AppleScript via osacompile as a type and list of names in a target folder
+	##
+	## Displays an error when it cannot install the script
+	## Displays an alert when installation is successful
+	
 	repeat with appName in appNames
-		set scriptSource to quoted form of POSIX path of pathToMe
-		set scriptTarget to quoted form of (installFolder & appName & appType)
-		set installCommand to "osacompile -x -o " & scriptTarget & " " & scriptSource
+		set scriptSource to POSIX path of pathToMe
+		set scriptTarget to (installFolder & appName & appType)
+		set installCommand to "osacompile -x -o " & (quoted form of scriptTarget) & " " & (quoted form of scriptSource)
 		-- execute the shell command to install script
 		try
 			do shell script installCommand
 		on error errStr number errorNumber
-			set alertResult to (display alert "Install Error" message errStr & ": " & (errorNumber as text) & "on file " & scriptSource buttons {"Stop"} default button "Stop" as critical giving up after 10)
+			set alertResult to (display alert "Install Script Error" message errStr & ": " & (errorNumber as text) & "on file " & scriptSource buttons {"Stop"} default button "Stop" as critical giving up after 10)
 		end try
+		
+		if appIcon is true then
+			tell application "Finder" to set myFolder to (folder of (pathToMe)) as alias as string
+			set iconSource to POSIX path of (myFolder & "droplet.icns")
+			set iconTarget to scriptTarget & "/Contents/Resources/"
+			set copyIcon to "/bin/cp " & (quoted form of iconSource) & " " & (quoted form of iconTarget)
+			try
+				do shell script copyIcon
+			on error errStr number errorNumber
+				set alertResult to (display alert "Install Icon Error" message errStr & ": " & (errorNumber as text) & "on file " & scriptSource buttons {"Stop"} default button "Stop" as critical giving up after 10)
+			end try
+		end if
 	end repeat
 	set alertResult to (display alert "Installation Complete" buttons {"OK"} default button "OK")
+	
 end installMe
+
 
 on meetsRequirements(appBase, requiresCOrunning, requiresCOdocument)
 	set requirementsMet to true
