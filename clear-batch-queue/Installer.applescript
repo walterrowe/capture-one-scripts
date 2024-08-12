@@ -17,7 +17,10 @@ property installFolder : ((POSIX path of (path to home folder)) as string) & "Li
 property appType : ".scpt"
 property appNames : {"Clear Batch Queue"}
 
-property appTesting : false
+property appIcon : false -- if true there must be a droplet.icns icon file in the source folder
+property appTesting : false -- if true, run in script editor, and if false install the script
+property requiresCOrunning : true -- true if capture one is required to be running
+property requiresCOdocument : true -- true if capture one is required to have an open document
 
 property queueParent : ((POSIX path of (path to home folder)) as string) & "Library/Application Support/Capture One/"
 
@@ -27,11 +30,22 @@ on run
 	set appBase to my name as string
 	set pathToMe to path to me
 	if appNames does not contain appBase and not appTesting then
-		installMe(appBase, pathToMe, installFolder, appType, appNames)
+		installMe(appBase, pathToMe, installFolder, appType, appNames, appIcon)
 		return
 	end if
 	
+	-- verify Capture One is running and has a document open
+	if not meetsRequirements(appBase, requiresCOrunning, requiresCOdocument) then return
+	
 	-- get contents of all batch queue folders
+	tell application "Capture One" to tell current document to set batchEnabled to processing queue enabled
+	tell application "Capture One" to tell current document to set batchCount to count of every job
+	if batchEnabled is true then
+		set batchEnabled to "Started"
+	else
+		set batchEnabled to "Stopped"
+	end if
+	
 	set queueMessage to ""
 	
 	tell application "Finder"
@@ -60,16 +74,16 @@ on run
 			set end of queueFiles to (count of theFiles) as string
 			set end of queueSizes to folderSize
 			
-			set queueMessage to queueMessage & (((name of item idx of queueFolders & " (" & item idx of queueFiles as string) & " files, " & ((item idx of queueSizes) / 1024 / 1024 as integer) as string) & "MB)") & return
+			set queueMessage to (queueMessage & (((name of item idx of queueFolders & " (" & item idx of queueFiles as string) & " files, " & ((item idx of queueSizes) / 1024 / 1024 as integer) as string) & "MB)") & return)
 			
 		end repeat
 	end tell
 	
-	set queueMessage to (queueMessage & return & "Total Space: " & queueTotalFiles as string) & " files, " & (queueTotalSizes / 1024 / 1024 as integer) & "MB" & return
+	set alertMessage to ((queueMessage & return & "Total Space: " & queueTotalFiles as string) & " files, " & (queueTotalSizes / 1024 / 1024 as integer) & "MB" & return & return & "Batch Queue: " & batchEnabled & " (" & batchCount as string) & " jobs)" & return
 	
 	-- inform user of what we plan to do and offer to cancel or continue
 	try
-		set alertResult to (display alert appBase message "This utility requires a Capture One session or catalog to be open." & return & return & "It stops the batch queue, removes all existing jobs from the queue, moves older batch queue folders to system trash, and moves the contents of the current batch queue folder to system trash." & return & return & queueMessage & return & "Do you wish to Cancel or Continue?" as informational buttons {"Cancel", "Continue"} cancel button "Cancel" giving up after 30)
+		set alertResult to (display alert appBase message "This utility requires a Capture One session or catalog to be open." & return & return & "It stops the batch queue, removes all existing jobs from the queue, moves older batch queue folders to system trash, and moves the contents of the current batch queue folder to system trash." & return & return & alertMessage & return & "Do you wish to Cancel or Continue?" as informational buttons {"Cancel", "Continue"} cancel button "Cancel" giving up after 30)
 		if (gave up of alertResult) or (button returned of alertResult is "Cancel") then return
 	on error
 		-- graceful exit when user presses Cancel
@@ -102,12 +116,26 @@ on run
 	end tell
 	
 	set doneAlert to appBase & " Finished"
-	set doneMessage to queueMessage
-	set alertResult to (display alert doneAlert message doneMessage buttons {"Done"} default button "Done" as informational giving up after 10)
+	tell application "Capture One" to tell current document to set batchCount to count of every job
+	set alertMessage to ((queueMessage & return & "Total Space: " & queueTotalFiles as string) & " files, " & (queueTotalSizes / 1024 / 1024 as integer) & "MB" & return & return & "Batch Queue: " & batchEnabled & " (" & batchCount as string) & " jobs)" & return
+	set alertResult to (display alert doneAlert message alertMessage buttons {"Done"} default button "Done" as informational giving up after 10)
 	
 end run
 
-on installMe(appBase, pathToMe, installFolder, appType, appNames)
+##
+## applescript self-installer function
+##
+
+on installMe(appBase, pathToMe, installFolder, appType, appNames, appIcon)
+	
+	## Copyright 2024 Walter Rowe, Maryland, USA		No Warranty
+	## General purpose AppleScript Self-Installer
+	##
+	## Compiles and installs an AppleScript via osacompile as a type and list of names in a target folder
+	##
+	## Displays an error when it cannot install the script
+	## Displays an alert when installation is successful
+	
 	repeat with appName in appNames
 		set scriptSource to quoted form of POSIX path of pathToMe
 		set scriptTarget to quoted form of (installFolder & appName & appType)
@@ -116,8 +144,49 @@ on installMe(appBase, pathToMe, installFolder, appType, appNames)
 		try
 			do shell script installCommand
 		on error errStr number errorNumber
-			set alertResult to (display alert "Install Error" message errStr & ": " & (errorNumber as text) & "on file " & scriptSource buttons {"Stop"} default button "Stop" as critical giving up after 10)
+			set alertResult to (display alert "Install Script Error" message errStr & ": " & (errorNumber as text) & "on file " & scriptSource buttons {"Stop"} default button "Stop" as critical giving up after 10)
 		end try
+		
+		if appIcon is true then
+			set iconSource to quoted form of (POSIX path of pathToMe) & "droplet.icns"
+			set iconTarget to quoted form of scriptTarget & "/Contents/Resources/"
+			set copyIcon to "/bin/cp " & iconSource & " " & iconTarget
+			try
+				do shell script copyIcon
+			on error errStr number errorNumber
+				set alertResult to (display alert "Install Icon Error" message errStr & ": " & (errorNumber as text) & "on file " & scriptSource buttons {"Stop"} default button "Stop" as critical giving up after 10)
+			end try
+		end if
 	end repeat
 	set alertResult to (display alert "Installation Complete" buttons {"OK"} default button "OK")
+	
 end installMe
+
+##
+## confirm if capture one is running and has an open document (if required)
+##
+
+on meetsRequirements(appBase, requiresCOrunning, requiresCOdocument)
+	set requirementsMet to true
+	
+	if requiresCOrunning then
+		
+		tell application "Capture One" to set isRunning to running
+		if not isRunning then
+			display alert "Alert" message "Capture One must be running." buttons {"Quit"}
+			set requirementsMet to false
+		end if
+		
+		if requiresCOdocument then
+			tell application "Capture One" to set documentOpen to exists current document
+			if not documentOpen then
+				display alert appBase message "A Capture One Session or Catalog must be open." buttons {"Quit"}
+				set requirementsMet to false
+			end if
+		end if
+		
+	end if
+	
+	return requirementsMet
+	
+end meetsRequirements

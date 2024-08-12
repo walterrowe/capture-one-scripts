@@ -15,6 +15,8 @@ property installFolder : ((POSIX path of (path to home folder)) as string) & "Li
 property docType : "catalog" as string
 
 property appTesting : false
+property requiresCOrunning : true
+property requiresCOdocument : true
 
 on run
 	
@@ -25,6 +27,9 @@ on run
 		installMe(appBase, pathToMe, installFolder, appType, appNames)
 		return
 	end if
+
+	-- verify Capture One is running and has a document open
+	if not meetsRequirements(appBase, requiresCOrunning, requiresCOdocument) then return
 	
 	tell application "Capture One"
 		set startTime to current date
@@ -99,6 +104,32 @@ on installMe(appBase, pathToMe, installFolder, appType, appNames)
 	end repeat
 	set alertResult to (display alert "Installation Complete" buttons {"OK"} default button "OK")
 end installMe
+
+
+on meetsRequirements(appBase, requiresCOrunning, requiresCOdocument)
+	set requirementsMet to true
+	
+	if requiresCOrunning then
+		
+		tell application "Capture One" to set isRunning to running
+		if not isRunning then
+			display alert "Alert" message "Capture One must be running." buttons {"Quit"}
+			set requirementsMet to false
+		end if
+		
+		if requiresCOdocument then
+			tell application "Capture One" to set documentOpen to exists current document
+			if not documentOpen then
+				display alert appBase message "A Capture One Session or Catalog must be open." buttons {"Quit"}
+				set requirementsMet to false
+			end if
+		end if
+		
+	end if
+	
+	return requirementsMet
+	
+end meetsRequirements
 
 -- --------------------
 -- FUNCTIONS
