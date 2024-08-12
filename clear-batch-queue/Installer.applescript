@@ -36,6 +36,9 @@ on run
 	
 	-- verify Capture One is running and has a document open
 	if not meetsRequirements(appBase, requiresCOrunning, requiresCOdocument) then return
+
+	-- get path to Capture One's app icon
+	set coIcon to path to resource "AppIcon.icns" in bundle (path to application "Capture One")
 	
 	-- get contents of all batch queue folders
 	tell application "Capture One" to tell current document to set batchEnabled to processing queue enabled

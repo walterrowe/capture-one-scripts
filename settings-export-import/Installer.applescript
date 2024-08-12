@@ -39,6 +39,9 @@ on run
 	-- verify Capture One is running and has a document open
 	if not meetsRequirements(appBase, requiresCOrunning, requiresCOdocument) then return
 	
+	-- get path to Capture One's app icon
+	set coIcon to path to resource "AppIcon.icns" in bundle (path to application "Capture One")
+	
 	set whereAmI to quoted form of POSIX path of pathToMe
 	
 	set settingsRoot to "~/Library/"
@@ -58,9 +61,9 @@ on run
 		try
 			do shell script exportCmd
 		on error errStr number errorNumber
-			display dialog "ERROR: " & appBase & ": " & errStr & ": " & (errorNumber as text)
+			display dialog "ERROR: " & appBase & ": " & errStr & ": " & (errorNumber as text) with icon coIcon
 		end try
-		display dialog "Exported settings to " & settingsBackup
+		display dialog "Exported settings to " & settingsBackup with icon coIcon
 	end if
 	
 	-- if we are running as the name "settings-import", restore CaptureOneSettings.zip from the desktop
@@ -73,9 +76,9 @@ on run
 		try
 			do shell script importCmd
 		on error errStr number errorNumber
-			display dialog "ERROR: " & appBase & ": " & errStr & ": " & (errorNumber as text) & " " & settingsBackup
+			display dialog "ERROR: " & appBase & ": " & errStr & ": " & (errorNumber as text) & " " & settingsBackup with icon coIcon
 		end try
-		display dialog "Imported settings from " & settingsBackup & ". Please restart Capture One."
+		display dialog "Imported settings from " & settingsBackup & ". Please restart Capture One." with icon coIcon
 	end if
 	
 end run

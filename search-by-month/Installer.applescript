@@ -22,6 +22,9 @@ on run
 		-- verify Capture One is running and has a document open
 	if not meetsRequirements(appBase, requiresCOrunning, requiresCOdocument) then return
 	
+	-- get path to Capture One's app icon
+	set coIcon to path to resource "AppIcon.icns" in bundle (path to application "Capture One")
+	
 	set monthNames to {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"}
 	set monthPicks to (choose from list monthNames with title "CHOOSE MONTH" with multiple selections allowed)
 	if monthPicks is false then return
@@ -43,8 +46,8 @@ on run
 	set text item delimiters to textDelimiters
 	
 	try
-		set sYear to text returned of (display dialog "Enter Start Year:" default answer "" with icon note buttons {"Continue", "Cancel"} default button "Continue")
-		set eYear to text returned of (display dialog "Enter Start Year:" default answer "" with icon note buttons {"Continue", "Cancel"} default button "Continue")
+		set sYear to text returned of (display dialog "Enter Start Year:" default answer "" with icon coIcon buttons {"Continue", "Cancel"} default button "Continue")
+		set eYear to text returned of (display dialog "Enter Start Year:" default answer "" with icon coIcon buttons {"Continue", "Cancel"} default button "Continue")
 	on error
 		return
 	end try

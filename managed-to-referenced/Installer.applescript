@@ -31,8 +31,11 @@ on run
 		return
 	end if
 	
-		-- verify Capture One is running and has a document open
+	-- verify Capture One is running and has a document open
 	if not meetsRequirements(appBase, requiresCOrunning, requiresCOdocument) then return
+	
+	-- get path to Capture One's app icon
+	set coIcon to path to resource "AppIcon.icns" in bundle (path to application "Capture One")
 	
 	-- only continue if we are working in a catalog
 	tell application "Capture One"
@@ -115,7 +118,7 @@ on run
 				-- don't move images that are already referenced
 				if managedPathStr does not start with docPath then
 					set skippedCount to skippedCount + 1
-					-- display dialog "Skipping referenced image " & managedName buttons {"Skip"} with icon caution with title "-- ALERT --"
+					-- display dialog "Skipping referenced image " & managedName buttons {"Skip"} with icon coIcon with title "-- ALERT --"
 				else
 					
 					-- construct target folder and file paths

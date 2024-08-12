@@ -42,6 +42,9 @@ on run
 	-- verify Capture One is running and has a document open
 	if not meetsRequirements(appBase, requiresCOrunning, requiresCOdocument) then return
 	
+	-- get path to Capture One's app icon
+	set coIcon to path to resource "AppIcon.icns" in bundle (path to application "Capture One")
+	
 	set updateCount to 0
 	
 	tell application "Capture One"

@@ -25,6 +25,9 @@ on run
 	-- verify Capture One is running and has a document open
 	if not meetsRequirements(appBase, requiresCOrunning, requiresCOdocument) then return
 	
+	-- get path to Capture One's app icon
+	set coIcon to path to resource "AppIcon.icns" in bundle (path to application "Capture One")
+	
 	tell application "Capture One" to tell (every variant whose content headline is "") to set color tag to 5
 	
 end run

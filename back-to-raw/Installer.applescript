@@ -42,6 +42,9 @@ on run
 	-- verify Capture One is running and has a document open
 	if not meetsRequirements(appBase, requiresCOrunning, requiresCOdocument) then return
 	
+	-- get path to Capture One's app icon
+	set coIcon to path to resource "AppIcon.icns" in bundle (path to application "Capture One")
+	
 	-- select source file format
 	set sourceExts to choose from list rawExtensions with title "Choose a Source File Format"
 	if sourceExts is false then
@@ -125,11 +128,11 @@ on run
 			
 			-- look for target date in source dates
 			set sourceItem to my binarySearch(targetDate, sourceDates, 1, length of sourceDates)
-			-- display dialog (sourceItem as string) buttons {"Cancel", "Continue"}
+			-- display dialog (sourceItem as string) buttons {"Cancel", "Continue"} with icon coIcon
 			if sourceItem > 0 then
 				set sourceVariant to item sourceItem of sourceVariants
 				set matchedVariants to matchedVariants & {sourceVariant, targetVariant}
-				-- display dialog sourceName & " => " & targetName buttons "Dismiss"
+				-- display dialog sourceName & " => " & targetName buttons "Dismiss" with icon coIcon
 				if syncedItems contains "Everything" or syncedItems contains "Adjustments" then
 					set targetVariant's crop to sourceVariant's crop
 					copy adjustments sourceVariant
