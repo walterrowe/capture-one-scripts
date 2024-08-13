@@ -17,10 +17,10 @@ property appType : ".scpt"
 property installFolder : ((POSIX path of (path to home folder)) as string) & "Library/Scripts/Capture One Scripts/"
 property docType : "catalog" as text
 
-property appIcon : false
-property appTesting : false
-property requiresCOrunning : true
-property requiresCOdocument : true
+property appIcon : false -- true, false
+property appTesting : false -- true, false
+property requiresCOrunning : true -- true, false
+property requiresCOdocument : "catalog" -- true, false, "catalog", "session"
 
 on run
 	
@@ -42,15 +42,13 @@ on run
 	tell application "Capture One"
 		tell current document
 			set docKind to kind
+			if kind is not catalog then
+				set alertResult to (display alert "Incorrect Document Type" message "Document Type: " & (docKind as string) & return & return & "This utility only works with Capture One catalogs." as critical buttons {"Exit"})
+				return
+			end if
 			set docPath to (path as text) & name
 		end tell
 	end tell
-	
-	if convertKindList(docKind) is not docType then
-		set alertResult to (display alert "Incorrect Document Type" message "Document Type: " & (docKind as string) & return & return & "This utility only works with Capture One catalogs." as critical buttons {"Exit"})
-		return
-	end if
-	
 	
 	-- inform user of what we plan to do and offer to cancel or continue
 	try
@@ -198,6 +196,10 @@ end installMe
 on meetsRequirements(appBase, requiresCOrunning, requiresCOdocument)
 	set requirementsMet to true
 	
+	set requiresDoc to false
+	if class of requiresCOdocument is string then set requiresDoc to true
+	if class of requiresCOdocument is boolean and requiresCOdocument then set requiresDoc to true
+	
 	if requiresCOrunning then
 		
 		tell application "Capture One" to set isRunning to running
@@ -206,14 +208,26 @@ on meetsRequirements(appBase, requiresCOrunning, requiresCOdocument)
 			set requirementsMet to false
 		end if
 		
-		if requiresCOdocument and isRunning then
+		if requiresDoc and requirementsMet then
 			tell application "Capture One" to set documentOpen to exists current document
 			if not documentOpen then
 				display alert appBase message "A Capture One Session or Catalog must be open." buttons {"Quit"}
 				set requirementsMet to false
 			end if
+			
+			if class of requiresCOdocument is string then
+				tell application "Capture One"
+					tell current document
+						if kind is catalog then set docKind to "catalog"
+						if kind is session then set docKind to "session"
+					end tell
+				end tell
+				if docKind is not requiresCOdocument then
+					display alert appBase message "You must be working in a Capture One " & requiresCOdocument & "." buttons {"Quit"}
+					set requirementsMet to false
+				end if
+			end if
 		end if
-		
 	end if
 	
 	return requirementsMet
