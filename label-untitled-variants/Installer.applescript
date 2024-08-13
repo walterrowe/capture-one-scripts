@@ -82,7 +82,7 @@ on meetsRequirements(appBase, requiresCOrunning, requiresCOdocument)
 			set requirementsMet to false
 		end if
 		
-		if requiresCOdocument then
+		if requiresCOdocument and isRunning then
 			tell application "Capture One" to set documentOpen to exists current document
 			if not documentOpen then
 				display alert appBase message "A Capture One Session or Catalog must be open." buttons {"Quit"}

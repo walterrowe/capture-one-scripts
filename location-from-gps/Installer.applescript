@@ -35,6 +35,12 @@ on run
 		return
 	end if
 	
+	-- make sure there is a maps API key
+	if mapApiKey starts with "YOUR" then
+		display alert appBase message "You need to provide a Google Maps API Key before installing the script. Look for this text in the Installer.applescript and replace it with your key." & return & return & mapApiKey & return
+		return
+	end if
+	
 	-- verify Capture One is running and has a document open
 	if not meetsRequirements(appBase, requiresCOrunning, requiresCOdocument) then return
 	
@@ -170,7 +176,7 @@ on meetsRequirements(appBase, requiresCOrunning, requiresCOdocument)
 			set requirementsMet to false
 		end if
 		
-		if requiresCOdocument then
+		if requiresCOdocument and isRunning then
 			tell application "Capture One" to set documentOpen to exists current document
 			if not documentOpen then
 				display alert appBase message "A Capture One Session or Catalog must be open." buttons {"Quit"}
