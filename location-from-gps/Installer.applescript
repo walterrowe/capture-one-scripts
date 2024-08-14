@@ -3,7 +3,7 @@
 -- if present it uses Google Maps API to get real place location info
 --
 --   * it populate the IPTC state, city, country, country code
---   * it adds hierarhial keywords country > state > county > city
+--   * it adds hierarhial keywords country > state/province > county > city
 --
 -- requirements: json helper, google maps api key
 --
@@ -24,6 +24,8 @@ property requiresCOrunning : true
 property requiresCOdocument : true
 
 property mapApiKey : "YOUR GOOGLE MAPS PROJECT API KEY"
+
+property mapsURL : "https://maps.googleapis.com/maps/api/geocode/json?key=" & mapApiKey & "&latlng="
 
 on run
 	
@@ -60,12 +62,12 @@ on run
 			set thisVariant to item i of imageSel
 			
 			if (latitude of thisVariant is missing value) or (longitude of thisVariant is missing value) then
-				set noGPS to noGPS & {name of parent image of thisVariant}
+				set end of noGPS to name of parent image of thisVariant
 			else
 				set lat to latitude of thisVariant as real
 				set lon to longitude of thisVariant as real
 				tell application "JSON Helper"
-					set gpsResult to (fetch JSON from ("https://maps.googleapis.com/maps/api/geocode/json?latlng=" & lat & "," & lon & "&key=" & mapApiKey))
+					set gpsResult to (fetch JSON from (mapsURL & lat & "," & lon))
 					if results of gpsResult is {} then
 						tell me to set alertResult to (display alert appBase message gpsResult buttons {"Exit"})
 						return
@@ -83,18 +85,23 @@ on run
 							-- get location components
 							set addressInfo to get item j of address_components
 							if item 1 of |types| of addressInfo is in {"locality", "administrative_area_level_2", "administrative_area_level_1", "country"} then
+								
 								set gotGPS to true
+								
 								if item 1 of |types| of addressInfo is "locality" then
 									tell application "Capture One" to set image city of thisVariant to long_name of addressInfo
 									set imgCity to long_name of addressInfo
 								end if
+								
 								if item 1 of |types| of addressInfo is "administrative_area_level_2" then
 									set imgCounty to long_name of addressInfo
 								end if
+								
 								if item 1 of |types| of addressInfo is "administrative_area_level_1" then
 									tell application "Capture One" to set image state of thisVariant to long_name of addressInfo
 									set imgState to long_name of addressInfo
 								end if
+								
 								if item 1 of |types| of addressInfo is "country" then
 									tell application "Capture One" to set image country of thisVariant to long_name of addressInfo
 									tell application "Capture One" to set image country code of thisVariant to short_name of addressInfo
