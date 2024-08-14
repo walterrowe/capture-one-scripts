@@ -34,8 +34,7 @@ The script self-installs in your Capture One Scripts folder.
 - The batch history will not reflect being empty until Capture One is restarted.
 - You may have to enable Extensions in System Settings as one user found.
 
-## Author
+## UPDATEs
 
-| Author | Updated | Description |
-| --- | --- | --- |
-| Walter Rowe | 2024-08-08 | Initial version written |
+- 13 Aug 2024 - enhanced installer and requirements checks
+- 08 Aug 2024 - initial version

@@ -55,3 +55,7 @@ Use these insructions to synchronize Capture One color tags to macOS Finder.
 1. Open your Capture One session or catalog.
 2. Select the images in Capture One you want to sync to Finder.
 3. Choose "copy-labels-to-finder" from the Scripts menu.
+
+## UPDATEs
+
+- 13 Aug 2024 - enhanced installer and requirements checks

@@ -30,11 +30,10 @@ The script self-installs in your Capture One Scripts folder.
 - Application Preferences is NOT backed up and restored - it contains non-transportable information.
 - You must quit and restart Capture One after running settings-import for the application to recognize your restored tool presets, styles, keyboard maps, workspaces, export recipes, scripts menu content, etc.
 
-## Author
+## UPDATEs
 
-| Author | Updated | Description |
-| --- | --- | --- |
-| Walter Rowe | 2024-06-26 | Updated this README.md |
-| Walter Rowe | 2023-12-16 | Added folder and file choosers |
-| Walter Rowe | 2023-12-15 | Added ~/Library/Scripts/Capture One Scripts to backup and restore |
-| Walter Rowe | 2023-12-13 | Backup and restore ~/Library/Application Support/Capture One |
+- 13 Aug 2024 - enhanced installer and requirements checks
+- 26 Jun 2024 - Updated this README.md
+- 16 Dec 2023 - Added folder and file choosers
+- 15 Dec 2023 - Include ~/Library/Scripts/Capture One Scripts to backup and restore
+- 13 Dec 2023 - initial version backs up and restores ~/Library/Application Support/Capture One

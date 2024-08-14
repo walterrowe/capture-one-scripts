@@ -1,5 +1,6 @@
 # BACK-to-RAW
 
+
 **Donations**: if you like these scripts and want to support them [buy me a coffee](https://buymeacoffee.com/walterrowe).
 
 The purpose of this script is to synchronize all or a subset of adjustments, metadata, keywords, ratings, and labels from a chosen source file type to one or more chosen target file types. For example, a client could apply labels and star ratings to JPGs you provided as proofs. With this script you can synchronize these back to your original source raw files.
@@ -27,3 +28,7 @@ The script self-installs in your Capture One Scripts folder.
 1. Click the "Run this script" (&#9654;) button.
 1. Open Capture One and choose Script > Update Script Menu.
 1. You now can run the script from the Capture One Scripts menu.
+
+## UPDATEs
+
+- 13 Aug 2024 - enhanced installer and requirements checks

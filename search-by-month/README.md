@@ -14,10 +14,13 @@ The script self-installs in your Capture One Scripts folder.
 1. Open Capture One and choose Script > Update Script Menu.
 1. You now can run the script from the Capture One Scripts menu.
 
-
 ## How To Run It
 
-1. Open the script in macOS Script Editor.
-1. "Export" as a script to ~/Library/Scripts/Capture One Scripts.
-1. Open Capture One (or choose Scripts > Update Scripts Menu if already open).
-1. Choose "search by month" from the Scripts menu.
+1. Open Capture One
+1. Open the Scripts menu.
+1. Select Update Scripts Menu (if necessary)
+1. Choose "Search By Month".
+
+## UPDATEs
+
+- 13 Aug 2024 - enhanced installer and requirements checks

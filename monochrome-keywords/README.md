@@ -67,3 +67,7 @@ Follow these steps to execute this script:
 5. Run the script by pressing the "Run" button (looks like a "Play" button).
 
 When the script is completed, it will show a list of image names in the results window. If no images are changed, a message will appear indicating so.
+
+## UPDATEs
+
+- 13 Aug 2024 - enhanced installer and requirements checks

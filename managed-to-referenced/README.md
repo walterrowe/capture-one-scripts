@@ -24,9 +24,7 @@ The script self-installs in your Capture One Scripts folder.
 1. Open Capture One and choose Script > Update Script Menu.
 1. You now can run the script from the Capture One Scripts menu.
 
+## UPDATEs
 
-## Author
-
-| Author | Updated | Description |
-| --- | --- | --- |
-| Walter Rowe | 2024-08-03 | Initial version written |
+- 13 Aug 2024 - enhanced installer and requirements checks
+- 03 Aug 2024 - initial version
