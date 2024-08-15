@@ -1,5 +1,5 @@
 ## Applescript to search a Capture One 12 or 20 Catalog for Images with offline files
-## Version 13.00 !! Best effort support !!  
+## Version 13.00 !! Best effort support !!
 ## Copyright 2020 Eric Valk, Ottawa, Canada   Creative Commons License CC BY-SA    No Warranty.
 ## This is the reference Application for my version 13 framework
 ## Last functional update on 2020-04-14 23:59
@@ -33,7 +33,7 @@ local enableReadPrefs, enableWritePrefs, Script_Title
 
 on getDefaultPrefs()
 	### Positioned at the top of the script to give quick access to the default Application Settings
-	
+
 	global debugLogEnable
 	local GC
 	local dfGUI, dfinitLogLevel, dfPrefFile, dfLogFiles, dfMaxErrorExits, dfForceDefaults, dSfSettingCheck
@@ -41,37 +41,37 @@ on getDefaultPrefs()
 	local dfCompleteAlert, dfResultsFile, dfResultsByLoq, dfResultsByClipboard, dfResultsByNotifications
 	local dfResultsByDialog, dfDialogTimeout, dfDialogPercent, dfScriptProgressBar, dfDebugLogLevel, ResultsFileMaxDebug
 	local dfClipboardMaxDebug, dfDebugNotifications, dfnotificationsMaxDebug
-	
+
 	############  Start of User settable area ###
 	## ***** Values in this section are safe to change, within limits indicated. Support is likely but no commitment
-	
+
 	## Default Settings for the Application, these can be changed with the GUI on each run of the script
 	set dfExcludedSubCollectionL to {} -- 	Collections in this list will not be searched
 	set dfSearchlevel to 32 --				(1..100) Reduce if you only want to search top level collections - not verified to 100
 	set dfResultsCollection to true --     		(true/false) found images are stored in an album in dfResultsProject
 	set dfC1ProgressBar to true --     		(true/false)
 	set dfFastWorkFlow to false --			True sets a faster workflow with less user interaction
-	
+
 	## Choice Lists for the GUI
-	set GC to {ExcludedSubCollectionChoice:{}} -- 
-	
+	set GC to {ExcludedSubCollectionChoice:{}} --
+
 	## Default Settings for reporting results, can be changed with the GUI on each run of the script
 	set dfCompleteAlert to false --			(true/false) - Create an Alert when the script completes
 	set dfResultsFile to true --				(true/false) - Log Results to a .txtx file opened in Text Editor
 	set dfResultsByLoq to true --			(true/false) - Log Results to Script Editor or Scripot Debugger
-	set dfResultsByClipboard to false --		(true/false) - Clipboard is populated only when the script exits 
+	set dfResultsByClipboard to false --		(true/false) - Clipboard is populated only when the script exits
 	set dfResultsByDialog to false --			(true/false) - Results reported by Dialog
 	set dfDialogTimeout to 20 --				1...119 seconds
-	set dfDialogPercent to 20 -- 				1...100 Percent of screen height used by the Scripts Dialog	
+	set dfDialogPercent to 20 -- 				1...100 Percent of screen height used by the Scripts Dialog
 	set dfResultsByNotifications to false --	(true/false) - only enable this if needed as it is slow
 	set dfScriptProgressBar to true --		(true/false)  - enable a progress bar in the Script window
-	
+
 	set dfDebugLogLevel to 0 --				0...6 Values >0 result in increasing amounts of debug data and longer run times
 	set dfResultsFileMaxDebug to 2 --		0...6  suggest not more than 2 if run from Script Editor
 	set dfClipboardMaxDebug to 0 --			0...6  suggest not more than 4
 	set dfDebugNotifications to false --		(true/false)  - enable notifications of errors and exceptions
 	set dfnotificationsMaxDebug to 0 --		0...2  suggest not more than 1
-	
+
 	### Script Settings - these cannot be adjusted by the GUI
 	set dfinitLogLevel to 3 -- 				logging level while script is initialising -- normally 0, set to 2 if problems
 	set dfPrefFile to true -- 					if false prevents creation of a .plist file for reading and writing of settings
@@ -80,10 +80,10 @@ on getDefaultPrefs()
 	set dfForceDefaults to false --			Force the script to use the scripts default settings (above) instead of the settings in the .plist file
 	set dSfSettingCheck to false --			Force the script to always validate the settings, Enable this if you are having errors
 	set dfResultsProject to "ScriptSearchResults" -- 	this is the project where found images found by scripts are stored. Not possible to exclude this from searching
-	
+
 	############ End of User Settable area ###
 	## Definitions for debugLogLevel which is used  to define the level of reporting and logging
-	##	-1 		Results 
+	##	-1 		Results
 	##	0		Critical errors
 	##	1		Verbose results
 	##	2		Managed Exceptions (a problem occurred, but the script handled it)
@@ -96,14 +96,14 @@ on getDefaultPrefs()
 	##  Levels -1 and 0 are always reported
 	##
 	local AD, LD
-	
+
 	set AD to {ExcludedSubCollectionL:dfExcludedSubCollectionL, maxSearchlevel:dfSearchlevel, enableResultsCollection:dfResultsCollection, nameResultsProject:dfResultsProject, enableC1ProgressBar:dfC1ProgressBar}
-	
+
 	set LD to {enableResultsFile:dfResultsFile, enableResultsByLoq:dfResultsByLoq, enableResultsByClipboard:dfResultsByClipboard, enableResultsByNotifications:dfResultsByNotifications}
 	set LD to LD & {enableResultsByDialog:dfResultsByDialog, dialogTimeout:dfDialogTimeout, maxDialogPercent:dfDialogPercent}
 	set LD to LD & {enableScriptProgressBar:dfScriptProgressBar, enableCompleteAlert:dfCompleteAlert, debugLogLevel:dfDebugLogLevel, ResultsFileMaxDebug:dfResultsFileMaxDebug}
 	set LD to LD & {clipboardMaxDebug:dfClipboardMaxDebug, enableDebugNotifications:dfDebugNotifications, notificationsMaxDebug:dfnotificationsMaxDebug, enableFastGui:dfFastWorkFlow}
-	
+
 	return {appDefs:AD, logDefs:LD, guiChoices:GC, initLogLevel:dfinitLogLevel, enablePrefFile:dfPrefFile, enableLogFiles:dfLogFiles, maxErrorExits:dfMaxErrorExits, forceScriptDefaults:dfForceDefaults, forceSettingsCheck:dSfSettingCheck}
 end getDefaultPrefs
 
@@ -200,16 +200,16 @@ false
 
 on searchHandler()
 	global debugLogEnable, theApp, Loqqing, C1
-	
+
 	local Mark1, Mark2, Mark3, Mark4, Mark5
 	set Mark1 to my GetTick_Now()
-	
+
 	setSearchWindows()
-	
+
 	## Setup the search
-	
+
 	local thisCollectionRef, countProcessedImages, thisColl_name, thisCollKindS, countImages, estDuration, estProgressDuration_S, nextSearchLevel
-	
+
 	tell application "Capture One 20"
 		set thisCollectionRef to C1's selectedCollectionRef
 		tell thisCollectionRef
@@ -218,21 +218,21 @@ on searchHandler()
 			set countImages to count of images
 		end tell
 	end tell
-	
+
 	set nextSearchLevel to 1
 	if ({"project", "album", "smart album"} does not contain thisCollKindS) then ¬
 		set countImages to countAllImages(thisCollectionRef, thisColl_name, thisCollKindS, nextSearchLevel)
 	my loqThis(1, false, ("Starting in " & thisCollKindS & " \"" & thisColl_name & "\" with " & countImages & " Images"))
-	
+
 	set {estDuration, estProgressDuration_S} to {0, ""}
 	if 0 < (0 + (theApp's ratePerSecond)) then
 		set estDuration to (countImages / (theApp's ratePerSecond))
 		set estProgressDuration_S to " (" & (my roundDecimals(estDuration, 0)) & "s)"
 		my loqThis(1, false, ("Estimated Execution Time is " & (my roundDecimals(estDuration, 0)) & " seconds"))
 	end if
-	
+
 	set Mark2 to my GetTick_Now()
-	
+
 	if 300 < estDuration then
 		tell application "System Events" to set frontmost of process parent_name to true
 		set dialog_result to display dialog "Estimated Execution time is " & estProgressDuration_S with title Loqqing's Script_Title ¬
@@ -254,7 +254,7 @@ on searchHandler()
 		end if
 		setSearchWindows()
 	end if
-	
+
 	set Mark5 to my GetTick_Now()
 	local Result_AlbumRoot, Result_ProjectName, Coll_Init_Text, ref2ResultAlbum
 	if theApp's enableResultsCollection then
@@ -264,45 +264,45 @@ on searchHandler()
 		set ref2ResultAlbum to my InitializeResultsCollection(Result_ProjectName, Result_AlbumRoot, Coll_Init_Text)
 		set C1 to {ref2ResultAlbum:ref2ResultAlbum} & C1
 	end if
-	
+
 	set Mark3 to my GetTick_Now()
 	local nextSearchLevel, countImageNotFound, Coll_path
 	set nextSearchLevel to 1
 	set countImageNotFound to 0
 	set countProcessedImages to 0
 	set Coll_path to ">" & thisColl_name
-	
+
 	tell my search_collection(thisCollectionRef, thisColl_name, thisCollKindS, nextSearchLevel, Coll_path, true, estProgressDuration_S)
 		set countImageNotFound to its countImageNotFound
 		set countProcessedImages to its countProcessedImages
 	end tell
 	set Mark4 to my GetTick_Now()
-	
+
 	local elapsedTime1, elapsedTime1s, elapsedTime2s, searchTimePerVariant, searchTimeMsPerVariant, countTimeMsPerVariant
-	
+
 	my loqThis(-1, false, (return & "Found " & countImageNotFound & " of " & countProcessedImages & " images with offline files in " & thisCollKindS & " \"" & thisColl_name & "\" (" & countImages & " images)"))
-	
+
 	set {countTimeMsPerVariant, searchTimeMsPerVariant} to {"--", "--"}
-	
+
 	set elapsedTime2s to my roundDecimals(Mark4 - Mark3, 3)
 	if (countProcessedImages > 10) and (0.1 < (Mark4 - Mark3)) then -- reasonable accuracy
 		set theApp's ratePerSecond to countProcessedImages / (Mark4 - Mark3) -- ratePerSecond is used only after setup is completed
 		saveAppPrefs()
 		set searchTimeMsPerVariant to my roundDecimals(((Mark4 - Mark3) / countProcessedImages * 1000), 1)
 	end if
-	
+
 	set elapsedTime1 to (Mark2 - Mark1) + (Mark3 - Mark5)
 	set elapsedTime1s to my roundDecimals(elapsedTime1, 3)
 	if (countImages > 10) and (0.1 < elapsedTime1) then ¬
 		set countTimeMsPerVariant to my roundDecimals((elapsedTime1 / countImages * 1000), 1) -- reasonable accuracy
-	
+
 	return (return & "Searching: " & elapsedTime2s & "s;  " & searchTimeMsPerVariant & "ms per image   Setup: " & elapsedTime1s & "s;  " & countTimeMsPerVariant & "ms per image")
-	
+
 end searchHandler
 
 on setSearchWindows()
 	global debugLogEnable, theApp, Loqqing, C1, parent_name
-	
+
 	tell application "System Events" -- Arrange the windows to show results and progress bars on top
 		set theAppName to (get C1's coAppName as text)
 		set frontmost of process theAppName to true
@@ -314,18 +314,18 @@ end setSearchWindows
 
 on countAllImages(thisCollection, thisColl_name, thisCollKindS, searchLevel)
 	-- recursive handler to count images in a collection and it's subcollections
-	
+
 	global debugLogEnable, theApp, Loqqing, C1
-	
+
 	if theApp's ExcludedSubCollectionL contains thisColl_name then return 0
-	
+
 	local countImages
 	tell application "Capture One 20" to tell thisCollection to set countImages to count of every image
 	if debugLogEnable then
 		set actionString to "counting images in " & thisCollKindS & " \"" & thisColl_name & "\""
 		my loqThis(3, false, actionString)
 	end if
-	
+
 	local nameSubCollsL, refSubCollsL, kindSubCollsSL, nextSearchLevel, countSubColls
 	local nextCollName, nextCollRef, nextCollKindS, ptrSubColl
 	if ({"project", "album", "smart album"} contains thisCollKindS) or (searchLevel ≥ theApp's maxSearchlevel) then return countImages
@@ -343,23 +343,23 @@ end countAllImages
 
 on search_collection(thisCollection, thisColl_name, thisCollKindS, searchLevel, thisCollPath, printColl, estProgressDuration_S)
 	-- recursive handler to search a collection and it's subcollections
-	
+
 	global debugLogEnable, theApp, Loqqing, C1
 	local imagePathL, nextSearchLevel, countImages, actionString, enableProgressBar, useC1ProgressBar, secondsThresh
-	
+
 	if theApp's ExcludedSubCollectionL contains thisColl_name then return {countImageNotFound:0, countProcessedImages:0, _debug:(get my loqThis(1, false, ("Skipped " & thisColl_name)))}
-	
+
 	tell application "Capture One 20" to tell thisCollection to set countImages to count of every image
 	set actionString to "Searching " & thisCollKindS & " \"" & thisColl_name & "\" with " & countImages & " images" & estProgressDuration_S
 	if debugLogEnable then my loqThis(3, false, actionString)
-	
+
 	set {secondsThresh, enableProgressBar} to {3, false}
 	if (Loqqing's enableScriptProgressBar or theApp's enableC1ProgressBar) and ¬
 		(C1's selectedCollAllImages or ¬
 			((0 ≠ theApp's ratePerSecond) and (countImages > (secondsThresh * (theApp's ratePerSecond)))) or ¬
 			((0 = theApp's ratePerSecond) and (countImages > 500)) ¬
 				) then
-		
+
 		set {enableProgressBar, progressInterval, useC1ProgressBar} to {true, 25, (true and theApp's enableC1ProgressBar)} -- updating the CO progress counter takes as long as checking the path of one image
 		if useC1ProgressBar then
 			tell application "Capture One 20" to set {progress text, progress completed units, progress total units, progress additional text} to {actionString, 0, countImages, ("" & countImages & " images")}
@@ -367,18 +367,18 @@ on search_collection(thisCollection, thisColl_name, thisCollKindS, searchLevel, 
 			set {progress description, progress total steps, progress completed steps} to {actionString, countImages, 0}
 		end if
 	end if
-	
+
 	tell application "Capture One 20" to tell thisCollection to set imagePathL to get path of every image
-	
+
 	local loc_Text, first_Hit, countImageNotFound, countProcessedImages, ImageCounter, imagepath, imageName, progressInterval
-	
+
 	set loc_Text to "In " & thisCollKindS & " " & thisCollPath & ":"
 	set first_Hit to true and not printColl -- if this is the starting collection then don't print out the collection name
 	set countImageNotFound to 0
 	set countProcessedImages to count of imagePathL
-	
+
 	if 0 < countImages then
-		
+
 		repeat with ImageCounter from 1 to countImages
 			if enableProgressBar and (0 = ImageCounter mod progressInterval) then
 				if useC1ProgressBar then
@@ -388,7 +388,7 @@ on search_collection(thisCollection, thisColl_name, thisCollKindS, searchLevel, 
 				end if
 			end if
 			set imagepath to item ImageCounter of imagePathL
-			
+
 			tell application "System Events"
 				set hasImageFile to (get exists file imagepath)
 				if not hasImageFile then
@@ -407,7 +407,7 @@ on search_collection(thisCollection, thisColl_name, thisCollKindS, searchLevel, 
 		if Loqqing's enableScriptProgressBar then set progress completed steps to countImages
 	end if
 	if debugLogEnable then my loqThis(3, false, ("Done " & thisCollKindS & "  " & thisCollPath & " with " & countImageNotFound & " offline files"))
-	
+
 	local nameSubCollsL, refSubCollsL, kindSubCollsSL, nextSearchLevel, countSubColls
 	local nextCollName, nextCollRef, nextCollKindS, ptrSubColl
 	if thisCollKindS ≠ "project" then -- do not search collections contained inside a project to avoid repeated "hits" of the same image
@@ -430,18 +430,18 @@ end search_collection
 
 on setLoqPrefs(forceDefaults, enableReadPrefs, enableWritePrefs, enableLogFiles)
 	global debugLogEnable, Loqqing
-	
+
 	local logDefs, saveLoqPrefs
-	
+
 	tell getDefaultPrefs() to set logDefs to its logDefs
 	set logDefs to {fullSetup:true, isChecked:false} & logDefs
-	
+
 	set saveLoqPrefs to false
 	if (not Loqqing's fullSetup) or forceDefaults then -- setup Loqqing from scripts defaults
 		set {Loqqing, saveLoqPrefs} to {logDefs & Loqqing, true} -- save the revised values, isChecked is false
 		my loqThis(1, false, "Loqqing settings were set to Script Defaults")
 	end if
-	
+
 	tell Loqqing -- control what's useable for this script
 		set its gateResultsByClipboard to true
 		set its gateResultsFile to true
@@ -451,29 +451,29 @@ on setLoqPrefs(forceDefaults, enableReadPrefs, enableWritePrefs, enableLogFiles)
 		set its enableReadPrefs to enableReadPrefs
 		set its enableWritePrefs to enableWritePrefs
 	end tell
-	
+
 	if not enableLogFiles then set Loqqing's gateResultsFile to false
-	
+
 	if saveLoqPrefs then
 		set loqResultMethod to my setupLoqqing6()
 		if enableWritePrefs then my saveLoqqingPrefs()
 	end if
-	
+
 end setLoqPrefs
 
 on setAppPrefs(forceDefaults, coParList)
-	
+
 	global debugLogEnable, Loqqing
 	global theApp, guiChoices, C1
 	local appSettingsName, selectedCollectionRef, kindSelectedCollection_s, nameSelectedCollection, selectedCollAllImages
-	
+
 	set theAppSettingsName to "appSettings"
 	copy ({appSettingsName:theAppSettingsName} & coParList) to C1
-	
+
 	local appDefs, saveAppPrefs, gotAppPrefs, AppPrefs, theErrMess, nameSubColl_L
-	
+
 	tell getDefaultPrefs() to set {appDefs, guiChoices} to {its appDefs, its guiChoices}
-	
+
 	set {saveAppPrefs, gotAppPrefs} to {(true and Loqqing's enableWritePrefs), false}
 	if Loqqing's enableReadPrefs and not forceDefaults then
 		try
@@ -498,7 +498,7 @@ on setAppPrefs(forceDefaults, coParList)
 		end try
 	end if
 	local forceAppDefaults, enableReadPrefs, enableWritePrefs, enableLogFiles
-	
+
 	if not gotAppPrefs then
 		copy (appDefs & {ratePerSecond:0}) to theApp
 		tell Loqqing to set {forceAppDefaults, enableReadPrefs, enableWritePrefs, enableLogFiles} to ¬
@@ -507,9 +507,9 @@ on setAppPrefs(forceDefaults, coParList)
 		my loqThis(1, false, "Application settings were set to Script Defaults")
 	end if
 	if saveAppPrefs then saveAppPrefs()
-	
+
 	local nameSubColl_L, nameSubSubColl_L, aList
-	
+
 	if C1's selectedCollAllImages or ("project" = C1's kindSelectedCollection_s) then
 		set guiChoices's ExcludedSubCollectionChoice to {}
 	else
@@ -520,15 +520,15 @@ on setAppPrefs(forceDefaults, coParList)
 		repeat with aList in nameSubSubColl_L
 			set nameSubColl_L to nameSubColl_L & aList
 		end repeat
-		
+
 		set guiChoices's ExcludedSubCollectionChoice to nameSubColl_L & guiChoices's ExcludedSubCollectionChoice
 	end if
-	
+
 end setAppPrefs
 
 on saveAppPrefs()
 	## Save the Application settings into the preferences (.plist) file
-	
+
 	global debugLogEnable, theApp, Loqqing, C1
 	local theAppSettingsName
 	set theAppSettingsName to (get "" & C1's appSettingsName)
@@ -549,10 +549,10 @@ end saveAppPrefs
 on guiCancelResetDefs()
 	global debugLogEnable, Loqqing, parent_name, C1
 	local forceAppDefaults, enableReadPrefs, enableWritePrefs, enableLogFiles, newC1
-	
+
 	set prefSaved to ""
 	copy (get {} & C1) to newC1
-	
+
 	if Loqqing's enableFastGui then
 		set prefSaved to "; changed settings were not saved"
 	else
@@ -578,11 +578,11 @@ end guiCancelResetDefs
 
 on makeGuiRecords(theGuiData)
 	## Set up the GUI records for the Application Settings
-	
+
 	global debugLogEnable, theApp, guiChoices, C1
 	local settingList, scriptList, loqSettings_L, loqScript_L
 	local helpMaxSearchLevel
-	
+
 	set helpMaxSearchLevel to "The maximum number of levels under the selected colllection which will be searched"
 	set settingList to {}
 	set end of settingList to {s_ID:0, s_Name:"Max Search Level", s_Help:helpMaxSearchLevel, s_Value:(a reference to theApp's maxSearchlevel), s_UserSet:true, s_Active:C1's selectedCollAllImages, s_Invert:true, s_Class:"Integer", s_LType:"InMin&InMax", s_Limit_L:{1, 100}}
@@ -590,9 +590,9 @@ on makeGuiRecords(theGuiData)
 	set end of settingList to {s_ID:0, s_Name:"Enable Results Collection", s_Value:(a reference to theApp's enableResultsCollection), s_UserSet:true, s_Active:true, s_Class:"Boolean"}
 	set end of settingList to {s_ID:0, s_Name:"Enable C1 Progress Bar", s_Value:(a reference to theApp's enableC1ProgressBar), s_UserSet:true, s_Active:true, s_Class:"Boolean"}
 	set end of settingList to {s_ID:0, s_Name:"++++", s_Value:missing value, s_UserSet:missing value, s_Active:true}
-	
+
 	set theGuiData's guiRecordList to settingList & theGuiData's guiRecordList
-	
+
 	return
 end makeGuiRecords
 
@@ -611,7 +611,7 @@ end finalCleanup
 
 ## Dependencies
 ## my  joinListToString   splitStringToList  compareVersion  findTargetFolder  removeLeadingTrailingSpaces  replaceText
-## my loqThis  loqqed_Error_Halt5   
+## my loqThis  loqqed_Error_Halt5
 
 
 on setup4CaptureOneScript(debugLogLevel, gateReportFiles, gatePrefFiles)
@@ -635,15 +635,15 @@ on validateCOP5(minCOPversionstr, maxCOPversionstr)
 	## Copyright 2020 Eric Valk, Ottawa, Canada   Creative Commons License CC BY-SA    No Warranty.
 	## General purpose initialisation handler for scripts using Capture One Pro
 	## Extract and check basic information about the Capture One application
-	
+
 	global debugLogEnable
 	local theAppName, copVersion, copVersionStr, copDetailedVersion
 	local minVersionPass, maxVersionPass
-	
+
 	tell application "Capture One 20" to set {theAppName, copVersionStr, copDetailedVersion, COPDocRef} to {name, app version, version, current document}
 	set copVersion to (word -1 of copVersionStr)
 	set theAppName to (get ("" & theAppName) as text)
-	
+
 	if debugLogEnable then my loqThis(1, false, ("Using " & theAppName & " version " & copDetailedVersion))
 	tell my compareVersion(copVersion, minCOPversionstr, maxCOPversionstr) to set {minVersionPass, maxVersionPass} to {its minVersionPass, its maxVersionPass}
 	if not minVersionPass then return {hasErrors:true, errorText:(get my loqqed_Error_Halt5(("This Script does not support version " & copDetailedVersion & " of Capture One - versions " & minCOPversionstr & " and later are supported")))}
@@ -655,19 +655,19 @@ on validateCOPdoc5(theDocRef, validDocKindList)
 	## Copyright 2020 Eric Valk, Ottawa, Canada   Creative Commons License CC BY-SA    No Warranty.
 	## General purpose initialisation handler for scripts using Capture One Pro
 	## Extract and check basic information about a document
-	
+
 	global debugLogEnable
 	--local COPDocKind_s, COPDocKind_p, COPDocName
-	
+
 	if "text" = (get class of theDocRef as text) and (0 = (get count of theDocRef)) then tell application "Capture One 20" to set theDocRef to get current document
-	
+
 	try
 		tell application "Capture One 20" to set {COPDocName, COPDocKind_p} to get {name, kind} of theDocRef
 	on error errorText number errorNumber
 		return {hasErrors:true, errorText:(get my loqqed_Error_Halt5("The Script could not retrieve Capture One document info. Error " & errorNumber & ": \"" & errorText & "\""))}
 	end try
 	set COPDocKind_s to convertKindList(COPDocKind_p)
-	
+
 	if validDocKindList does not contain COPDocKind_s then return {hasErrors:true, errorText:(get my loqqed_Error_Halt5((COPDocName & " is a " & COPDocKind_s & " -- not supported by this script")))}
 	return {hasErrors:false, COPDocName:COPDocName, COPDocKind_s:COPDocKind_s}
 end validateCOPdoc5
@@ -680,10 +680,10 @@ on validateCOPcollections5(theDocRef)
 	local selectedCollectionRef, selectedCollectionIndex, countTopCollections
 	local nameSelectedCollection, kindSelectedCollection_s, userSelectedCollection, idSelectedCollection
 	local namesTopCollections, kindsTopCollections_s, usersTopCollections, idsTopCollections
-	
+
 	tell application "Capture One 20" to set {COPDocName, COPDocKind_p} to get {name, kind} of theDocRef
 	set COPDocKind_s to convertKindList(COPDocKind_p)
-	
+
 	tell application "Capture One 20" to tell theDocRef
 		set selectedCollectionRef to get current collection
 		if (missing value = selectedCollectionRef) then
@@ -698,7 +698,7 @@ on validateCOPcollections5(theDocRef)
 		tell every collection to set {namesTopCollections, kindsTopCollections_s, usersTopCollections, idsTopCollections} to {name, my convertKindList(kind), user, id}
 	end tell
 	set countTopCollections to count of namesTopCollections
-	
+
 	set selectedCollectionIndex to 0
 	repeat with collectionCounter from countTopCollections to 1 by -1
 		if (idSelectedCollection = item collectionCounter of idsTopCollections) then
@@ -706,24 +706,24 @@ on validateCOPcollections5(theDocRef)
 			exit repeat
 		end if
 	end repeat
-	
+
 	local selectedCollectionMirroredAtTopLast, bottomUserCollectionIndex, topUserCollectionIndex, selectedCollectionIsUser
 	set {bottomUserCollectionIndex, topUserCollectionIndex} to {0, 0}
 	local foldersTopCollection, folderSelectedCollection, countFavoriteCollections, namesFavoriteCollections
-	
+
 	if COPDocKind_s = "catalog" then
 		set selectedCollectionIsUser to userSelectedCollection
 		set selectedCollectionMirroredAtTopLast to ¬
 			(selectedCollectionIndex = countTopCollections) and userSelectedCollection and ¬
 			({"catalog folder", "favorite"} does not contain last item of kindsTopCollections_s)
-		
+
 		repeat with collectionCounter from 1 to topUserCollectionIndex
 			if (get item collectionCounter of usersTopCollections) then
 				set bottomUserCollectionIndex to collectionCounter + 0
 				exit repeat
 			end if
 		end repeat
-		
+
 		if bottomUserCollectionIndex > 0 then
 			repeat with collectionCounter from bottomUserCollectionIndex to countTopCollections
 				if not (get item collectionCounter of usersTopCollections) then
@@ -732,25 +732,25 @@ on validateCOPcollections5(theDocRef)
 				end if
 			end repeat
 		end if
-		
-		
+
+
 		set {countFavoriteCollections, namesFavoriteCollections} to {missing value, missing value}
-		
+
 	else if COPDocKind_s = "session" then
 		tell application "Capture One 20" to tell theDocRef
 			set foldersTopCollection to folder of every collection
 			set folderSelectedCollection to folder of selectedCollectionRef
 		end tell
-		
+
 		set selectedCollectionIsUser to userSelectedCollection and (missing value = folderSelectedCollection)
-		
+
 		repeat with collectionCounter from 1 to countTopCollections
 			if (get item collectionCounter of userTopCollections) and (missing value = item collectionCounter of foldersTopCollection) then
 				set bottomUserCollectionIndex to collectionCounter + 0
 				exit repeat
 			end if
 		end repeat
-		
+
 		if bottomUserCollectionIndex > 0 then
 			repeat with collectionCounter from bottomUserCollectionIndex to countTopCollections
 				if not ((get item collectionCounter of userTopCollections) and (missing value = item collectionCounter of foldersTopCollection)) then
@@ -759,19 +759,19 @@ on validateCOPcollections5(theDocRef)
 				end if
 			end repeat
 		end if
-		
+
 		set countFavoriteCollections to countTopCollections - topUserCollectionIndex
 		if 1 > countFavoriteCollections then
 			set namesFavoriteCollections to {}
 		else
 			set namesFavoriteCollections to (get items (topUserCollectionIndex + 1) thru countTopCollections of namesTopCollections)
 		end if
-		
+
 		set selectedCollectionMirroredAtTopLast to false
 	end if
-	
+
 	local selectedCollectionIsUser, namesTopUserCollections, kindsTopUserCollections_s, countTopUserCollections
-	
+
 	if (topUserCollectionIndex < bottomUserCollectionIndex) or (0 = topUserCollectionIndex) then
 		set {topUserCollectionIndex, bottomUserCollectionIndex} to {missing value, missing value}
 		set {namesTopUserCollections, kindsTopUserCollections_s, countTopUserCollections} to {{}, {}, 0}
@@ -779,9 +779,9 @@ on validateCOPcollections5(theDocRef)
 		set {namesTopUserCollections, kindsTopUserCollections_s} to {(get items bottomUserCollectionIndex thru topUserCollectionIndex of namesTopCollections), (get items bottomUserCollectionIndex thru topUserCollectionIndex of kindsTopCollections_s)}
 		set countTopUserCollections to count of namesTopUserCollections
 	end if
-	
+
 	return {hasErrors:false, namesTopUserCollections:namesTopUserCollections, kindsTopUserCollections_s:kindsTopUserCollections_s, countTopUserCollections:countTopUserCollections, selectedCollectionRef:selectedCollectionRef, selectedCollectionIndex:selectedCollectionIndex, kindSelectedCollection_s:kindSelectedCollection_s, nameSelectedCollection:nameSelectedCollection, selectedCollectionMirroredAtTopLast:selectedCollectionMirroredAtTopLast, selectedCollectionIsUser:selectedCollectionIsUser, bottomUserCollectionIndex:bottomUserCollectionIndex, topUserCollectionIndex:topUserCollectionIndex, countFavoriteCollections:countFavoriteCollections, namesFavoriteCollections:namesFavoriteCollections}
-	
+
 end validateCOPcollections5
 
 on validateCOcollection6(theDocRef)
@@ -790,7 +790,7 @@ on validateCOcollection6(theDocRef)
 	## Extract basic information regarding the current collection
 	global debugLogEnable
 	local collectionRef, collectionName, collectionKind_s, collectionId, collectionUser, collectionIsMirrored, docKind_p, docKind_s, selectedCollectionIsUser, collectionIsAllImages
-	
+
 	tell application "Capture One 20" to tell theDocRef
 		set docKind_p to kind
 		set collectionRef to get current collection
@@ -816,7 +816,7 @@ on validateCOcollection6(theDocRef)
 			return {hasErrors:true, errorText:(get my loqqed_Error_Halt5("validateCOcollection6 received an unexpected Document Kind: " & docKind_s))}
 		end if
 	end tell
-	
+
 	return {hasErrors:false, selectedCollectionRef:collectionRef, selectedCollectionKind_s:collectionKind_s, selectedCollectionName:collectionName, selectedCollectionMirroredAtTopLast:collectionIsMirrored, selectedCollectionIsUser:selectedCollectionIsUser, selectedCollectionID:collectionId, selectedCollectionIsAllImages:collectionIsAllImages}
 end validateCOcollection6
 
@@ -827,10 +827,10 @@ on convertKindList(theKind)
 	## Unless care is taken to avoid text conversion of this property, this bug breaks script decisions based on "kind"
 	## This script converts text strings with the chevron form to strings with the expected text form
 	## The input may be a single string, a single enum, a list of strings or a list of enums
-	## The code is not compact but runs very fast, between 60us and 210us per item 
-	
+	## The code is not compact but runs very fast, between 60us and 210us per item
+
 	local kind_sl, theItem, kindItem_s, code_start, kindItem_s, kind_code, kind_type
-	
+
 	if list = (class of theKind) then
 		set kind_sl to {}
 		repeat with theItem in theKind
@@ -844,14 +844,14 @@ on convertKindList(theKind)
 		tell application "Capture One 20" to set kindItem_s to (get theKind as text)
 		if "«" ≠ (get text 1 of kindItem_s) then return kindItem_s
 	end if
-	
+
 	set code_start to -5
 	if ("»" ≠ (get text -1 of kindItem_s)) or (16 > (count of kindItem_s)) then ¬
 		error (get my loqqed_Error_Halt5("convertKindList received an unexpected Kind string: " & kindItem_s))
-	
+
 	set kind_code to get (text code_start thru (code_start + 3) of kindItem_s)
 	set kind_type to get (text code_start thru (code_start + 1) of kindItem_s)
-	
+
 	if kind_type = "CC" then ## Collection Kinds
 		if kind_code = "CCpj" then
 			return "project"
@@ -866,7 +866,7 @@ on convertKindList(theKind)
 		else if kind_code = "CCff" then
 			return "catalog folder"
 		end if
-		
+
 	else if kind_type = "CL" then ## Layer Kinds
 		if kind_code = "CLbg" then
 			return "background"
@@ -877,7 +877,7 @@ on convertKindList(theKind)
 		else if kind_code = "CLhl" then
 			return "heal"
 		end if
-		
+
 	else if kind_type = "CR" then ## Watermark Kinds
 		if kind_code = "CRWn" then
 			return "none"
@@ -886,7 +886,7 @@ on convertKindList(theKind)
 		else if kind_code = "CRWi" then
 			return "imagery"
 		end if
-		
+
 	else if kind_type = "CO" then ## Document Kinds
 		if kind_code = "COct" then
 			return "catalog"
@@ -894,19 +894,19 @@ on convertKindList(theKind)
 			return "session"
 		end if
 	end if
-	
+
 	error (get my loqqed_Error_Halt5("convertKindList received an unexpected Kind string: " & kindItem_s))
-	
+
 end convertKindList
 
 on InitializeResultsCollection(nameResultProject, nameResultAlbumRoot, Coll_Init_Text)
 	## Copyright 2020 Eric Valk, Ottawa, Canada   Creative Commons License CC BY-SA    No Warranty.
 	## General Purpose Handler for scripts using Capture One Pro
 	## Sets up a project and albums for collecting images
-	
+
 	global debugLogEnable, C1, Loqqing
 	local coll_ctr, nameResultAlbum, resultProjectList, Coll_Init_Text, ref2ResultAlbum
-	
+
 	tell application "Capture One 20" to tell C1's COPDocRef
 		if 0 = (get count of (collections whose name is nameResultProject and user is true)) then
 			set ref2ResultProject to make new collection with properties {kind:project, name:nameResultProject}
@@ -921,7 +921,7 @@ on InitializeResultsCollection(nameResultProject, nameResultAlbumRoot, Coll_Init
 			end if
 		end if
 	end tell
-	
+
 	set coll_ctr to 1
 	set nameResultAlbum to nameResultAlbumRoot & "_" & (get short date string of (get current date)) & "_"
 	repeat
@@ -935,10 +935,10 @@ on InitializeResultsCollection(nameResultProject, nameResultAlbumRoot, Coll_Init
 			end if
 		end tell
 	end repeat
-	
+
 	if 0 < length of Coll_Init_Text then set Coll_Init_Text to Coll_Init_Text & ": "
 	my loqThis(0, false, (Coll_Init_Text & nameResultProject & ">" & nameResultAlbum))
-	
+
 	return ref2ResultAlbum
 end InitializeResultsCollection
 
@@ -955,7 +955,7 @@ on findParentColl(thisCollRef)
 		end if
 		if (collection ≠ (class of thisCollRef)) then error my loqqed_Error_Halt5("findParentColl's parameter is not a collection or a document")
 	end tell
-	
+
 	if debugLogEnable then my loqThis(2, false, "Starting Parent Search")
 	try
 		get || of {thisCollRef} -- intentionally create an error
@@ -974,7 +974,7 @@ on findParentColl(thisCollRef)
 	if "«class COcl»" = text 1 thru 12 of errorText then set errorText to my replaceText(errorText, "«class COcl»", "collection")
 	set parentStringList to my splitStringToList(errorText, "of") -- make a list of references
 	if debugLogEnable then my loqThis(4, false, "Processed error text \"" & errorText & "\"")
-	
+
 	repeat with docPtr from (count of parentStringList) to 0 by -1
 		try
 			if "document" = first word of item docPtr of parentStringList then exit repeat
@@ -1004,7 +1004,7 @@ end findParentColl
 ## Dependencies  my joinListToString    my GetTick_Now()
 
 ## Definitions for debugLogLevel which is used  to define the level of reporting and logging
-##	-1 		Results 
+##	-1 		Results
 ##	0		Critical errors
 ##	1		Verbose results
 ##	2		Managed Exceptions
@@ -1024,17 +1024,17 @@ on initLoqqingGlobals(debugLogLevel, Script_Title, posix2PrefFile, gateResultsFi
 	-- , enableReadPrefs, enableWritePrefs
 	global debugLogEnable, Loqqing, parent_name
 	global loqResultDocRef, loqResultMethod, loqDialogTextList, loqClipboardTextS
-	## Setup for logging during initialisation 
-	## Setup for logging without GUI and prefs file 
+	## Setup for logging during initialisation
+	## Setup for logging without GUI and prefs file
 	## controlled by the enable settings only
 	## Logging by Clipboard, Notifications and Logging
 	## LoqqingVersion is not copied into Loqqing, not need without GUI
-	
+
 	set {loqResultDocRef, loqResultMethod, loqDialogTextList, loqClipboardTextS} to {false, "Preliminary - Clipboard", (get Script_Title & " Startup"), (get Script_Title & " Startup")}
 	## the last word of the first line of loqDialogTextList and loqClipboardTextS must be "Startup"
-	
+
 	set debugLogEnable to (get debugLogLevel > 0)
-	
+
 	set Loqqing to {stateResultDoc:false, gateResultsFile:gateResultsFile, enableResultsFile:false, initResultDoc:false, nameResultDoc:(Script_Title & ".txt"), ResultsFileMaxDebug:0} & ¬
 		{stateResultsByClipboard:false, gateResultsByClipboard:false, enableResultsByClipboard:true, initResultsByClipboard:false, clipboardMaxDebug:6} & ¬
 		{stateResultsByDialog:false, gateResultsDialog:false, enableResultsByDialog:false, maxDialogPercent:50, maxDialogLines:25, maxDialogChar:1000, dialogTimeout:20} & ¬
@@ -1044,7 +1044,7 @@ on initLoqqingGlobals(debugLogLevel, Script_Title, posix2PrefFile, gateResultsFi
 		{debugLogLevel:(0 + debugLogLevel), path2ResultsFiles:path2ResultsFiles, enableReadPrefs:enableReadPrefs, enableWritePrefs:enableWritePrefs} & ¬
 		{posix2PrefFile:posix2PrefFile, LoqVersion:LoqqingVersion, fullSetup:false, isChecked:false, enableFastGui:false, Script_Title:Script_Title} & ¬
 		{cleanExit:false, errorExit:false, errorExitCtr:0, startTick:my GetTick_Now(), stopTick:0}
-	
+
 	if {"Script Editor", "Script Debugger"} contains parent_name then
 		set Loqqing's enableDebugByLoq to true
 		set loqResultMethod to loqResultMethod & ", Logs"
@@ -1052,7 +1052,7 @@ on initLoqqingGlobals(debugLogLevel, Script_Title, posix2PrefFile, gateResultsFi
 		set Loqqing's enableDebugNotifications to true
 		set loqResultMethod to loqResultMethod & ", Notifications"
 	end if
-	
+
 	return LoqqingVersion
 end initLoqqingGlobals
 
@@ -1080,7 +1080,7 @@ on loqqed_Error_Halt5(exitReason)
 	## General purpose handler for logging during script termination
 	global debugLogEnable, Loqqing
 	local plistNames, errorText, errorNumber, lastLine, countErrorExits
-	
+
 	if false = (get Loqqing's posix2PrefFile) then
 		loqThis(3, false, ("loqqed_Error_Halt5() did not update settings file (expected, not configured)"))
 	else
@@ -1103,22 +1103,22 @@ on loqqed_Error_Halt5(exitReason)
 			my loqThis(0, false, ("loqqed_Error_Halt5() error \"" & errorText & "\""))
 		end try
 	end if
-	
+
 	local clipText, exitText
-	
+
 	set {clipText, exitText} to {"", ""}
 	if Loqqing's enableResultsByClipboard then set clipText to return & "Results are on the clipboard"
 	try
 		if 0 < (length of (get exitReason as text)) then set exitText to (" Exit Reason: " & exitReason & return)
 	end try
-	
+
 	tell current application to set lastLine to "Script \"" & Loqqing's Script_Title & "\" exits with error at " & (get (current date) as text)
 	loqThis(-1, true, lastLine & exitText & clipText)
-	
+
 	loqAnnounceResults(lastLine)
-	
+
 	finalCleanup()
-	
+
 	return lastLine & exitText
 end loqqed_Error_Halt5
 
@@ -1127,7 +1127,7 @@ on loqqedNormalHalt6()
 	## General purpose handler for logging during script termination
 	global debugLogEnable, Loqqing
 	local plistNames, errorText, errorNumber, lastLine
-	
+
 	if false = (get Loqqing's posix2PrefFile) then
 		loqThis(3, false, ("loqqed_Error_Halt6() did not update settings file (expected, not configured)"))
 	else
@@ -1149,16 +1149,16 @@ on loqqedNormalHalt6()
 			my loqThis(0, true, ("loqqedNormalHalt6() error \"" & errorText & "\""))
 		end try
 	end if
-	
+
 	tell current application to set lastLine to "Script \"" & Loqqing's Script_Title & "\" exits normally at " & (get (current date) as text)
 	local clipText
 	set clipText to ""
 	if Loqqing's enableResultsByClipboard then set clipText to return & "Results are on the clipboard"
 	loqThis(-1, true, lastLine & clipText)
 	loqAnnounceResults(lastLine)
-	
+
 	finalCleanup()
-	
+
 	return lastLine
 end loqqedNormalHalt6
 
@@ -1167,7 +1167,7 @@ on loqqedNormalHalt7(exitMessage)
 	## General purpose handler for logging during script termination
 	global debugLogEnable, Loqqing
 	local plistNames, errorText, errorNumber, lastLine
-	
+
 	if false = (get Loqqing's posix2PrefFile) then
 		loqThis(3, false, ("loqqed_Error_Halt7() did not update settings file (expected, not configured)"))
 	else
@@ -1189,17 +1189,17 @@ on loqqedNormalHalt7(exitMessage)
 			my loqThis(0, false, ("loqqedNormalHalt7() error \"" & errorText & "\""))
 		end try
 	end if
-	
+
 	tell current application to set lastLine to "\"" & Loqqing's Script_Title & "\" normal exit at " & (get (current date) as text) & exitMessage
-	
+
 	local clipText
 	set clipText to ""
 	if Loqqing's enableResultsByClipboard then set clipText to return & "Results are on the clipboard"
 	loqThis(-1, true, lastLine & clipText)
 	loqAnnounceResults(lastLine)
-	
+
 	finalCleanup()
-	
+
 	return lastLine
 end loqqedNormalHalt7
 
@@ -1212,7 +1212,7 @@ on loqAnnounceResults(lastLine)
 		set the clipboard to loqClipboardTextS
 		set announceText to announceText & return & "Results are on the clipboard"
 	end if
-	
+
 	## Avoiding Duplicate notifications and alerts
 	if not Loqqing's enableResultsByNotifications then display notification announceText
 	if Loqqing's enableCompleteAlert and not Loqqing's enableResultsByDialog then display alert announceText
@@ -1221,20 +1221,20 @@ end loqAnnounceResults
 on loqGUIsettings2(theGuiData)
 	## Copyright 2020 Eric Valk, Ottawa, Canada   Creative Commons License CC BY-SA    No Warranty.
 	## General Purpose handler that creates the settings list for the Settings GUI for all the settings
-	
+
 	script ResultsMgr_S
 		on resolve()
 			## Gets called after any change to ResultsByClipboard, ResultsByDialog, ResultsFile, enableResultsByLoq, ResultsByNotifications
 			global debugLogEnable, loqResultMethod, Loqqing
 			set loqResultMethod to setupLoqqing6()
 		end resolve
-		
+
 		on preConfig()
 			global Result_DocName, loqResultMethod
 			set loqResultMethod to setupLoqqing6()
 			return return & "Result Reporting: " & loqResultMethod & return
 		end preConfig
-		
+
 		on postConfig()
 			## Gets called before and after the GUI runs
 			global Result_DocName, loqResultMethod, Loqqing
@@ -1255,7 +1255,7 @@ on loqGUIsettings2(theGuiData)
 						set Loqqing's enableResultsByNotifications to true
 					end if
 				end if
-				
+
 				set loqResultMethod to setupLoqqing6()
 				display alert "All methods of reporting results have been disabled!! " message ("Enabling result reporting by " & loqResultMethod) as critical giving up after 30
 			else
@@ -1264,24 +1264,24 @@ on loqGUIsettings2(theGuiData)
 			return return & "Result Reporting: " & loqResultMethod & return
 		end postConfig
 	end script
-	
+
 	script DebugMgr_S
 		on resolve()
 			global debugLogEnable, loqResultMethod, Loqqing
 			set loqResultMethod to setupLoqqing6()
 		end resolve
 	end script
-	
+
 	local helpdebugLogLevel, helpMaxDebug, helpMaxDialog, helpFastGUI
 	set helpdebugLogLevel to "Maximum level of debug info reported"
 	set helpMaxDebug to "Maximum level of debug data in TextEdit file"
 	set helpMaxNotifications to "Maximum level of debug data in Notifications"
 	set helpMaxDialog to "Percentage of screen fill that triggers a Dialog report"
 	set helpFastGUI to "Disables Free Input for a faster workflow"
-	
+
 	global debugLogEnable, Loqqing
 	local settingList, scriptList, theSetting_r
-	
+
 	set settingList to {}
 	set end of settingList to {s_ID:0, s_Name:"Alert when Script ends", s_Value:(a reference to Loqqing's enableCompleteAlert), s_UserSet:true, s_Active:true, s_Class:"Boolean"}
 	set end of settingList to {s_ID:0, s_Name:"Report Results by Text File", s_Value:(a reference to Loqqing's enableResultsFile), s_UserSet:true, s_Active:Loqqing's gateResultsFile, s_Class:"Boolean", s_Script:ResultsMgr_S}
@@ -1298,11 +1298,11 @@ on loqGUIsettings2(theGuiData)
 	set end of settingList to {s_ID:0, s_Name:"Max Debug Level in Clipboard", s_Help:helpMaxNotifications, s_Value:(a reference to Loqqing's clipboardMaxDebug), s_UserSet:true, s_Active:(a reference to Loqqing's enableResultsByClipboard), s_Class:"Integer", s_LType:"InMin&InMax", s_Limit_L:{0, 6}}
 	set end of settingList to {s_ID:0, s_Name:"Report Debug by Notifications", s_Value:(a reference to Loqqing's enableDebugNotifications), s_UserSet:Loqqing's gateResultsNotification, s_Active:true, s_Class:"Boolean", s_Script:ResultsMgr_S}
 	set end of settingList to {s_ID:0, s_Name:"Max Debug Level in Notifications", s_Help:helpMaxNotifications, s_Value:(a reference to Loqqing's notificationsMaxDebug), s_UserSet:true, s_Active:(a reference to Loqqing's enableDebugNotifications), s_Class:"Integer", s_LType:"InMin&InMax", s_Limit_L:{0, 2}}
-	
+
 	set theGuiData's guiRecordList to theGuiData's guiRecordList & settingList
 	set theGuiData's guiScriptList to theGuiData's guiScriptList & {ResultsMgr_S}
 	set theGuiData's guiParams's guiChecked to a reference to Loqqing's isChecked
-	
+
 	return null
 end loqGUIsettings2
 
@@ -1311,19 +1311,19 @@ on setupLoqqing6()
 	## Handler to initialize logging of results
 	## Do  use loq_Results() until the end of the handler and initialising is completed
 	## Doesn't set loqResultMethod, this is set by caller of this handler
-	
+
 	global debugLogEnable
 	global parent_name, Loqqing, loqDialogTextList, loqResultDocRef, loqClipboardTextS
-	
+
 	set debugLogEnable to (0 < (get Loqqing's debugLogLevel))
-	
+
 	local LogMethods, LogHeader, date_string, originLine, initLoqCache, errorText, errorNumber
 	tell current application to set date_string to (current date) as text
 	set LogMethods to {}
 	set LogHeader to ("Script \"" & Loqqing's Script_Title & "\" results on " & date_string)
 	set originLine to (" by \"" & Loqqing's Script_Title & "\" on " & date_string)
 	if debugLogEnable then loqThis(3, false, "setupLoqqing6: Script Title \"" & Loqqing's Script_Title & "\"")
-	
+
 	set initLoqCache to ""
 	if (0 < (count paragraphs of loqClipboardTextS)) and ¬
 		(0 < (count words of loqClipboardTextS's first paragraph)) and ¬
@@ -1332,7 +1332,7 @@ on setupLoqqing6()
 			set initLoqCache to "Cached Events:" & return & "---" & loqClipboardTextS & return & "---"
 		set loqClipboardTextS to ""
 	end if
-	
+
 	local TextEditlist, DocName_Ext
 	if not Loqqing's gateResultsFile then
 		set {Loqqing's stateResultDoc, Loqqing's enableResultsFile, Loqqing's initResultDoc} to {false, false, false}
@@ -1342,9 +1342,9 @@ on setupLoqqing6()
 			set DocName_Ext to Loqqing's nameResultDoc
 			set end of LogMethods to "TextEdit: " & DocName_Ext
 			if not Loqqing's initResultDoc then
-				## initResultDoc means that we have a valid loqResultDocRef and a header has been written 
+				## initResultDoc means that we have a valid loqResultDocRef and a header has been written
 				set Loqqing's stateResultDoc to false -- insurance
-				
+
 				## If TextEdit is already open and has the document open then add the header
 				tell application "System Events" to set TextEditlist to get background only of every application process whose name is "TextEdit"
 				if (0 < (count of TextEditlist)) and not item 1 of TextEditlist then
@@ -1357,7 +1357,7 @@ on setupLoqqing6()
 						if debugLogEnable then loqThis(3, false, "Path to \"" & DocName_Ext & "\" obtained" & originLine)
 					end if
 				end if
-				
+
 				local targetFileWasCreated, targetFolderParent_a, targetFolderParent_p, targetFolderName, targetFolder_a, targetFolder_p, ResultDocPath_a, ResultDocPath_p, newFolderRef, newFileRef
 				if (not Loqqing's initResultDoc) then
 					## Do the full intialization since the document was not open
@@ -1366,7 +1366,7 @@ on setupLoqqing6()
 					set targetFolder_p to get POSIX path of targetFolder_a
 					set ResultDocPath_p to targetFolder_p & "/" & DocName_Ext
 					if debugLogEnable then loqThis(3, false, " Initializing \"" & DocName_Ext & "\" in \"" & targetFolder_p & "\"")
-					
+
 					try
 						set ResultDocPath_a to (get alias POSIX file ResultDocPath_p)
 						if debugLogEnable then loqThis(4, false, "File " & ResultDocPath_p & "  Exists")
@@ -1375,7 +1375,7 @@ on setupLoqqing6()
 						set ResultDocPath_a to newFileRef as alias
 						set targetFileWasCreated to true
 					end try
-					
+
 					tell application "TextEdit" -- open the document and add the first line if empty
 						activate
 						set loqResultDocRef to open ResultDocPath_a
@@ -1398,7 +1398,7 @@ on setupLoqqing6()
 				## before the results document is initalized, logged events are stored in loqClipboardTextS, copy those to the results document
 				if ("" ≠ initLoqCache) then tell application "TextEdit" to tell text of loqResultDocRef to ¬
 					set paragraph (1 + (count paragraphs)) to initLoqCache
-				
+
 			else
 				if debugLogEnable then loqThis(3, false, "\"" & DocName_Ext & "\" already initialized")
 			end if
@@ -1415,7 +1415,7 @@ on setupLoqqing6()
 				set paragraph (1 + (count paragraphs)) to return & parent_name & "Results reporting disabled for: " & Loqqing's Script_Title & return
 		end if
 	end if
-	
+
 	local screenWidthO, screenHeightO, screenWidth, screenHeight, fontSize_pts, charactersPerLine, dotsPer_Point, linesPerScreen, borderWidth
 	if not Loqqing's gateResultsDialog then
 		set {Loqqing's stateResultsByDialog, Loqqing's enableResultsByDialog} to {false, false}
@@ -1441,7 +1441,7 @@ on setupLoqqing6()
 			--set loqDialogTextList to ""
 		end if
 	end if
-	
+
 	if not Loqqing's gateResultsByClipboard then
 		set {Loqqing's stateResultsByClipboard, Loqqing's enableResultsByClipboard} to {false, false}
 	else
@@ -1460,14 +1460,14 @@ on setupLoqqing6()
 			set loqClipboardTextS to loqClipboardTextS & return & "Clipboard Results disabled"
 		end if
 	end if
-	
+
 	set Loqqing's gateScriptProgressBar to (get ("Script Editor" = parent_name)) -- gateScriptProgressBar  controls user's ability to set progress bar in the Script Editor window
 	if not Loqqing's gateScriptProgressBar then set Loqqing's enableScriptProgressBar to false
-	
+
 	if {"Script Editor", "Script Debugger"} contains parent_name then set Loqqing's enableDebugByLoq to true
 	## enableDebugByLoq  sets the logging of debug information
 	## Don't capture initLoqCache - if enableDebugByLoq would be true then it is already captured.
-	
+
 	## Logging of results -- gateParentLoqqing  controls user's ability to set logging of results
 	if Loqqing's gateResultsNotification and Loqqing's enableResultsByLoq and not Loqqing's initLoqqing then
 		set Loqqing's stateResultsByLoq to false
@@ -1490,7 +1490,7 @@ on setupLoqqing6()
 			tell Loqqing to set {its gateParentLoqqing, enableResultsByLoq} to {false, false}
 		end if
 	end if
-	
+
 	if not Loqqing's gateParentLoqqing then
 		tell Loqqing to set {its stateResultsByLoq, its enableResultsByLoq} to {false, false}
 	else if Loqqing's enableResultsByLoq then
@@ -1503,7 +1503,7 @@ on setupLoqqing6()
 		set Loqqing's stateResultsByLoq to false
 		if debugLogEnable then loqThis(3, false, "Results Logging disabled for: " & Loqqing's Script_Title)
 	end if
-	
+
 	if not Loqqing's gateResultsNotification then
 		set {Loqqing's stateResultsByNotification, Loqqing's enableResultsByNotifications} to {false, false}
 	else
@@ -1515,7 +1515,7 @@ on setupLoqqing6()
 			set Loqqing's stateResultsByNotification to false
 		end if
 	end if
-	
+
 	set LogMethods_S to my joinListToString(LogMethods, ", ")
 	if debugLogEnable then loqThis(3, false, ("Result Reported by " & LogMethods_S))
 	return LogMethods_S
@@ -1526,20 +1526,20 @@ on loqThis(thisLogDebugLevel, MakeFront, log_Text)
 	## General purpose handler for logging results
 	## log results if the debug level of the message is below the the threshold set by debugLogLevel
 	## log the results by whatever mechanism is enabled - {Script Editor Log, Text Editor Log, Display Dialog}
-	
+
 	global debugLogEnable
 	global parent_name, Loqqing, loqDialogTextList, loqResultDocRef, loqClipboardTextS
 	local log_Text_S, dialogTriggeredMakeFront
-	
+
 	if thisLogDebugLevel > Loqqing's debugLogLevel then return "" -- immediate return if thisLogDebugLevel exceeds threshold
-	
+
 	set log_Text_S to my joinListToString(log_Text, "; ")
 	set dialogTriggeredMakeFront to false
-	
+
 	## Dialog
 	if Loqqing's stateResultsByDialog and (thisLogDebugLevel ≤ 0) then
 		set loqDialogTextList to (get loqDialogTextList & return & log_Text_S)
-		
+
 		if MakeFront or (0 ≥ Loqqing's maxDialogLines) or ¬
 			(Loqqing's maxDialogLines < (get count of paragraphs of loqDialogTextList)) or ¬
 			(Loqqing's maxDialogChar < (get length of loqDialogTextList)) then
@@ -1554,22 +1554,22 @@ on loqThis(thisLogDebugLevel, MakeFront, log_Text)
 			set loqDialogTextS to ""
 		end if
 	end if
-	
+
 	## Result Document
 	if Loqqing's stateResultDoc and (thisLogDebugLevel ≤ Loqqing's ResultsFileMaxDebug) then ¬
 		tell application "TextEdit" to tell text of loqResultDocRef to ¬
 			set paragraph (1 + (count paragraphs)) to ((log_Text_S as text) & return)
-	
+
 	## Log
 	if Loqqing's enableDebugByLoq and (thisLogDebugLevel ≥ 0) then log (log_Text)
 	if Loqqing's enableResultsByLoq and (thisLogDebugLevel < 0) then log (log_Text)
-	
+
 	## Clipboard
 	if Loqqing's enableResultsByClipboard and (thisLogDebugLevel ≤ Loqqing's clipboardMaxDebug) then ¬
 		set loqClipboardTextS to (loqClipboardTextS & return & log_Text_S)
-	
+
 	## Notifications
-	## If a notification has too many characters then the notification system hangs 
+	## If a notification has too many characters then the notification system hangs
 	## Constrain it to 3 lines of 39 characters max.
 	local paraCtr, notString, lineCnt, paramax, remChar, thePara, thisCount
 	if (Loqqing's enableDebugNotifications and (thisLogDebugLevel ≤ Loqqing's notificationsMaxDebug)) or ¬
@@ -1593,8 +1593,8 @@ on loqThis(thisLogDebugLevel, MakeFront, log_Text)
 		end repeat
 		display notification notString
 	end if
-	
-	if (not dialogTriggeredMakeFront) and (MakeFront or (0 = thisLogDebugLevel)) then -- 
+
+	if (not dialogTriggeredMakeFront) and (MakeFront or (0 = thisLogDebugLevel)) then --
 		if Loqqing's enableDebugByLoq then tell application "System Events" to set frontmost of process parent_name to true
 		if Loqqing's stateResultDoc then tell application "System Events" to set frontmost of process "TextEdit" to true
 	end if
@@ -1621,19 +1621,19 @@ on initPrefsFromFile(Script_Title, debugLogLevel, errorExitMax, gateReadPrefFile
 	local path2Prefs, alias2Prefs, posix2Prefs, path2PrefFile, posix2PrefFile, hasPrefFile, verifiedLoqPlist, gotPrefSetUp, this_plistfile, LoqqingVersion, errorText, errorNumber
 	local prefsLoqVersion, prefsExitCtr, prefsErrorExit, prefsCleanExit, prefsFullSetup, hasLoqPlist
 	set {posix2PrefFile, hasPrefFile, hasLoqPlist, verifiedLoqPlist, gotPrefSetUp} to {false, false, false, false, false}
-	
+
 	## very simple logging setup, text edit logging not ready yet, preferences file not read yet
-	
+
 	set checkedGuiData to false
 	set LoqqingVersion to my LoqqingVersion
 	if mainsLoqqingVersion ≠ LoqqingVersion then error my loqqed_Error_Halt5("SW Error: Loqqing Version Mismatch in GUI Library")
 	if (gateReadPrefFiles or gateWritePrefFiles) then
-		
+
 		set path2PrefFile to path2Prefs & Script_Title & ".plist"
 		set posix2PrefFile to (POSIX path of path2PrefFile)
-		
+
 		-- Do not use finder to test for the file existence because it has a bug that ignores leading 0's
-		-- https://www.macscripter.net/viewtopic.php?id=45178 
+		-- https://www.macscripter.net/viewtopic.php?id=45178
 		--hasPrefFile, hasLoqPlist, verifiedLoqPlist, gotPrefSetUp
 		try
 			get path2PrefFile as alias -- check for existance of preferences .plist file
@@ -1648,12 +1648,12 @@ on initPrefsFromFile(Script_Title, debugLogLevel, errorExitMax, gateReadPrefFile
 				set prefsFullSetup to value of (property list file posix2PrefFile)'s property list item "Loqqing"'s property list item "fullSetup"
 			end tell
 			if (not prefsErrorExit) and (not prefsCleanExit) then set prefsExitCtr to prefsExitCtr + 1
-			
+
 			set rejectList to {}
 			if not (LoqqingVersion = prefsLoqVersion) then set rejectList to rejectList & "Incorrect Version: Is " & prefsLoqVersion & "  Expected " & LoqqingVersion
 			if (prefsExitCtr ≥ errorExitMax) then set rejectList to rejectList & "Error Exit Count too high: Is " & prefsExitCtr & "  Limit " & errorExitMax
 			if not prefsFullSetup then set rejectList to rejectList & "Contains a preliminary setup"
-			
+
 			if (0 = (get count of rejectList)) then
 				set verifiedLoqPlist to true
 				my loqThis(3, false, "Preferences file has passed verification")
@@ -1664,7 +1664,7 @@ on initPrefsFromFile(Script_Title, debugLogLevel, errorExitMax, gateReadPrefFile
 		on error errorText number errorNumber
 			my loqThis(-1, false, ("Got an error reading the preferences file: " & return & errorText & " (" & errorNumber & ")"))
 		end try
-		
+
 		if gateReadPrefFiles and verifiedLoqPlist then
 			## now get the entire Loqqing record
 			--hasPrefFile, hasLoqPlist, verifiedLoqPlist, gotPrefSetUp
@@ -1677,7 +1677,7 @@ on initPrefsFromFile(Script_Title, debugLogLevel, errorExitMax, gateReadPrefFile
 				set verifiedLoqPlist to false
 				my loqThis(-1, true, ("Could not read the .plist file due to error: " & return & errorText & " (" & errorNumber & ")"))
 			end try
-			
+
 			if gotPrefSetUp then
 				tell Loqqing
 					set {its startTick, its stopTick} to {my GetTick_Now(), 0}
@@ -1696,14 +1696,14 @@ on initPrefsFromFile(Script_Title, debugLogLevel, errorExitMax, gateReadPrefFile
 				set {gotPrefSetUp, verifiedLoqPlist} to {false, false}
 			end if
 		end if
-		
+
 		if gateWritePrefFiles then
 			if gotPrefSetUp then
 				my saveLoqqingPrefs() -- update preference file with modified settings
 			else
 				## The preferences file wasn't used
 				local parent_dictionary, theFile
-				if (not hasPrefFile) or (not hasLoqPlist) or (not verifiedLoqPlist) then -- there is no prefs file, or the prefs file plist cannnot be read, or the prefs file plist cannnot be verified 
+				if (not hasPrefFile) or (not hasLoqPlist) or (not verifiedLoqPlist) then -- there is no prefs file, or the prefs file plist cannnot be read, or the prefs file plist cannnot be verified
 					tell application "System Events" -- make a new prefs file
 						set the parent_dictionary to make new property list item with properties {kind:record} -- create an empty property list dictionary item
 						set theFile to make new property list file with properties {contents:parent_dictionary, name:posix2PrefFile} -- create new property list file using the empty dictionary list item as contents
@@ -1723,7 +1723,7 @@ end initPrefsFromFile
 
 on guisGUiSettings(theGuiData)
 	global debugLogEnable, Loqqing
-	
+
 	script PrefMgr_S
 		on preConfig()
 			global debugLogEnable, Loqqing
@@ -1738,40 +1738,40 @@ on guisGUiSettings(theGuiData)
 			end if
 			return prefMethod
 		end preConfig
-		
+
 		on postConfig()
 			global debugLogEnable
 			preConfig()
 		end postConfig
 	end script
-	
-	
+
+
 	local helpFastGUI, settingList
 	set helpFastGUI to "Disables Free Input for a faster workflow"
 	set settingList to {}
 	set end of settingList to {s_ID:0, s_Name:"Fast WorkFlow", s_Help:helpFastGUI, s_Value:(a reference to Loqqing's enableFastGui), s_UserSet:true, s_Active:true, s_Class:"Boolean"}
-	
+
 	set theGuiData's guiParams to {enableFastGui:(a reference to Loqqing's enableFastGui), Script_Title:(get "" & Loqqing's Script_Title)} & theGuiData's guiParams
 	set theGuiData's guiRecordList to settingList & theGuiData's guiRecordList
 	set theGuiData's guiScriptList to theGuiData's guiScriptList & {PrefMgr_S}
-	
+
 	return null
-	
+
 end guisGUiSettings
 
 on guiRunSettingsEditor(theGuiData)
 	## Copyright 2020 Eric Valk, Ottawa, Canada   Creative Commons License CC BY-SA    No Warranty.
 	## General Purpose handler that provides a user interface to control settings for Script
 	## This is the main handler that runs the GUI
-	
+
 	global debugLogEnable, parent_name
 	local nextID, idCtr, scriptList
 	local scriptDisplay_S, configDisplay_S, scriptCount, scriptCtr, theScript, legendString
 	local usercancelled, errorText, errorNumber, dialog_result
-	
+
 	set usercancelled to false
 	set scriptList to theGuiData's guiScriptList
-	
+
 	set idCtr to 1
 	repeat with nextID from 1 to (count of theGuiData's guiRecordList)
 		if not (missing value = theGuiData's guiRecordList's record nextID's s_UserSet) then
@@ -1780,9 +1780,9 @@ on guiRunSettingsEditor(theGuiData)
 			set idCtr to 1 + idCtr
 		end if
 	end repeat
-	
+
 	guiValidateSettingsRecords(theGuiData)
-	
+
 	set {configDisplay_S, scriptCount} to {"", (count of scriptList)}
 	if scriptCount > 0 then
 		repeat with scriptCtr from 1 to scriptCount
@@ -1799,7 +1799,7 @@ on guiRunSettingsEditor(theGuiData)
 			end try
 		end repeat
 	end if
-	
+
 	repeat while not usercancelled
 		tell application "System Events" to set frontmost of process parent_name to true
 		set settingsDisplay_S to guiMakeSettingsDisplay(theGuiData, true) & configDisplay_S
@@ -1812,16 +1812,16 @@ on guiRunSettingsEditor(theGuiData)
 			set usercancelled to true
 			exit repeat
 		end if
-		
+
 		if "OK" = (get button returned of dialog_result) then exit repeat
-		
+
 		if "Edit" = (get button returned of dialog_result) then
 			set usercancelled to guiSelectSetting(theGuiData)
-			
+
 			if theGuiData's guiParams's enableFastGui then exit repeat
 		end if
 	end repeat
-	
+
 	set configDisplay_S to ""
 	if scriptCount > 0 then
 		repeat with scriptCtr from 1 to scriptCount
@@ -1838,14 +1838,14 @@ on guiRunSettingsEditor(theGuiData)
 			end try
 		end repeat
 	end if
-	
+
 	if debugLogEnable then
 		set settingsDisplay_S to guiMakeSettingsDisplay(theGuiData, false) & configDisplay_S
 		my loqThis(1, false, (return & "Post GUI Settings:" & return & settingsDisplay_S))
 	end if
-	
+
 	return usercancelled
-	
+
 	#############
 	## Definition of the Setting record
 	## s_ID             ID of the setting (integer)
@@ -1924,11 +1924,11 @@ end guiMakeSettingsDisplay
 on guiValidateSettingsRecords(theGuiData)
 	## Copyright 2020 Eric Valk, Ottawa, Canada   Creative Commons License CC BY-SA    No Warranty.
 	## General purpose handler that checks a setting record for inconsistancies
-	
+
 	global debugLogEnable
-	
+
 	local errText, errNum
-	
+
 	if (true and (get contents of (theGuiData's guiParams's guiChecked))) then
 		if debugLogEnable then my loqThis(3, false, "Validation of GUI data bypassed")
 	else
@@ -1955,16 +1955,16 @@ on guiValidateSettingsRecords(theGuiData)
 							{(its ParseError), (its ParseErrorList), (its settingName), (its settingValue), (its valueCLassName), (its valueIsList), (its settingLimitList), (its hasSettingLimitList), (its hasFreeInput), (its SettingBlockList), (its hasSettingBlockList), (its blockLTSpaces), (its settingMin), (its hasInclusiveMin), (its settingMax), (its hasInclusiveMax), (its hasExclusiveMin), (its hasExclusiveMax), (its hasQuotation), (its hasNoSpace), (its hasOkSpace)}
 					end tell
 					if ParseError then set complaintList to complaintList & ParseErrorList
-					
+
 					if hasSettingLimitList and (not hasFreeInput) and (0 = (count of theSettingLimitList)) then set the end of complaintList to ("Setting \"" & theSettingName & "\" has an empty Choose List and not Free Input")
-					
+
 					if {"real", "integer"} contains theValueCLassName then
 						if (hasInclusiveMin and (theSettingValue < theSettingMin)) or (hasExclusiveMin and (theSettingValue ≤ theSettingMin)) then set the end of complaintList to ("The value of \"" & theSettingName & "\" is less than it's minimum")
 						if (hasInclusiveMax and (theSettingValue > theSettingMax)) or (hasExclusiveMax and (theSettingValue ≥ theSettingMax)) then set the end of complaintList to ("The value of \"" & theSettingName & "\" is greater than it's maximum")
 					else -- limits valid only for real and integer should not be used elsewhere
 						if hasInclusiveMin or hasExclusiveMin or hasInclusiveMax or hasExclusiveMax then set the end of complaintList to ("Setting \" " & settingName & "\" has a \"Min\" or \"Max\" limit which is invalid for type \"" & valueCLassName & "\"")
 					end if
-					
+
 					local initialValue, theSettingLimitList
 					if ("text" = theValueCLassName) then
 						if hasNoSpace and hasOkSpace then set the end of complaintList to ("Setting \"" & settingName & "\" has an \"OkSpace\" limit and a \"NoSpace\" limit - invalid combination")
@@ -1997,9 +1997,9 @@ on guiValidateSettingsRecords(theGuiData)
 						else
 							if (theSettingLimitList does not contain theSettingValue) then set the end of complaintList to ("The value of setting \"" & theSettingName & "\" is not in it's Choose List and Free Input is not enabled")
 						end if
-						
+
 					end if
-					
+
 				end if
 				local theComplaint
 				if (0 < (count of complaintList)) then
@@ -2026,12 +2026,12 @@ on guiParseSettingRecord(theSettingRecord)
 	global debugLogEnable
 	ignoring case -- for this entire handler
 		local settingName, settingCLassName, valueIsList, valueCLassName, settingValue, ParseError, ParseErrorList, xor
-		
+
 		set ParseError to false -- minor errors
 		set ParseErrorList to {} -- minor errors
-		
+
 		set settingName to (get contents of theSettingRecord's s_Name)
-		
+
 		if (missing value = (get contents of theSettingRecord's s_UserSet)) then
 			return {ParseFail:true, ParseErrorString:("SW Error: Setting \" " & settingName & "'s\"  s_UserSet is missing value")} -- may cause unexpected behaviour
 		end if
@@ -2048,13 +2048,13 @@ on guiParseSettingRecord(theSettingRecord)
 			set valueCLassName to (get settingCLassName as text)
 			set valueIsList to false
 		end if
-		
+
 		if {"text", "integer", "real", "boolean"} does not contain valueCLassName then -- error that will cause a failure to edit
 			return {ParseFail:true, ParseErrorString:("SW Error: Setting \" " & settingName & "\" has an unexpected value in Setting Class: \"" & valueCLassName & "\"")}
 		end if
 		(get contents of theSettingRecord's s_Value)
 		set settingValue to my deReference((get contents of theSettingRecord's s_Value), valueCLassName)
-		
+
 		local SettingBlockList, hasSettingBlockList
 		set SettingBlockList to missing value
 		if "text" = valueCLassName then
@@ -2070,13 +2070,13 @@ on guiParseSettingRecord(theSettingRecord)
 		on error
 			set hasSettingBlockList to false
 		end try
-		
+
 		local hasFreeInput, hasSettingLimitType, hasInclusiveMin, hasInclusiveMax, hasSettingLimitList, hasSettingLimitList, SettingLimitType, settingMin, settingMax, settingLimitList
 		local hasQuotation, hasNoSpace, hasOkSpace
 		set {hasFreeInput, hasSettingLimitType, hasInclusiveMin, hasInclusiveMax, hasExclusiveMin, hasExclusiveMax, hasSettingLimitList, hasQuotation, hasNoSpace, hasOkSpace} to ¬
 			{false, false, false, false, false, false, false, false, false, false}
 		set {settingMin, settingMax, settingLimitList, SettingLimitType} to {missing value, missing value, missing value, missing value}
-		
+
 		local SettingLimitType
 		if (valueCLassName = "Boolean") then
 			set SettingLimitType to "boolean"
@@ -2090,7 +2090,7 @@ on guiParseSettingRecord(theSettingRecord)
 				set hasSettingLimitType to false
 			end try
 		end if
-		
+
 		local theLimitType, SettingLimitType_L, sltCtr
 		if hasSettingLimitType then
 			set SettingLimitType_L to my splitStringToList(SettingLimitType, "&")
@@ -2099,36 +2099,36 @@ on guiParseSettingRecord(theSettingRecord)
 				if "boolean" = theLimitType then
 					set settingLimitList to {true, false}
 					set hasSettingLimitList to true
-					
+
 				else if "InMin" = theLimitType then
 					set hasInclusiveMin to true
 					set hasFreeInput to true
 					set settingMin to my deReference((get item 1 of theSettingRecord's s_Limit_L), valueCLassName)
-					
+
 				else if "InMax" = theLimitType then
 					set hasInclusiveMax to true
 					set hasFreeInput to true
 					set settingMax to my deReference((get item -1 of theSettingRecord's s_Limit_L), valueCLassName)
-					
+
 				else if "ExMin" = theLimitType then
 					set hasExclusiveMin to true
 					set hasFreeInput to true
 					set settingMin to my deReference((get item 1 of theSettingRecord's s_Limit_L), valueCLassName)
-					
+
 				else if "ExMax" = theLimitType then
 					set hasExclusiveMax to true
 					set hasFreeInput to true
 					set settingMax to my deReference((get item -1 of theSettingRecord's s_Limit_L), valueCLassName)
-					
+
 				else if "Free" = theLimitType then
 					set hasFreeInput to true
-					
+
 				else if "List" = theLimitType then
 					set settingLimitList to my deReference((get theSettingRecord's s_Limit_L), valueCLassName)
 					set hasSettingLimitList to true
 					if ("text" = valueCLassName) and (SettingLimitType_L contains "OkSpace") then ¬
 						set settingLimitList to my splitStringToList(("\"" & my joinListToString(settingLimitList, "\",\"") & "\""), ",")
-					
+
 				else if "OkSpace" = theLimitType then
 					set hasOkSpace to true -- add quotation marks to the text string or list of strings
 					if ("text" = valueCLassName) then
@@ -2139,7 +2139,7 @@ on guiParseSettingRecord(theSettingRecord)
 							set settingValue to "\"" & settingValue & "\""
 						end if
 					end if
-					
+
 				else if "NoSpace" = theLimitType then
 					set hasNoSpace to true -- add a space to the SettingBlockList
 					if ("text" = valueCLassName) then
@@ -2150,22 +2150,22 @@ on guiParseSettingRecord(theSettingRecord)
 							set SettingBlockList to {" "}
 						end if
 					end if
-					
+
 				else
 					set ParseError to true -- minor errors
 					set end of ParseErrorList to ("Setting \" " & settingName & "\" has an unexpected Setting Limit type: \"" & theLimitType & "\"")
 				end if
 			end repeat
 		end if
-		
+
 		local blockLTSpaces
 		set blockLTSpaces to ("text" = valueCLassName) and (not hasNoSpace) and (not hasOkSpace) and (not (hasSettingBlockList and (SettingBlockList contains " "))) -- blockLT is the default if no other space control
-		
+
 		if (not hasFreeInput) then -- errors that will cause a failure to edit
 			if (not hasSettingLimitList) then return {ParseFail:true, ParseErrorString:("Setting \"" & settingName & "\" is configured with free input disabled and with list input disabled")}
 			if (0 = (count of settingLimitList)) then return {ParseFail:true, ParseErrorString:("Setting \"" & settingName & "\" is configured with free input disabled and has an empty Choose List")}
 		end if
-		
+
 	end ignoring
 	return {ParseFail:false, ParseError:ParseError, ParseErrorList:ParseErrorList, settingName:settingName, settingValue:settingValue, valueCLassName:valueCLassName, valueIsList:valueIsList, blockLTSpaces:blockLTSpaces, hasSettingBlockList:hasSettingBlockList, SettingBlockList:SettingBlockList, hasFreeInput:hasFreeInput, hasInclusiveMin:hasInclusiveMin, hasInclusiveMax:hasInclusiveMax, hasExclusiveMin:hasExclusiveMin, hasExclusiveMax:hasExclusiveMax, hasSettingLimitList:hasSettingLimitList, settingMin:settingMin, settingMax:settingMax, settingLimitList:settingLimitList, hasQuotation:hasQuotation, hasNoSpace:hasNoSpace, hasOkSpace:hasOkSpace}
 end guiParseSettingRecord
@@ -2173,22 +2173,22 @@ end guiParseSettingRecord
 on guiSelectSetting(theGuiData)
 	## Copyright 2020 Eric Valk, Ottawa, Canada   Creative Commons License CC BY-SA    No Warranty.
 	## General Purpose handler that enables the user to select the setting to be edited
-	
+
 	global debugLogEnable
 	local usercancelled, userDone, settings_choose_List, settings_choose_List, ChooseResult, selectedSetting, settingID, numSelectedSetting, theSelected_Setting, theSettingValueS
 	local separatorLine, xor
 	--local settingsList
 	--set settingsList to theGuiData's guiRecordList
-	
+
 	set {usercancelled, userDone, separatorLine} to {false, false, "-----"}
-	
+
 	repeat while userDone is false
-		
+
 		copy {} to settings_choose_List
 		repeat with recordCtr from 1 to (count of theGuiData's guiRecordList)
 			## set theSetting_r to theGuiData's guiRecordList's record recordCtr
 			## copy (get theGuiData's guiRecordList's record recordCtr) to theSetting_r
-			
+
 			set xor to true
 			try
 				if (true = (contents of theGuiData's guiRecordList's record recordCtr's s_Invert)) then set xor to false
@@ -2209,14 +2209,14 @@ on guiSelectSetting(theGuiData)
 				else
 					copy ("" & (get contents of theGuiData's guiRecordList's record recordCtr's s_Value)) to theSettingValueS
 				end if
-				
+
 				copy (((get contents of theGuiData's guiRecordList's record recordCtr's s_ID) as text) & ": " & (get contents of theGuiData's guiRecordList's record recordCtr's s_Name) & ": " & theSettingValueS) to the end of settings_choose_List
-				
+
 			else if (true = (contents of theGuiData's guiRecordList's record recordCtr's s_Active)) and (missing value = contents of theGuiData's guiRecordList's record recordCtr's s_UserSet) then
 				copy separatorLine to the end of settings_choose_List
 			end if
 		end repeat
-		
+
 		set ChooseResult to {separatorLine}
 		repeat while separatorLine = ChooseResult's first item
 			if theGuiData's guiParams's enableFastGui then
@@ -2232,16 +2232,16 @@ on guiSelectSetting(theGuiData)
 				set ChooseResult to (get choose from list settings_choose_List with title "Settings for " & theGuiData's guiParams's Script_Title with prompt "Select an Item to Edit" cancel button name "Done" OK button name "Edit" without empty selection allowed)
 				if ChooseResult = false then -- user is done editting
 					set userDone to true
-					exit repeat -- exit from this repeat loop 
+					exit repeat -- exit from this repeat loop
 				end if
 			end if
 		end repeat
 		if userDone or usercancelled then exit repeat --exit from the main repeat loop
-		
+
 		##  without empty selection allowed
 		set selectedSetting to item 1 of ChooseResult
 		set settingID to get ((item 1 of (my splitStringToList(selectedSetting, ":"))) as integer)
-		
+
 		set numSelectedSetting to false
 		repeat with recordCtr from 1 to (count of theGuiData's guiRecordList)
 			if settingID = (theGuiData's guiRecordList's record recordCtr's s_ID) then
@@ -2250,10 +2250,10 @@ on guiSelectSetting(theGuiData)
 				exit repeat
 			end if
 		end repeat
-		
+
 		if false = numSelectedSetting then error my loqqed_Error_Halt5("SW Error 1: Unable to find setting #" & settingID)
 		guiEditSetting(theGuiData, numSelectedSetting)
-		
+
 	end repeat
 	return usercancelled
 end guiSelectSetting
@@ -2261,24 +2261,24 @@ end guiSelectSetting
 on guiEditSetting(theGuiData, numSelectedSetting)
 	## Copyright 2020 Eric Valk, Ottawa, Canada   Creative Commons License CC BY-SA    No Warranty.
 	## General Purpose handler that provides a user interface to edit one setting
-	
+
 	global debugLogEnable
-	
+
 	ignoring case -- for this entire handler
-		
+
 		local theRecord
 		set theRecord to guiParseSettingRecord(get theGuiData's guiRecordList's record numSelectedSetting)
 		if theRecord's ParseFail then error my loqqed_Error_Halt5((get theRecord's ParseErrorString))
 		if debugLogEnable and theRecord's ParseError then my loqThis(2, false, (get theRecord's ParseErrorList))
-		
+
 		local theSettingName, theValueCLassName, valueIsList, theSettingLimitList, hasSettingLimitList, hasFreeInput, theSettingBlockList, hasSettingBlockList, blockLTSpaces, theSettingMin, hasInclusiveMin, theSettingMax, hasInclusiveMax, hasExclusiveMin, hasExclusiveMax, hasQuotation
 		tell theRecord
 			set {theSettingName, theSettingValue, theValueCLassName, valueIsList, theSettingLimitList, hasSettingLimitList, hasFreeInput, theSettingBlockList, hasSettingBlockList, blockLTSpaces, theSettingMin, hasInclusiveMin, hasExclusiveMin, theSettingMax, hasInclusiveMax, hasExclusiveMax, hasQuotation} to ¬
 				{(get its settingName), (get its settingValue), (get its valueCLassName), (get its valueIsList), (get its settingLimitList), (get its hasSettingLimitList), (get its hasFreeInput), (get its SettingBlockList), (its hasSettingBlockList), (its blockLTSpaces), (its settingMin), (its hasInclusiveMin), (its hasExclusiveMin), (its settingMax), (its hasInclusiveMax), (its hasExclusiveMax), (its hasQuotation)}
 		end tell
-		
+
 		local settingHelpPrompt, SettingBlockString
-		
+
 		try
 			set settingHelpPrompt to (get (theGuiData's guiRecordList's record numSelectedSetting's s_Help) as text)
 			if 0 = (get length of settingHelpPrompt) then
@@ -2289,13 +2289,13 @@ on guiEditSetting(theGuiData, numSelectedSetting)
 		on error
 			set settingHelpPrompt to ""
 		end try
-		
+
 		if hasSettingBlockList then
 			set SettingBlockString to return & "Blocked characters: \"" & my joinListToString(theSettingBlockList, ("\",  \"")) & "\""
 		else
 			set SettingBlockString to ""
 		end if
-		
+
 		if debugLogEnable then
 			my loqThis(4, false, ¬
 				{"settingName: " & theSettingName, "valueCLassName: " & theValueCLassName, "valueIsList: " & valueIsList, "hasFreeInput: " & hasFreeInput})
@@ -2304,22 +2304,22 @@ on guiEditSetting(theGuiData, numSelectedSetting)
 			my loqThis(4, false, ¬
 				{"hasInclusiveMin: " & hasInclusiveMin, "hasInclusiveMax: " & hasInclusiveMax, "hasExclusiveMin: " & hasExclusiveMin, "hasExclusiveMax: " & hasExclusiveMax})
 		end if
-		
-		
-		
+
+
+
 		local usercancelled, hasNewSettingValue, chooseSettingValueList, buttonList
 		local settingAddTitle, settingChooseTitle, settingChoosePrompt, settingEditPrompt
 		local newSettingEntry, ChooseResult, dialog_result, dialogResultList, theValueString, skipListInput
 		local errorText, errorNumber
-		
+
 		## Setup local variables
 		set usercancelled to false
 		set hasNewSettingValue to false
 		set chooseSettingValueList to missing value
 		set skipListInput to false
-		
+
 		#### Setup is complete
-		
+
 		if (not valueIsList) then
 			if theGuiData's guiParams's enableFastGui and (theValueCLassName = "Boolean") then
 				set contents of theGuiData's guiRecordList's record numSelectedSetting's s_Value to (get not theSettingValue)
@@ -2328,7 +2328,7 @@ on guiEditSetting(theGuiData, numSelectedSetting)
 				set settingAddTitle to "Enter a New Value"
 				set settingChooseTitle to "Select a New Value"
 				copy ("Setting: " & (get theSettingName as text) & (get settingHelpPrompt as text) & SettingBlockString) to settingEditPrompt
-				
+
 				if hasFreeInput and (not (theGuiData's guiParams's enableFastGui and hasSettingLimitList)) then
 					if (hasInclusiveMin or hasInclusiveMax or hasExclusiveMin or hasExclusiveMax) then set settingEditPrompt to settingEditPrompt & return
 					if hasInclusiveMin then set settingEditPrompt to settingEditPrompt & "Minimum: ≥" & my deReference(theSettingMin, theValueCLassName)
@@ -2341,7 +2341,7 @@ on guiEditSetting(theGuiData, numSelectedSetting)
 					else
 						set buttonList to {"Select", "Cancel Editing"}
 					end if
-					
+
 					repeat while not hasNewSettingValue
 						set skipListInput to false
 						set dialog_result to display dialog settingEditPrompt with title settingAddTitle default answer theSettingValue buttons buttonList
@@ -2350,7 +2350,7 @@ on guiEditSetting(theGuiData, numSelectedSetting)
 							set hasNewSettingValue to false
 							exit repeat
 						end if
-						
+
 						try
 							if 0 < (length of text returned of dialog_result) then
 								set newSettingEntry to my deReference((text returned of dialog_result), theValueCLassName)
@@ -2372,7 +2372,7 @@ on guiEditSetting(theGuiData, numSelectedSetting)
 							display dialog (settingEditPrompt & return & "Unable to convert \"" & (get text returned of dialog_result) & "\"  to an " & theValueCLassName) with title "Press OK to try again" buttons {"OK"} default button "OK"
 							set hasNewSettingValue to false
 						end try
-						
+
 						if hasNewSettingValue and ¬
 							((hasInclusiveMin and (newSettingEntry < theSettingMin)) or (hasInclusiveMax and (newSettingEntry > theSettingMax)) or ¬
 								(hasExclusiveMin and (newSettingEntry ≤ theSettingMin)) or (hasExclusiveMax and (newSettingEntry ≥ theSettingMax))) then
@@ -2382,7 +2382,7 @@ on guiEditSetting(theGuiData, numSelectedSetting)
 						if hasNewSettingValue and ("Skip List Input" = (get button returned of dialog_result)) then set skipListInput to true
 					end repeat
 				end if
-				
+
 				if hasSettingLimitList and (not usercancelled) and (not skipListInput) then
 					set chooseSettingValueList to (get contents of theSettingLimitList)
 					if chooseSettingValueList does not contain theSettingValue then set end of chooseSettingValueList to theSettingValue
@@ -2392,7 +2392,7 @@ on guiEditSetting(theGuiData, numSelectedSetting)
 					else
 						set chooseDefaults to newSettingEntry
 					end if
-					
+
 					set ChooseResult to (get choose from list chooseSettingValueList with prompt settingEditPrompt ¬
 						with title settingChooseTitle OK button name "Select" cancel button name "Cancel Editing" default items chooseDefaults)
 					if ChooseResult = false then
@@ -2408,7 +2408,7 @@ on guiEditSetting(theGuiData, numSelectedSetting)
 					set contents of theGuiData's guiRecordList's record numSelectedSetting's s_Value to newSettingEntry
 				end if
 			end if
-			
+
 			if hasNewSettingValue then
 				try
 					theGuiData's guiRecordList's record numSelectedSetting's s_Script's resolve()
@@ -2420,35 +2420,35 @@ on guiEditSetting(theGuiData, numSelectedSetting)
 					end if
 				end try
 			end if
-			
+
 		else --- handle a list
 			## Initiialise local variables
 			set settingAddTitle to "Enter a New Value"
 			set settingChooseTitle to "Select Values"
 			set settingChoosePrompt to "Setting: " & theSettingName & settingHelpPrompt & return & "Empty selection allowed" & return & "(cmd-click deselects)"
 			set settingEditPrompt to "Setting: " & theSettingName & settingHelpPrompt & return & "(use ';' to make a list)" & SettingBlockString
-			
+
 			set chooseSettingValueList to (get contents of theSettingValue)
 			set newSettingEntry to {}
 			set hasNewSettingValue to false
 			set skipListInput to false
-			
+
 			if hasSettingLimitList then
 				repeat with theValueString in theSettingLimitList
 					if chooseSettingValueList does not contain (contents of theValueString) then copy (contents of theValueString) to the end of chooseSettingValueList
 				end repeat
 			end if
-			
+
 			if hasFreeInput and (not (theGuiData's guiParams's enableFastGui and (0 < (count of chooseSettingValueList)))) then
 				if 0 < (count of chooseSettingValueList) then
 					set buttonList to {"OK", "Cancel Editing", "Skip List Input"}
 				else
 					set buttonList to {"OK", "Cancel Editing"}
 				end if
-				
+
 				set dialog_result to display dialog settingEditPrompt with title settingAddTitle default answer "" buttons buttonList
 				if "Cancel Editing" = (get dialog_result's button returned) then set usercancelled to true
-				
+
 				if (not usercancelled) then
 					set dialogResultList to my splitStringToList((get text returned of dialog_result), ";")
 					if hasSettingBlockList then copy my removeTextFromList(dialogResultList, theSettingBlockList) to dialogResultList
@@ -2470,7 +2470,7 @@ on guiEditSetting(theGuiData, numSelectedSetting)
 					if ("Skip List Input" = (get button returned of dialog_result)) then set skipListInput to true
 				end if
 			end if
-			
+
 			if (not usercancelled) and (not skipListInput) and (0 < (get count of chooseSettingValueList)) then
 				set ChooseResult to (get choose from list chooseSettingValueList with prompt settingChoosePrompt ¬
 					with title settingChooseTitle OK button name "Select" cancel button name "Cancel Editing" default items (theSettingValue & newSettingEntry) with empty selection allowed and multiple selections allowed)
@@ -2482,7 +2482,7 @@ on guiEditSetting(theGuiData, numSelectedSetting)
 					set hasNewSettingValue to true
 				end if
 			end if
-			
+
 			if hasNewSettingValue and not usercancelled then
 				if hasQuotation then set newSettingEntry to my removeTextFromList(newSettingEntry, "\"")
 				set the contents of theGuiData's guiRecordList's record numSelectedSetting's s_Value to {}
@@ -2511,7 +2511,7 @@ on getScriptTitle(script_path, removeExtension, replacePeriod)
 	## extracts the script tile from an alias as a string, removing the file path
 	## if removeExtension the file extension and period are removed
 	## Remaining "." are replaced by the replacePeriod characters
-	
+
 	set script_path to script_path as string
 	set astid to AppleScript's text item delimiters
 	try
@@ -2535,10 +2535,10 @@ end getScriptTitle
 
 on findTargetFolder(targetFolderParent_a, targetFolderName, debugLogLevel, enableCreate)
 	## Return a refernce to a folder. If the folder doesn't exist, create it.
-	## targetFolderParent_a can be an alias or a string 
+	## targetFolderParent_a can be an alias or a string
 	local targetFolder_p, targetFolder_a
 	local errorString1, errorNumber1, errorString2, errorNumber2
-	
+
 	try
 		set targetFolder_p to (POSIX path of targetFolderParent_a) & targetFolderName
 		if 1 ≤ debugLogLevel then tell me to log " Initializing Folder \"" & targetFolder_p & "\""
@@ -2571,9 +2571,9 @@ on stdDecimalVersionNumber(theVersion_S, numDigits)
 	## if numDigits is < 0 then the number of digits per group is chosen automatically, but has a minimum value of (-numDigits)
 	local theVersionNumber, theVersion_LS, theDotVersion_LS, groupMult, maxDigits
 	local thisGroupMult, thisGroup_S
-	
+
 	set {theVersion_LS, numDigits} to {(splitStringToList(replaceText(removeLeadingTrailingSpaces((theVersion_S as text)), " ", "."), ".")), (numDigits as integer)}
-	
+
 	set theVersionNumber to (item 1 of theVersion_LS) as integer
 	if 1 < (get count of theVersion_LS) then
 		set {hasDotVersions, theDotVersion_LS} to {true, (items 2 thru -1 of theVersion_LS)}
@@ -2588,7 +2588,7 @@ on stdDecimalVersionNumber(theVersion_S, numDigits)
 				if numDigits < (length of thisGroup_S) then error "The digit group \"" & thisGroup_S & "\" has more than " & numDigits & " digits"
 			end repeat
 		end if
-		
+
 		set {thisGroupMult, groupMult} to {1, (10 ^ maxDigits)}
 		repeat with thisGroup_S in theDotVersion_LS
 			set thisGroupMult to thisGroupMult / groupMult
@@ -2600,7 +2600,7 @@ on stdDecimalVersionNumber(theVersion_S, numDigits)
 		if numDigits = 0 then set {maxDigits, groupMult} to {1, 10}
 		if numDigits < 0 then set {maxDigits, groupMult} to {(-numDigits), (10 ^ (-numDigits))}
 	end if
-	
+
 	return {stdVersionNumber:theVersionNumber, lengthVersionGroup:maxDigits, multVersionGroup:groupMult, hasDotVersions:hasDotVersions}
 end stdDecimalVersionNumber
 
@@ -2610,33 +2610,33 @@ on compareVersion(testVersion_S, minVersion_S, maxVersion_S)
 	--local digitMult, testVersionNumber, minVersionNumber, maxVersionNumber, testVersion_LS, minVersion_LS, maxVersion_LS, groupsCount, group_ctr
 	--local testGroupsCount, minGroupsCount, maxGroupsCount, hasTestGroup, hasMinGroup, hasMaxGroup, testGroupVersion, minGroupVersion, maxGroupVersion
 	--local allBoundsPass, lowerBoundPass, upperBoundPass, lowerBoundFail, upperBoundFail, boundsCheckPass
-	
+
 	if (text ≠ (get class of testVersion_S)) or (text ≠ (get class of minVersion_S)) or (text ≠ (get class of maxVersion_S)) then error "compareVersion() failed: Text inputs only"
-	
+
 	set testVersion_LS to (splitStringToList(replaceText(removeLeadingTrailingSpaces(testVersion_S), " ", "."), "."))
 	set minVersion_LS to (splitStringToList(replaceText(removeLeadingTrailingSpaces(minVersion_S), " ", "."), "."))
 	set maxVersion_LS to (splitStringToList(replaceText(removeLeadingTrailingSpaces(maxVersion_S), " ", "."), "."))
-	
+
 	set testGroupsCount to get count of testVersion_LS
 	set minGroupsCount to get count of minVersion_LS
 	set maxGroupsCount to get count of maxVersion_LS
-	
+
 	set groupsCount to testGroupsCount
 	if groupsCount < minGroupsCount then set groupsCount to minGroupsCount
 	if groupsCount < maxGroupsCount then set groupsCount to maxGroupsCount
-	
+
 	set {lowerBoundPass, lowerBoundFail, upperBoundPass, upperBoundFail, boundsCheckPass} to {false, false, false, false, false}
-	
+
 	repeat with group_ctr from 1 to groupsCount
-		
+
 		set hasTestGroup to (get group_ctr ≤ testGroupsCount)
 		set hasMinGroup to (get group_ctr ≤ minGroupsCount)
 		set hasMaxGroup to (get group_ctr ≤ maxGroupsCount)
-		
+
 		if hasTestGroup then set testGroupVersion to 0 + (item group_ctr of testVersion_LS)
 		if hasMinGroup then set minGroupVersion to 0 + (item group_ctr of minVersion_LS)
 		if hasMaxGroup then set maxGroupVersion to 0 + (item group_ctr of maxVersion_LS)
-		
+
 		if not boundsCheckPass then
 			if hasMaxGroup and hasMinGroup then
 				if maxGroupVersion > minGroupVersion then set boundsCheckPass to true
@@ -2645,41 +2645,41 @@ on compareVersion(testVersion_S, minVersion_S, maxVersion_S)
 				set boundsCheckPass to true
 			end if
 		end if
-		
+
 		if not (lowerBoundPass or lowerBoundFail) then
 			if hasMinGroup and hasTestGroup then
 				if testGroupVersion > minGroupVersion then set lowerBoundPass to true
 				if testGroupVersion < minGroupVersion then set lowerBoundFail to true
-			else if hasMinGroup then -- (and no testGroup) e.g. test 11 , min 11.1 
+			else if hasMinGroup then -- (and no testGroup) e.g. test 11 , min 11.1
 				set lowerBoundFail to true --  not symetric with upper bound behaviour
 			else if hasTestGroup then -- (and no minGroup) e.g. test 11.1, min 11 --> OK
 				set lowerBoundPass to true
 			end if
 		end if
-		
+
 		if not (upperBoundPass or upperBoundFail) then
 			if hasMaxGroup and hasTestGroup then
 				if testGroupVersion < maxGroupVersion then set upperBoundPass to true
 				if testGroupVersion > maxGroupVersion then set upperBoundFail to true
-			else if hasMaxGroup then -- (and no testGroup) e.g. test 11.1 , max 11.1.2 or test 11 , max 11.1 
+			else if hasMaxGroup then -- (and no testGroup) e.g. test 11.1 , max 11.1.2 or test 11 , max 11.1
 				set upperBoundPass to true --  not symetric with lower bound behaviour
 			else if hasTestGroup then --(and no maxGroup) e.g. test 11.1, max 11 --> pass
 				set upperBoundPass to true
 			end if
 		end if
-		
+
 	end repeat
-	
+
 	return {maxVersionPass:(not upperBoundFail), minVersionPass:(not lowerBoundFail)}
 end compareVersion
 
 on deReference(theItem, theclassName)
 	## General purpose handler for removing references from a variable
-	## reusult is a value, or list of values, of the specified class 
+	## reusult is a value, or list of values, of the specified class
 	## Enables data handling of multiple classes of items in the same code
-	
+
 	if class = (get class of theclassName) then set theclassName to (get theclassName as text)
-	
+
 	if list = (get class of (get theItem)) then
 		set theResult to {}
 		set cntItems to length of theItem
@@ -2712,7 +2712,7 @@ on deReference(theItem, theclassName)
 				error "deReference() can't handle class \"" & thisclassName & "\""
 			end if
 		end repeat
-		
+
 	else
 		if "boolean" = theclassName then
 			set theResult to false or (get theItem as boolean)
@@ -2735,7 +2735,7 @@ on makeList(listLength, theElement)
 	-- Note that the theElement can even be a List
 	if listLength = 0 then return {}
 	if listLength = 1 then return {theElement}
-	
+
 	set theList to {theElement}
 	repeat while (count of theList) < listLength / 2
 		copy contents of theList to ListB
@@ -2772,15 +2772,15 @@ on joinListToString(theList, theDelim)
 end joinListToString
 
 on ConcatenatedRemovedLeadingTrailingSpaces(theString, separatorCharList)
-	## theString can be either string or list 
+	## theString can be either string or list
 	## Attempts to handle any class of theString without crashing
 	## If the input is a list, the output is a string which is all trimmed strings concatenated
-	## If separatorCharList is a string, the first character is the main separator, the second and third characters are the start and end separators for a sub list 
-	## If separatorCharList is a list, the first string is the main separator, the second and third strings are the start and end separators for a sub list 
-	
+	## If separatorCharList is a string, the first character is the main separator, the second and third characters are the start and end separators for a sub list
+	## If separatorCharList is a list, the first string is the main separator, the second and third strings are the start and end separators for a sub list
+
 	local newString, theSubString, resString, isFirstItem, mainSepChar, startSepChar, endSepChar, startSubSepChar, endSubSepChar
 	local thestringLen, hasTriggered, indexLow, indexHigh, errMess1
-	
+
 	if (list = (get (class of theString))) then
 		set {resString, isFirstItem} to {"", true}
 		set {mainSepChar, startSubSepChar, endSubSepChar, countSepChars} to {"", "", "", (get length of separatorCharList)}
@@ -2795,7 +2795,7 @@ on ConcatenatedRemovedLeadingTrailingSpaces(theString, separatorCharList)
 				if 3 ≤ countSepChars then set endSubSepChar to separatorCharList's item 3
 			end if
 		end if
-		
+
 		repeat with theSubString in theString
 			set newString to ConcatenatedRemovedLeadingTrailingSpaces(theSubString, separatorCharList)
 			if 0 < (get length of newString) then
@@ -2807,7 +2807,7 @@ on ConcatenatedRemovedLeadingTrailingSpaces(theString, separatorCharList)
 			end if
 		end repeat
 		return resString
-		
+
 	else if (text = (get (class of theString))) then
 		set {thestringLen, hasTriggered} to {(get count of theString), false}
 		repeat with indexLow from 1 to thestringLen
@@ -2815,12 +2815,12 @@ on ConcatenatedRemovedLeadingTrailingSpaces(theString, separatorCharList)
 			if hasTriggered then exit repeat
 		end repeat
 		if not hasTriggered then return ""
-		
+
 		repeat with indexHigh from -1 to (-thestringLen) by -1
 			if " " ≠ (get text indexHigh of theString as text) then exit repeat
 		end repeat
 		return (text indexLow thru indexHigh of theString)
-		
+
 	else
 		try
 			return (get theString as text)
@@ -2832,7 +2832,7 @@ on ConcatenatedRemovedLeadingTrailingSpaces(theString, separatorCharList)
 			end try
 		end try
 	end if
-	
+
 end ConcatenatedRemovedLeadingTrailingSpaces
 
 
@@ -2840,16 +2840,16 @@ on removeLeadingTrailingSpaces(theString)
 	## 40% faster than a version which trims the string 1 space at a time
 	## handles both string and list input correctly
 	## handles just about any input without crashing
-	
+
 	local newString, theSubString, thestringLen, hasTriggered, indexLow, indexHigh, errMess1
-	
+
 	if (list = (get (class of theString))) then
 		set newString to {}
 		repeat with theSubString in theString
 			set the end of newString to removeLeadingTrailingSpaces(theSubString)
 		end repeat
 		return newString
-		
+
 	else if (text = (get (class of theString))) then
 		set {thestringLen, hasTriggered} to {(get count of theString), false}
 		repeat with indexLow from 1 to thestringLen
@@ -2857,12 +2857,12 @@ on removeLeadingTrailingSpaces(theString)
 			if hasTriggered then exit repeat
 		end repeat
 		if not hasTriggered then return ""
-		
+
 		repeat with indexHigh from -1 to (-thestringLen) by -1
 			if " " ≠ (get text indexHigh of theString as text) then exit repeat
 		end repeat
 		return (text indexLow thru indexHigh of theString)
-		
+
 	else
 		try
 			return (get theString as text)
@@ -2874,35 +2874,35 @@ on removeLeadingTrailingSpaces(theString)
 			end try
 		end try
 	end if
-	
+
 end removeLeadingTrailingSpaces
 
 on removeLeadingTrailingChars(theString, trimLeading, trimTrailing)
 	## 40% faster than a version which trims the string 1 character at a time
-	## handles both string and list input correctly 
+	## handles both string and list input correctly
 	## if trimLeading or trimTrailing are boolean and true, then spaces are removed from the leading and trailing sides
 	## if trimLeading or trimTrailing are characters or strings, then these characters are removed from the leading and trailing sides
-	
+
 	local enableTrimLeading, enableTrimTrailing, charTrimLeading, charTrimTrailing, charTrimLeadingIsString, charTrimTrailingIsString
 	local newString, theSubString, thestringLen, hasTriggered, indexLow, indexHigh, errMess1
-	
+
 	if (list = (get (class of theString))) then
 		set newString to {}
 		repeat with theSubString in theString
 			set the end of newString to removeLeadingTrailingChars(theSubString, trimLeading, trimTrailing)
 		end repeat
 		return newString
-		
+
 	else if (text = (get (class of theString))) then
 		set {enableTrimLeading, enableTrimTrailing} to {false, false}
 		if (trimLeading = true) then set {enableTrimLeading, charTrimLeading, charTrimLeadingIsString} to {true, " ", false}
 		if (text = (class of trimLeading)) then ¬
 			set {enableTrimLeading, charTrimLeading, charTrimLeadingIsString} to {true, trimLeading, (1 < (length of trimLeading))}
-		
+
 		if (trimTrailing = true) then set {enableTrimTrailing, charTrimTrailing, charTrimTrailingIsString} to {true, " ", false}
 		if (text = (class of trimTrailing)) then ¬
 			set {enableTrimTrailing, charTrimTrailing, charTrimTrailingIsString} to {true, trimTrailing, (1 < (length of trimTrailing))}
-		
+
 		set {thestringLen, indexLow, indexHigh, hasTriggered} to {(count of theString), 1, -1, false}
 		repeat with indexLow from 1 to thestringLen
 			if charTrimLeadingIsString then
@@ -2913,18 +2913,18 @@ on removeLeadingTrailingChars(theString, trimLeading, trimTrailing)
 			if hasTriggered then exit repeat
 		end repeat
 		if not hasTriggered then return ""
-		
+
 		repeat with indexHigh from -1 to (-thestringLen) by -1
 			if charTrimTrailingIsString then
 				if (charTrimTrailing does not contain (theString's text indexHigh)) then exit repeat
 			else
 				if (charTrimTrailing ≠ (theString's text indexHigh)) then exit repeat
 			end if
-			
+
 		end repeat
 		if ((thestringLen + 1 + indexHigh) < indexLow) then return ""
 		return (text indexLow thru indexHigh of theString)
-		
+
 	else
 		try
 			return removeLeadingTrailingChars((get theString as text), trimLeading, trimTrailing)
@@ -2936,13 +2936,13 @@ on removeLeadingTrailingChars(theString, trimLeading, trimTrailing)
 			end try
 		end try
 	end if
-	
+
 end removeLeadingTrailingChars
 
 on removeTextFromList(theList, theBadChar)
 	## theBadChar may be a string or character, whereupon that string will be removed
 	## theBadChar may be a list of strings or characters, whereupon those strings will be removed
-	
+
 	set theDelim to character id 60000 -- obscure character chosen for the low likelihood of its appearance
 	set astid to AppleScript's text item delimiters
 	try
@@ -2956,7 +2956,7 @@ on removeTextFromList(theList, theBadChar)
 		set theList to text items of cleanText_S
 	end try
 	set AppleScript's text item delimiters to astid
-	
+
 	return theList
 end removeTextFromList
 
@@ -2983,7 +2983,7 @@ on removeItemFromList(theList, theBadItem)
 		set theList to text items of cleanText_S
 	end try
 	set AppleScript's text item delimiters to astid
-	
+
 	return theList
 end removeItemFromList
 
@@ -3042,7 +3042,7 @@ on GetTick_Now()
 			return (current application's NSDate's timeIntervalSinceReferenceDate) as real
 		end Now
 	end script
-	
+
 	return GetTick's Now()
 end GetTick_Now
 

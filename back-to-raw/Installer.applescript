@@ -5,7 +5,7 @@
 -- for selected images use chosen sources to find matching targets
 --
 -- user chooses source extension type, target extension types, what to sync
--- 
+--
 -- Requirements: exiftool
 --
 -- Author: Walter Rowe
@@ -31,7 +31,7 @@ property rawExtensions : {"ARW", "ARF", "ARQ", "CR3", "CR2", "CRW", "DCR", "DNG"
 property syncableItems : {"Everything", "Adjustments", "Keywords", "Labels", "Metadata", "Ratings"}
 
 on run
-	
+
 	-- do install if not running under app name
 	set appBase to my name as string
 	set pathToMe to path to me
@@ -39,13 +39,13 @@ on run
 		installMe(appBase, pathToMe, installFolder, appType, appNames, appIcon)
 		return
 	end if
-	
+
 	-- verify Capture One is running and has a document open
 	if not meetsRequirements(appBase, requiresCOrunning, requiresCOdocument) then return
-	
+
 	-- get path to Capture One's app icon
 	set coIcon to path to resource "AppIcon.icns" in bundle (path to application "Capture One")
-	
+
 	-- select source file format
 	set sourceExts to choose from list rawExtensions with title "Choose a Source File Format"
 	if sourceExts is false then
@@ -53,9 +53,9 @@ on run
 		return
 	end if
 	set targetExts to {}
-	
+
 	set srcExt to first item in sourceExts
-	
+
 	if srcExt is first item in rawExtensions then set targetExts to items 2 thru end of rawExtensions
 	if srcExt is last item in rawExtensions then set targetExts to items 1 thru -2 of rawExtensions
 	if (count of targetExts) is 0 then
@@ -65,26 +65,26 @@ on run
 			end if
 		end repeat
 	end if
-	
+
 	set targetExts to choose from list targetExts with title "Choose One or More Target File Format(s)" with multiple selections allowed
 	if targetExts is false then
 		display alert "Target Format" message "You must choose at least one target file format."
 		return
 	end if
-	
+
 	set syncedItems to choose from list syncableItems with title "Choose What Items to Synchronize" with multiple selections allowed
 	if syncedItems is false then
 		display alert "Items to Synchronize" message "You must choose what items to synchronize."
 		return
 	end if
-	
+
 	set AppleScript's text item delimiters to ","
 	set alertResults to (display alert "Confirmation" message "Synchronizing " & (syncedItems as string) & " (" & sourceExts & " to " & targetExts & ")" buttons {"Cancel", "Continue"} default button "Continue" cancel button "Cancel" giving up after 10)
-	
+
 	if (gave up of alertResults) or (button returned of alertResults is "Cancel") then return
-	
+
 	set AppleScript's text item delimiters to ""
-	
+
 	tell application "Capture One"
 		-- initialize source and target lists
 		set sourceVariants to {}
@@ -93,12 +93,12 @@ on run
 		set targetDates to {}
 		set matchedVariants to {}
 		set skippedVariants to {}
-		
-		-- get all selected variants		
+
+		-- get all selected variants
 		set selectedVariants to variants where selected is true
-		
+
 		tell me to progress_start(0, "Processing ...", "scanning")
-		
+
 		-- divide selected variants into potential sources and targets
 		repeat with thisVariant in selectedVariants
 			set thisParent to thisVariant's parent image
@@ -118,15 +118,15 @@ on run
 				end if
 			end if
 		end repeat
-		
+
 		-- synchronize adjustments and metadata for matching sources and targets
 		set targetCount to length of targetVariants
 		repeat with targetItem from 1 to targetCount
 			tell me to progress_update(targetItem, targetCount, "")
-			
+
 			set targetDate to item targetItem of targetDates
 			set targetVariant to item targetItem of targetVariants
-			
+
 			-- look for target date in source dates
 			set sourceItem to my binarySearch(targetDate, sourceDates, 1, length of sourceDates)
 			-- display dialog (sourceItem as string) buttons {"Cancel", "Continue"} with icon coIcon
@@ -189,11 +189,11 @@ on run
 			end if
 			tell me to progress_step(targetItem)
 		end repeat
-		
+
 		set statusMessage to ""
-		
+
 		if (count of skippedVariants) > 0 then
-			set statusMessage to statusMessage & "Skipped " & (count of skippedVariants) & " variants. 
+			set statusMessage to statusMessage & "Skipped " & (count of skippedVariants) & " variants.
 See \"BACK-to-RAW Skipped Variants\" User Collection.
 
 "
@@ -206,9 +206,9 @@ See \"BACK-to-RAW Skipped Variants\" User Collection.
 				add inside skippedCollection variants skippedVariants
 			end tell
 		end if
-		
+
 		if (count of matchedVariants) > 0 then
-			set statusMessage to statusMessage & "Synchronized " & ((count of matchedVariants) / 2 as integer) & " Variant Pairs. 
+			set statusMessage to statusMessage & "Synchronized " & ((count of matchedVariants) / 2 as integer) & " Variant Pairs.
 See \"BACK-to-RAW Matched Variants\" User Collection.
 
 "
@@ -230,7 +230,7 @@ end run
 
 
 on installMe(appBase, pathToMe, installFolder, appType, appNames, appIcon)
-	
+
 	## Copyright 2024 Walter Rowe, Maryland, USA		No Warranty
 	## General purpose AppleScript Self-Installer
 	##
@@ -238,7 +238,7 @@ on installMe(appBase, pathToMe, installFolder, appType, appNames, appIcon)
 	##
 	## Displays an error when it cannot install the script
 	## Displays an alert when installation is successful
-	
+
 	repeat with appName in appNames
 		set scriptSource to quoted form of POSIX path of pathToMe
 		set scriptTarget to quoted form of (installFolder & appName & appType)
@@ -249,7 +249,7 @@ on installMe(appBase, pathToMe, installFolder, appType, appNames, appIcon)
 		on error errStr number errorNumber
 			set alertResult to (display alert "Install Script Error" message errStr & ": " & (errorNumber as text) & "on file " & scriptSource buttons {"Stop"} default button "Stop" as critical giving up after 10)
 		end try
-		
+
 		if appIcon is true then
 			tell application "Finder" to set myFolder to (folder of (pathToMe)) as alias as string
 			set iconSource to POSIX path of (myFolder & "droplet.icns")
@@ -263,31 +263,31 @@ on installMe(appBase, pathToMe, installFolder, appType, appNames, appIcon)
 		end if
 	end repeat
 	set alertResult to (display alert "Installation Complete" buttons {"OK"} default button "OK")
-	
+
 end installMe
 
 on meetsRequirements(appBase, requiresCOrunning, requiresCOdocument)
 	set requirementsMet to true
-	
+
 	set requiresDoc to false
 	if class of requiresCOdocument is string then set requiresDoc to true
 	if class of requiresCOdocument is boolean and requiresCOdocument then set requiresDoc to true
-	
+
 	if requiresCOrunning then
-		
+
 		tell application "Capture One" to set isRunning to running
 		if not isRunning then
 			display alert "Alert" message "Capture One must be running." buttons {"Quit"}
 			set requirementsMet to false
 		end if
-		
+
 		if requiresDoc and requirementsMet then
 			tell application "Capture One" to set documentOpen to exists current document
 			if not documentOpen then
 				display alert appBase message "A Capture One Session or Catalog must be open." buttons {"Quit"}
 				set requirementsMet to false
 			end if
-			
+
 			if class of requiresCOdocument is string then
 				tell application "Capture One"
 					tell current document
@@ -302,9 +302,9 @@ on meetsRequirements(appBase, requiresCOrunning, requiresCOdocument)
 			end if
 		end if
 	end if
-	
+
 	return requirementsMet
-	
+
 end meetsRequirements
 
 -- --------------------
@@ -315,7 +315,7 @@ end meetsRequirements
 -- your overall code much cleaner and less repetitive.
 
 -- Create the initial progress bar.
--- @param {int} 	 steps  			The number of steps for the process 
+-- @param {int} 	 steps  			The number of steps for the process
 -- @param {string} descript		The initial text for the progress bar
 -- @param {string} descript_add 	Additional text for the progress bar
 -- @returns void
@@ -328,7 +328,7 @@ end progress_start
 
 -- Update the progress bar. This goes inside your loop.
 -- @param {int} 	 n  			The current step number in the iteration
--- @param {int} 	 steps  		The number of steps for the process 
+-- @param {int} 	 steps  		The number of steps for the process
 -- @param {string} message   The progress update message
 -- @returns void
 on progress_update(n, steps, message)
@@ -365,9 +365,9 @@ end progress_end
 -- @returns	0 or index	Return 0 for not found, index when found
 
 on binarySearch(aValue, values, iLower, iUpper)
-	
+
 	set valueIndex to 0
-	
+
 	-- if search list is narrowed down to only 1 item
 	if (iUpper - iLower) ² 4 then
 		repeat with midIndex from iLower to iUpper
@@ -377,10 +377,10 @@ on binarySearch(aValue, values, iLower, iUpper)
 		end repeat
 		return valueIndex
 	end if
-	
+
 	set midIndex to (iLower + ((iUpper - iLower) div 2))
 	set midValue to item midIndex of values
-	
+
 	if midValue = aValue then
 		return midIndex
 	else if midValue > aValue then
@@ -388,5 +388,5 @@ on binarySearch(aValue, values, iLower, iUpper)
 	else if midValue < aValue then
 		return my binarySearch(aValue, values, (midIndex + 1), iUpper)
 	end if
-	
+
 end binarySearch

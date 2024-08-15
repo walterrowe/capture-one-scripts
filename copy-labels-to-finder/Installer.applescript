@@ -20,7 +20,7 @@ property requiresCOrunning : true
 property requiresCOdocument : true
 
 on run
-	
+
 	-- do install if not running under app name
 	set appBase to my name as string
 	set pathToMe to path to me
@@ -31,19 +31,19 @@ on run
 
 	-- verify Capture One is running and has a document open
 	if not meetsRequirements(appBase, requiresCOrunning, requiresCOdocument) then return
-	
+
 	-- get path to Capture One's app icon
 	set coIcon to path to resource "AppIcon.icns" in bundle (path to application "Capture One")
-	
+
 	tell application "Capture One"
 		set startTime to current date
 		set imageSel to get selected variants
-		
+
 		if (count of imageSel) < 1 then
 			set alertResult to (display alert "No Selection" message "No images are selected." buttons {"Stop"} default button "Stop" as critical giving up after 10)
 			return
 		end if
-		
+
 		set noLabels to {}
 		tell me to progress_start(0, "Processing ...", "scanning")
 		set imgCount to count of imageSel
@@ -55,7 +55,7 @@ on run
 			set thisLabel to color tag of thisVariant
 			-- map capture one color tags to macOS finder label indexes
 			-- color CO-index Finder-index
-			-- 
+			--
 			-- None		0		0
 			-- Red		1		2
 			-- Orange	2		1
@@ -78,24 +78,24 @@ on run
 			else if thisLabel is 7 then
 				set thisLabel to 5
 			end if
-			
+
 			tell application "Finder" to set label index of thisFile to thisLabel
 			tell me to progress_step(i)
 		end repeat
-		
+
 		tell me to progress_end()
-		
+
 		tell me to set noLabelsCount to ((count of noLabels) as string)
 		tell me to set timeTaken to ((current date) - startTime)
 		set timeTaken to ((timeTaken / 60 as integer) as string) & ":" & (text -1 thru -2 of ("0" & (timeTaken mod 60 as integer) as string))
-		
+
 		set alertResults to (display alert "Copy Labels to Finder Completed" message "Updated " & imgCount & " images in " & timeTaken & " (mm:ss)." buttons {"Okay"} as informational giving up after 10)
-		
+
 	end tell
 end run
 
 on installMe(appBase, pathToMe, installFolder, appType, appNames, appIcon)
-	
+
 	## Copyright 2024 Walter Rowe, Maryland, USA		No Warranty
 	## General purpose AppleScript Self-Installer
 	##
@@ -103,7 +103,7 @@ on installMe(appBase, pathToMe, installFolder, appType, appNames, appIcon)
 	##
 	## Displays an error when it cannot install the script
 	## Displays an alert when installation is successful
-	
+
 	repeat with appName in appNames
 		set scriptSource to quoted form of POSIX path of pathToMe
 		set scriptTarget to quoted form of (installFolder & appName & appType)
@@ -114,7 +114,7 @@ on installMe(appBase, pathToMe, installFolder, appType, appNames, appIcon)
 		on error errStr number errorNumber
 			set alertResult to (display alert "Install Script Error" message errStr & ": " & (errorNumber as text) & "on file " & scriptSource buttons {"Stop"} default button "Stop" as critical giving up after 10)
 		end try
-		
+
 		if appIcon is true then
 			tell application "Finder" to set myFolder to (folder of (pathToMe)) as alias as string
 			set iconSource to POSIX path of (myFolder & "droplet.icns")
@@ -128,32 +128,32 @@ on installMe(appBase, pathToMe, installFolder, appType, appNames, appIcon)
 		end if
 	end repeat
 	set alertResult to (display alert "Installation Complete" buttons {"OK"} default button "OK")
-	
+
 end installMe
 
 
 on meetsRequirements(appBase, requiresCOrunning, requiresCOdocument)
 	set requirementsMet to true
-	
+
 	set requiresDoc to false
 	if class of requiresCOdocument is string then set requiresDoc to true
 	if class of requiresCOdocument is boolean and requiresCOdocument then set requiresDoc to true
-	
+
 	if requiresCOrunning then
-		
+
 		tell application "Capture One" to set isRunning to running
 		if not isRunning then
 			display alert "Alert" message "Capture One must be running." buttons {"Quit"}
 			set requirementsMet to false
 		end if
-		
+
 		if requiresDoc and requirementsMet then
 			tell application "Capture One" to set documentOpen to exists current document
 			if not documentOpen then
 				display alert appBase message "A Capture One Session or Catalog must be open." buttons {"Quit"}
 				set requirementsMet to false
 			end if
-			
+
 			if class of requiresCOdocument is string then
 				tell application "Capture One"
 					tell current document
@@ -168,9 +168,9 @@ on meetsRequirements(appBase, requiresCOrunning, requiresCOdocument)
 			end if
 		end if
 	end if
-	
+
 	return requirementsMet
-	
+
 end meetsRequirements
 
 -- --------------------
@@ -181,7 +181,7 @@ end meetsRequirements
 -- your overall code much cleaner and less repetitive.
 
 -- Create the initial progress bar.
--- @param {int} 	 steps  			The number of steps for the process 
+-- @param {int} 	 steps  			The number of steps for the process
 -- @param {string} descript		The initial text for the progress bar
 -- @param {string} descript_add 	Additional text for the progress bar
 -- @returns void
@@ -194,7 +194,7 @@ end progress_start
 
 -- Update the progress bar. This goes inside your loop.
 -- @param {int} 	 n  			The current step number in the iteration
--- @param {int} 	 steps  		The number of steps for the process 
+-- @param {int} 	 steps  		The number of steps for the process
 -- @param {string} message   The progress update message
 -- @returns void
 on progress_update(n, steps, message)

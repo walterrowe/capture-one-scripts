@@ -13,7 +13,7 @@ property requiresCOrunning : true
 property requiresCOdocument : true
 
 on run
-	
+
 	-- do install if not running under app name
 	set appBase to my name as string
 	set pathToMe to path to me
@@ -24,10 +24,10 @@ on run
 
 	-- verify Capture One is running and has a document open
 	if not meetsRequirements(appBase, requiresCOrunning, requiresCOdocument) then return
-	
+
 	-- get path to Capture One's app icon
 	set coIcon to path to resource "AppIcon.icns" in bundle (path to application "Capture One")
-	
+
 	tell application "Capture One"
 		set selVarList to get selected variants
 		if (count of selVarList) is 0 then set selVarList to all variants
@@ -35,11 +35,11 @@ on run
 			tell thisVariant to set current layer to first layer
 		end repeat
 	end tell
-	
+
 end run
 
 on installMe(appBase, pathToMe, installFolder, appType, appNames, appIcon)
-	
+
 	## Copyright 2024 Walter Rowe, Maryland, USA		No Warranty
 	## General purpose AppleScript Self-Installer
 	##
@@ -47,7 +47,7 @@ on installMe(appBase, pathToMe, installFolder, appType, appNames, appIcon)
 	##
 	## Displays an error when it cannot install the script
 	## Displays an alert when installation is successful
-	
+
 	repeat with appName in appNames
 		set scriptSource to POSIX path of pathToMe
 		set scriptTarget to (installFolder & appName & appType)
@@ -58,7 +58,7 @@ on installMe(appBase, pathToMe, installFolder, appType, appNames, appIcon)
 		on error errStr number errorNumber
 			set alertResult to (display alert "Install Script Error" message errStr & ": " & (errorNumber as text) & "on file " & scriptSource buttons {"Stop"} default button "Stop" as critical giving up after 10)
 		end try
-		
+
 		if appIcon is true then
 			tell application "Finder" to set myFolder to (folder of (pathToMe)) as alias as string
 			set iconSource to POSIX path of (myFolder & "droplet.icns")
@@ -72,32 +72,32 @@ on installMe(appBase, pathToMe, installFolder, appType, appNames, appIcon)
 		end if
 	end repeat
 	set alertResult to (display alert "Installation Complete" buttons {"OK"} default button "OK")
-	
+
 end installMe
 
 
 on meetsRequirements(appBase, requiresCOrunning, requiresCOdocument)
 	set requirementsMet to true
-	
+
 	set requiresDoc to false
 	if class of requiresCOdocument is string then set requiresDoc to true
 	if class of requiresCOdocument is boolean and requiresCOdocument then set requiresDoc to true
-	
+
 	if requiresCOrunning then
-		
+
 		tell application "Capture One" to set isRunning to running
 		if not isRunning then
 			display alert "Alert" message "Capture One must be running." buttons {"Quit"}
 			set requirementsMet to false
 		end if
-		
+
 		if requiresDoc and requirementsMet then
 			tell application "Capture One" to set documentOpen to exists current document
 			if not documentOpen then
 				display alert appBase message "A Capture One Session or Catalog must be open." buttons {"Quit"}
 				set requirementsMet to false
 			end if
-			
+
 			if class of requiresCOdocument is string then
 				tell application "Capture One"
 					tell current document
@@ -112,7 +112,7 @@ on meetsRequirements(appBase, requiresCOrunning, requiresCOdocument)
 			end if
 		end if
 	end if
-	
+
 	return requirementsMet
-	
+
 end meetsRequirements
