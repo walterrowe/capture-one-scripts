@@ -434,3 +434,35 @@ on progress_end()
 	set progress description to ""
 	set progress additional description to ""
 end progress_end
+
+##
+## nigel garvey (2011)
+##
+## https://www.macscripter.net/t/recursively-extract-items-from-list-of-lists/61412/3
+##
+
+on flatten(listOfLists)
+	script o
+		property fl : {}
+		
+		on flttn(l)
+			script p
+				property lol : l
+			end script
+			
+			repeat with i from 1 to (count l)
+				set v to item i of p's lol
+				if (v's class is list) then
+					flttn(v)
+				else
+					set end of my fl to v
+				end if
+			end repeat
+		end flttn
+	end script
+	
+	tell o
+		flttn(listOfLists)
+		return its fl
+	end tell
+end flatten
