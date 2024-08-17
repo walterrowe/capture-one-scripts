@@ -19,7 +19,7 @@ property appType : ".scpt"
 property installFolder : ((POSIX path of (path to home folder)) as string) & "Library/Scripts/Capture One Scripts/"
 
 property appIcon : false
-property appTesting : false
+property appTesting : true
 property requiresCOrunning : true
 property requiresCOdocument : true
 
@@ -64,17 +64,24 @@ on run
 			if (latitude of thisVariant is missing value) or (longitude of thisVariant is missing value) then
 				set end of noGPS to name of parent image of thisVariant
 			else
+				
 				set lat to my findReplace(((latitude of thisVariant as real) as string), ",", ".")
 				set lon to my findReplace(((longitude of thisVariant as real) as string), ",", ".")
-				set gpsFetch to mapsURL & lat & "," & lon
+				set gpsFetch to (mapsURL & lat & "," & lon) as string
 				
-				-- if testing display the URL with longitude and latitude
-				if appTesting then display dialog gpsFetch buttons {"OK"}
+				-- if testing display the URL with longitude and latitude to debug
+				-- if appTesting then display dialog gpsFetch buttons {"OK"}
 				
 				tell application "JSON Helper"
-					set gpsResult to (fetch JSON from (gpsFetch))
-					if results of gpsResult is {} then
-						tell me to set alertResult to (display alert appBase message gpsResult buttons {"Exit"})
+					try
+						set gpsResult to (fetch JSON from gpsFetch)
+					on error
+						tell me to set alertResult to (display alert appBase message "Unable to get Google Maps information." buttons {"Exit"})
+						return
+					end try
+					
+					if gpsResult is "" or results of gpsResult is {} then
+						tell me to set alertResult to (display alert appBase message "Unable to get Google Maps information." buttons {"Exit"})
 						return
 					else
 						
