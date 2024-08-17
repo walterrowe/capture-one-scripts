@@ -72,8 +72,7 @@ on run
 				if appTesting then display dialog gpsFetch buttons {"OK"}
 				
 				tell application "JSON Helper"
-
-					set gpsResult to (fetch JSON from (mapsURL & lat & "," & lon))
+					set gpsResult to (fetch JSON from (gpsFetch))
 					if results of gpsResult is {} then
 						tell me to set alertResult to (display alert appBase message gpsResult buttons {"Exit"})
 						return
