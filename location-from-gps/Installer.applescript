@@ -19,7 +19,7 @@ property appType : ".scpt"
 property installFolder : ((POSIX path of (path to home folder)) as string) & "Library/Scripts/Capture One Scripts/"
 
 property appIcon : false
-property appTesting : true
+property appTesting : false
 property requiresCOrunning : true
 property requiresCOdocument : true
 
