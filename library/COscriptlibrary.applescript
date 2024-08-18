@@ -507,7 +507,7 @@ on match(_subject, _regex)
 end match
 
 on replace(_subject, _regex, _replace)
-	set _js to "(new String(`" & _subject & "`)).replace(" & _regex & ",", & _replace & ")"
+	set _js to "(new String(`" & _subject & "`)).replace(" & _regex & "," & _replace & ")"
 	set _result to run script _js in "JavaScript"
 	if _result is null or _result is missing value then return {}
 	return _result
@@ -533,7 +533,7 @@ on slice(_subject, _start, _end)
 	if _end is 0 then set _slice to _start
 	if _args is missing value then set _slice to _start & "," & _end
 
-	set _js to "(new String(`" & _subject & "`)).slice(" & _slice ")"
+	set _js to "(new String(`" & _subject & "`)).slice(" & _slice & ")"
 	set _result to run script _js in "JavaScript"
 	if _result is null or _result is missing value then return {}
 	return _result
@@ -541,9 +541,9 @@ end replace
 
 on indexOf(_subject, _string, _start)
 	set _indexOf to _string
-	if _start is not 0 then set _indexOf to _indexOf & "," _start
+	if _start is not 0 then set _indexOf to _indexOf & "," & _start
 
-	set _js to "(new String(`" & _subject & "`)).indexOf(" & _indexOf ")"
+	set _js to "(new String(`" & _subject & "`)).indexOf(" & _indexOf & ")"
 	set _result to run script _js in "JavaScript"
 	if _result is null or _result is missing value then return {}
 	return _result
