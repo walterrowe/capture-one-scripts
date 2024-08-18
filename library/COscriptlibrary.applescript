@@ -466,3 +466,42 @@ on flatten(listOfLists)
 		return its fl
 	end tell
 end flatten
+
+## get a collection's parent path
+## adapted from eric valk's function
+
+on getCollectionPath(theColl)
+	tell application "Capture One"
+		if class of theColl is not collection then return {}
+		set collPath to {current document}
+		tell current document
+			try
+				-- force an error and capture the error text
+				get || of theColl
+			on error errText
+				-- extract list of the collection IDs from the error text
+				-- example return: { "18", "17", "13, "12" }
+				-- first ID is the collection we were passed
+				set collIDs to my match(errText, "/(\\d+)/g")
+			end try
+		end tell
+		-- if count is 1, collection we were passed is a root level collection
+		if (count of collIDs) > 1 then
+			repeat with collIndex from (count of collIDs) to 2 by -1
+				set collID to item collIndex of collIDs
+				tell first item of collPath to set beginning of collPath to collection id collID
+			end repeat
+		end if
+	end tell
+	return collPath
+end getCollectionPath
+
+# Returns a list of strings from _subject that match _regex
+# _regex in the format of /<value>/<flags>
+# https://stackoverflow.com/a/54953152
+on match(_subject, _regex)
+	set _js to "(new String(`" & _subject & "`)).match(" & _regex & ")"
+	set _result to run script _js in "JavaScript"
+	if _result is null or _result is missing value then return {}
+	return _result
+end match
