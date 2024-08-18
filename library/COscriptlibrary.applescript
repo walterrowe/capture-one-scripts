@@ -496,12 +496,55 @@ on getCollectionPath(theColl)
 	return collPath
 end getCollectionPath
 
-# Returns a list of strings from _subject that match _regex
-# _regex in the format of /<value>/<flags>
-# https://stackoverflow.com/a/54953152
+# collection of string handlers that leverage JavaScript
+# https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String
+
 on match(_subject, _regex)
 	set _js to "(new String(`" & _subject & "`)).match(" & _regex & ")"
 	set _result to run script _js in "JavaScript"
 	if _result is null or _result is missing value then return {}
 	return _result
 end match
+
+on replace(_subject, _regex, _replace)
+	set _js to "(new String(`" & _subject & "`)).replace(" & _regex & ",", & _replace & ")"
+	set _result to run script _js in "JavaScript"
+	if _result is null or _result is missing value then return {}
+	return _result
+end replace
+
+on split(_subject, _split)
+	set _js to "(new String(`" & _subject & "`)).split(" & _split & ")"
+	set _result to run script _js in "JavaScript"
+	if _result is null or _result is missing value then return {}
+	return _result
+end match
+
+on trim(_subject)
+	set _js to "(new String(`" & _subject & "`)).trim()"
+	set _result to run script _js in "JavaScript"
+	if _result is null or _result is missing value then return {}
+	return _result
+end match
+
+on slice(_subject, _start, _end)
+	set _slice to missing value
+	if _start is 0 then set _slice to _end
+	if _end is 0 then set _slice to _start
+	if _args is missing value then set _slice to _start & "," & _end
+
+	set _js to "(new String(`" & _subject & "`)).slice(" & _slice ")"
+	set _result to run script _js in "JavaScript"
+	if _result is null or _result is missing value then return {}
+	return _result
+end replace
+
+on indexOf(_subject, _string, _start)
+	set _indexOf to _string
+	if _start is not 0 then set _indexOf to _indexOf & "," _start
+
+	set _js to "(new String(`" & _subject & "`)).indexOf(" & _indexOf ")"
+	set _result to run script _js in "JavaScript"
+	if _result is null or _result is missing value then return {}
+	return _result
+end replace
