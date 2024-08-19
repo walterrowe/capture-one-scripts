@@ -548,3 +548,13 @@ on indexOf(_subject, _string, _start)
 	if _result is null or _result is missing value then return {}
 	return _result
 end indexOf
+
+on lastIndexOf(_subject, _string, _start)
+	set _lastindexOf to "\"" & _string & "\""
+	if _start is not 0 then set _lastindexOf to _lastindexOf & "," & _start
+	
+	set _js to "(new String(`" & _subject & "`)).lastIndexOf(" & _lastindexOf & ")"
+	set _result to run script _js in "JavaScript"
+	if _result is null or _result is missing value then return {}
+	return _result
+end lastIndexOf
