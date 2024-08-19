@@ -1,3 +1,6 @@
+use AppleScript version "2.8"
+use scripting additions
+
 ##
 ## COscriptlibrary - a library of utility handlers for Capture One scripting
 ##
