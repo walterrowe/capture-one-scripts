@@ -41,7 +41,7 @@ end run
 ## applescript self-installer function
 ##
 
-on installMe(appBase, pathToMe, installFolder, appType, appNames, appIcon)
+on installMe(appBase as string, pathToMe as string, installFolder as string, appType as string, appNames as list, appIcon as boolean)
 	
 	## Copyright 2024 Walter Rowe, Maryland, USA		No Warranty
 	## General purpose AppleScript Self-Installer
@@ -82,7 +82,7 @@ end installMe
 ## confirm if capture one is running and has an open document (if required)
 ##
 
-on meetsRequirements(appBase, requiresCOrunning, requiresCOdocument)
+on meetsRequirements(appBase as string, requiresCOrunning as boolean, requiresCOdocument as boolean)
 	set requirementsMet to true
 	
 	set requiresDoc to false
@@ -141,101 +141,13 @@ on activateUIScripting()
 end activateUIScripting
 
 ##
-## convert capture one kind codes into real words
-##
-
-on convertKindList(theKind)
-	
-	## Copyright 2020 Eric Valk, Ottawa, Canada   Creative Commons License CC BY-SA    No Warranty.
-	## General Purpose Handler for scripts using Capture One Pro
-	## Capture One returns the chevron form of the "kind" property when AppleScript is run as an Application
-	## Unless care is taken to avoid text conversion of this property, this bug breaks script decisions based on "kind"
-	## This script converts text strings with the chevron form to strings with the expected text form
-	## The input may be a single string, a single enum, a list of strings or a list of enums
-	## The code is not compact but runs very fast, between 60us and 210us per item
-	
-	local kind_sl, theItem, kindItem_s, code_start, kindItem_s, kind_code, kind_type
-	
-	if list = (class of theKind) then
-		set kind_sl to {}
-		repeat with theItem in theKind
-			set the end of kind_sl to convertKindList(theItem)
-		end repeat
-		return kind_sl
-	else if text = (class of theKind) then
-		if "Ç" ­ (get text 1 of theKind) then return theKind
-		set kindItem_s to theKind
-	else
-		tell application "Capture One" to set kindItem_s to (get theKind as text)
-		if "Ç" ­ (get text 1 of kindItem_s) then return kindItem_s
-	end if
-	
-	set code_start to -5
-	if ("È" ­ (get text -1 of kindItem_s)) or (16 > (count of kindItem_s)) then Â
-		error "convertKindList received an unexpected Kind string: " & kindItem_s
-	
-	set kind_code to get (text code_start thru (code_start + 3) of kindItem_s)
-	set kind_type to get (text code_start thru (code_start + 1) of kindItem_s)
-	
-	if kind_type = "CC" then ## Collection Kinds
-		if kind_code = "CCpj" then
-			return "project"
-		else if kind_code = "CCgp" then
-			return "group"
-		else if kind_code = "CCal" then
-			return "album"
-		else if kind_code = "CCsm" then
-			return "smart album"
-		else if kind_code = "CCfv" then
-			return "favorite"
-		else if kind_code = "CCff" then
-			return "catalog folder"
-		end if
-		
-	else if kind_type = "CL" then ## Layer Kinds
-		if kind_code = "CLbg" then
-			return "background"
-		else if kind_code = "CLnm" then
-			return "adjustment"
-		else if kind_code = "CLcl" then
-			return "clone"
-		else if kind_code = "CLhl" then
-			return "heal"
-		end if
-		
-	else if kind_type = "CR" then ## Watermark Kinds
-		if kind_code = "CRWn" then
-			return "none"
-		else if kind_code = "CRWt" then
-			return "textual"
-		else if kind_code = "CRWi" then
-			return "imagery"
-		end if
-		
-	else if kind_type = "CO" then ## Document Kinds
-		if kind_code = "COct" then
-			return "catalog"
-		else if kind_code = "COsd" then
-			return "session"
-		end if
-	end if
-	
-	error "convertKindList received an unexpected Kind string: " & kindItem_s
-	
-end convertKindList
-
-
-##
-## capture one native handler to return string value of object type
+## get string representation of "kind" of object(s)
 ##
 
 on getCOtype(theObject)
 	
-	##
-	## capture one native handler to return string value of object type
-	##
-	## modelled after eric valk's convertKindList but uses native references
-	##
+	## capture one native handler to return string value(s) of object(s) type
+	## modelled after eric valk's convertKindList() but uses native references
 	
 	if class of theObject is list then
 		set types_list to {}
@@ -244,6 +156,7 @@ on getCOtype(theObject)
 		end repeat
 		return types_list
 	end if
+	
 	tell application "Capture One"
 		tell current document
 			if class of theObject is variant then return "variant"
@@ -289,7 +202,7 @@ end getCOtype
 ## @returns false if gave up or cancel button pressed
 ## @returns button returned value
 
-on myAlert(alertHeading, alertMessage, alertGiveUp, alertButtons, alertCancel)
+on myAlert(alertHeading as string, alertMessage as string, alertGiveUp as integer, alertButtons as list, alertCancel as string)
 	set alertResult to (display alert alertHeading message alertMessage as critical buttons alertButtons giving up after alertGiveUp)
 	if (gave up of alertResult) or (button returned of alertResult is alertCancel) then
 		return false
@@ -302,7 +215,7 @@ end myAlert
 ## trim specified leading/trailing characters from a string
 ##
 
-on trimString(theSource, theTrimmer)
+on trimString(theSource as string, theTrimmer as string)
 	local theResult
 	
 	set strBegin to 1
@@ -334,7 +247,7 @@ end trimString
 ## join a list into a string based on a specific delimiter
 ##
 
-on joinText(theText, theDelimiter)
+on joinText(theText as string, theDelimiter as string)
 	set AppleScript's text item delimiters to theDelimiter
 	set theTextItems to every text item of theText as string
 	set AppleScript's text item delimiters to ""
@@ -345,7 +258,7 @@ end joinText
 ## split a string into a list based on a specific delimiter
 ##
 
-on splitText(theText, theDelimiter)
+on splitText(theText as string, theDelimiter as string)
 	set AppleScript's text item delimiters to theDelimiter
 	set theTextItems to every text item of theText
 	set AppleScript's text item delimiters to ""
@@ -356,7 +269,7 @@ end splitText
 ## use text item delimiters to find and replace text in a string
 ##
 
-on findReplace(t, toFind, toReplace)
+on findReplace(t as string, toFind as string, toReplace as string)
 	set {tid, text item delimiters} to {text item delimiters, toFind}
 	set t to text items of t
 	set text item delimiters to toReplace
@@ -369,7 +282,7 @@ end findReplace
 ## sort a list
 ##
 
-on sortList(theList)
+on sortList(theList as list)
 	set theIndexList to {}
 	set theSortedList to {}
 	repeat (length of theList) times
@@ -402,7 +315,7 @@ end sortList
 -- @param {string} descript		The initial text for the progress bar
 -- @param {string} descript_add 	Additional text for the progress bar
 -- @returns void
-on progress_start(steps, descript, descript_add)
+on progress_start(steps as integer, descript as string, descript_add as string)
 	set progress total steps to steps
 	set progress completed steps to 0
 	set progress description to descript
@@ -414,14 +327,14 @@ end progress_start
 -- @param {int} 	 steps  		The number of steps for the process
 -- @param {string} message   The progress update message
 -- @returns void
-on progress_update(n, steps, message)
+on progress_update(n as integer, steps as integer, message as string)
 	set progress additional description to message & n & " of " & steps
 end progress_update
 
 -- Increment the step number of the progress bar.
 -- @param {int} 	 n            The current step number in the iteration
 -- @returns void
-on progress_step(n)
+on progress_step(n as integer)
 	set progress completed steps to n
 end progress_step
 
@@ -441,7 +354,7 @@ end progress_end
 ## https://www.macscripter.net/t/recursively-extract-items-from-list-of-lists/61412/3
 ##
 
-on flatten(listOfLists)
+on flatten(listOfLists as list)
 	script o
 		property fl : {}
 		
@@ -499,39 +412,43 @@ end getCollectionPath
 # collection of string handlers that leverage JavaScript
 # https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String
 
-on match(_subject, _regex)
+on match(_subject as string, _regex as string)
+	set handlerName to "match"
 	set _js to "(new String(`" & _subject & "`)).match(" & _regex & ")"
 	set _result to run script _js in "JavaScript"
 	if _result is null or _result is missing value then return {}
 	return _result
 end match
 
-on replace(_subject, _regex, _replace)
+on replace(_subject as string, _regex as string, _replace as string)
+	set handlerName to "replace"
 	set _js to "(new String(`" & _subject & "`)).replace(" & _regex & ",\"" & _replace & "\")"
 	set _result to run script _js in "JavaScript"
 	if _result is null or _result is missing value then return {}
 	return _result
 end replace
 
-on split(_subject, _split)
+on split(_subject as string, _split as string)
+	set handlerName to "split"
 	set _js to "(new String(`" & _subject & "`)).split(" & _split & ")"
 	set _result to run script _js in "JavaScript"
 	if _result is null or _result is missing value then return {}
 	return _result
 end split
 
-on trim(_subject)
+on trim(_subject as string)
+	set handlerName to "trim"
 	set _js to "(new String(`" & _subject & "`)).trim()"
 	set _result to run script _js in "JavaScript"
 	if _result is null or _result is missing value then return {}
 	return _result
 end trim
 
-on slice(_subject, _start, _end)
-	set _slice to missing value
-	if _start is 0 then set _slice to _end
-	if _end is 0 then set _slice to _start
-	if _slice is missing value then set _slice to _start & "," & _end
+on slice(_subject as string, _start as integer, _chars as integer)
+	set handlerName to "slice"
+	if (_start < 1) and (_chars < 1) then error handlerName & " parameters must be source string [,start pos[,num of chars]]"
+	if (_start + _chars) > length of _subject then error handlerName & " parameters must be source string [,start pos[,num of chars]]"
+	set _slice to _start & "," & (_start + _chars)
 	
 	set _js to "(new String(`" & _subject & "`)).slice(" & _slice & ")"
 	set _result to run script _js in "JavaScript"
@@ -539,7 +456,8 @@ on slice(_subject, _start, _end)
 	return _result
 end slice
 
-on indexOf(_subject, _string, _start)
+on indexOf(_subject as string, _string as string, _start as integer)
+	set handlerName to "indexOf"
 	set _indexOf to "\"" & _string & "\""
 	if _start is not 0 then set _indexOf to _indexOf & "," & _start
 	
@@ -549,7 +467,8 @@ on indexOf(_subject, _string, _start)
 	return _result
 end indexOf
 
-on lastIndexOf(_subject, _string, _start)
+on lastIndexOf(_subject as string, _string as string, _start as integer)
+	set handlerName to "indexOf"
 	set _lastindexOf to "\"" & _string & "\""
 	if _start is not 0 then set _lastindexOf to _lastindexOf & "," & _start
 	
