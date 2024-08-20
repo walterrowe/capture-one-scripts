@@ -1,56 +1,83 @@
 (*
-  Script: apply-monochrome-keywords
-  Author: Walter Rowe
-  Create: July 2020
-  Update: April 2023
+	AUTHOR
 
-  Apply or Remove a list of monochrome-oriented keywords from images that do not meet monochrome criteria.
+	Author: Walter Rowe
+	Contact: walter@walterrowe.com
 
-  Monochrome criteria:
+	Created: 03-Jul-2020
+	Updated: 20-Aug-2024
 
-  * black and white is enabled
-  --OR--
-  * saturation is -100.0
+	DESCRIPTION
 
-  When the script is completed, it will show a count of images updated in the results window.
+	Apply or Remove a list of monochrome-oriented keywords from monochrome images.
 
+	Monochrome criteria:
+
+	* black and white is enabled
+	--OR--
+	* saturation is -100.0
+
+	When the script is completed, it will show a count of images updated in the results window.
+
+	PREREQUISITES
+
+	None
 *)
 
 use AppleScript version "2.8"
 use scripting additions
 
-property appNames : {"Apply Monochrome Keywords", "Remove Monochrome Keywords"}
-property appType : ".scpt"
+property libraryFolder : ((POSIX path of (path to home folder)) as string) & "Library/Scripts/"
 property installFolder : ((POSIX path of (path to home folder)) as string) & "Library/Scripts/Capture One Scripts/"
+
+property installNames : {"Apply Monochrome Keywords", "Remove Monochrome Keywords"}
+property installType : ".scpt" -- ".scpt" for script, ".app" for script app
+property installIcon : false -- if true must have a droplet.icns icon file in the source folder and ".app" installType
+
+property requiresCOrunning : true -- true if capture one is required to be running
+property requiresCOdocument : true -- true, false, "catalog", "session"
+
+property appTesting : false -- if true, run in script editor, and if false install the script
+
+-- application specific properties below
 
 property bwKeywords : {"Black & White", "Monochrome"}
 
-property appIcon : false
-property appTesting : false
-property requiresCOrunning : true
-property requiresCOdocument : true
+-- application specific properties above
 
 on run
-
+	
+	-- set required base variables
+	set appName to my name
+	set appPath to path to me
+	
+	-- make sure the CO script library is loaded
+	set myLibrary to loadLibrary(appName)
+	if myLibrary is missing value then return
+	
 	-- do install if not running under app name
-	set appBase to my name as string
-	set pathToMe to path to me
-	if appNames does not contain appBase and not appTesting then
-		installMe(appBase, pathToMe, installFolder, appType, appNames, appIcon)
+	if installNames does not contain appName and not appTesting then
+		myLibrary's installMe(appName, appPath, installFolder, installType, installNames, installIcon)
 		return
 	end if
-
+	
 	-- verify Capture One is running and has a document open
-	if not meetsRequirements(appBase, requiresCOrunning, requiresCOdocument) then return
-
+	set readyToRun to myLibrary's meetsRequirements(appName, requiresCOrunning, requiresCOdocument)
+	if not readyToRun then return
+	
 	-- get path to Capture One's app icon
 	set coIcon to path to resource "AppIcon.icns" in bundle (path to application "Capture One")
-
+	
+	-- ensure we have permission to interact with other apps
+	myLibrary's activateUIScripting()
+	
+	-- application code goes below here
+	
 	set updateCount to 0
-
+	
 	tell application "Capture One"
-
-		if appBase starts with "Apply" then
+		
+		if appName starts with "Apply" then
 			-- get list of variants with black & white enabled or background saturation set to -100
 			set monoVariants to (get variants where ((black and white of adjustments is true) or (saturation of adjustments is -100.0)))
 			if (count of monoVariants) > 0 then
@@ -69,8 +96,8 @@ on run
 				set updateCount to (count of monoVariants)
 			end if
 		end if
-
-		if appBase starts with "Remove" then
+		
+		if appName starts with "Remove" then
 			repeat with thisKeyword in bwKeywords
 				set monoVariants to (variants where (thisKeyword is in name of keywords) and (saturation of adjustments is not -100.0) and (black and white of adjustments is false))
 				repeat with thisVariant in monoVariants
@@ -79,88 +106,47 @@ on run
 				set updateCount to updateCount + (count of monoVariants)
 			end repeat
 		end if
-
+		
 	end tell
-
-	display alert appBase message (updateCount as string) & " images updated."
-
+	
+	set alertMessage to (updateCount as string) & " images updated."
+	
+	-- application code goes above here
+	
+	set alertTitle to appName & " Finished"
+	
+	set alertResult to (display alert alertTitle message alertMessage buttons {"OK"} giving up after 10)
+	
 end run
 
-on installMe(appBase, pathToMe, installFolder, appType, appNames, appIcon)
+##
+## download and install the latest CO script library
+##
 
-	## Copyright 2024 Walter Rowe, Maryland, USA		No Warranty
-	## General purpose AppleScript Self-Installer
-	##
-	## Compiles and installs an AppleScript via osacompile as a type and list of names in a target folder
-	##
-	## Displays an error when it cannot install the script
-	## Displays an alert when installation is successful
-
-	repeat with appName in appNames
-		set scriptSource to POSIX path of pathToMe
-		set scriptTarget to (installFolder & appName & appType)
-		set installCommand to "osacompile -x -o " & (quoted form of scriptTarget) & " " & (quoted form of scriptSource)
-		-- execute the shell command to install script
+on loadLibrary(appName as string)
+	
+	set myLibrary to libraryFolder & "COscriptlibrary.scpt"
+	
+	tell application "Finder"
+		set libraryDownload to "curl -s -f https://raw.githubusercontent.com/walterrowe/capture-one-scripts/master/library/COscriptlibrary.applescript -o COscriptlibrary.applescript --output-dir " & libraryFolder
+		set libraryCompile to "osacompile -x -o " & (quoted form of myLibrary) & " " & libraryFolder & "COscriptlibrary.applescript"
 		try
-			do shell script installCommand
-		on error errStr number errorNumber
-			set alertResult to (display alert "Install Script Error" message errStr & ": " & (errorNumber as text) & "on file " & scriptSource buttons {"Stop"} default button "Stop" as critical giving up after 10)
+			do shell script libraryDownload
+			do shell script libraryCompile
+		on error errorText
+			set myLibrary to POSIX path of myLibrary
+			set alertResult to (display alert appName message "Unable to download and compile script library " & myLibrary & return & return & libraryDownload & return & return & libraryCompile & return & return & errorText buttons {"Quit"} giving up after 30)
+			return missing value
 		end try
-
-		if appIcon is true then
-			tell application "Finder" to set myFolder to (folder of (pathToMe)) as alias as string
-			set iconSource to POSIX path of (myFolder & "droplet.icns")
-			set iconTarget to scriptTarget & "/Contents/Resources/"
-			set copyIcon to "/bin/cp " & (quoted form of iconSource) & " " & (quoted form of iconTarget)
-			try
-				do shell script copyIcon
-			on error errStr number errorNumber
-				set alertResult to (display alert "Install Icon Error" message errStr & ": " & (errorNumber as text) & "on file " & scriptSource buttons {"Stop"} default button "Stop" as critical giving up after 10)
-			end try
-		end if
-	end repeat
-	set alertResult to (display alert "Installation Complete" buttons {"OK"} default button "OK")
-
-end installMe
-
-
-on meetsRequirements(appBase, requiresCOrunning, requiresCOdocument)
-	set requirementsMet to true
-
-	set requiresDoc to false
-	if class of requiresCOdocument is string then set requiresDoc to true
-	if class of requiresCOdocument is boolean and requiresCOdocument then set requiresDoc to true
-
-	if requiresCOrunning then
-
-		tell application "Capture One" to set isRunning to running
-		if not isRunning then
-			display alert "Alert" message "Capture One must be running." buttons {"Quit"}
-			set requirementsMet to false
-		end if
-
-		if requiresDoc and requirementsMet then
-			tell application "Capture One" to set documentOpen to exists current document
-			if not documentOpen then
-				display alert appBase message "A Capture One Session or Catalog must be open." buttons {"Quit"}
-				set requirementsMet to false
-			end if
-
-			if class of requiresCOdocument is string then
-				tell application "Capture One"
-					tell current document
-						if kind is catalog then set docKind to "catalog"
-						if kind is session then set docKind to "session"
-					end tell
-				end tell
-				if docKind is not requiresCOdocument then
-					display alert appBase message "You must be working in a Capture One " & requiresCOdocument & "." buttons {"Quit"}
-					set requirementsMet to false
-				end if
-			end if
-		end if
-	end if
-
-	return requirementsMet
-
-end meetsRequirements
+	end tell
+	
+	try
+		set myLibrary to load script myLibrary
+		return myLibrary
+	on error
+		set myLibrary to POSIX path of myLibrary
+		set alertResult to (display alert appName message "Unable to load script library " & myLibrary buttons {"Quit"} giving up after 30)
+		return missing value
+	end try
+	
+end loadLibrary

@@ -1,28 +1,41 @@
---
--- BACK-2-RAW
---
--- synchronize adjustments, labels, ratings, keywords, metadata
--- for selected images use chosen sources to find matching targets
---
--- user chooses source extension type, target extension types, what to sync
---
--- Requirements: exiftool
---
--- Author: Walter Rowe
--- Created: 08-Apr-2023
---
+(*
+	AUTHOR
+
+	Author: Walter Rowe
+	Contact: walter@walterrowe.com
+
+	Created: 08-Apr-2023
+	Updated: 20-Aug-2024
+
+	DESCRIPTION
+
+	Synchronize adjustments, labels, ratings, keywords, metadata
+	for selected images use chosen sources to find matching targets
+
+	User chooses source file type, target file types, and what to sync
+
+	PREREQUISITES
+	
+	* exiftool must be installed
+
+*)
 
 use AppleScript version "2.8"
 use scripting additions
 
-property appNames : {"Back To RAW"}
-property appType : ".scpt"
+property libraryFolder : ((POSIX path of (path to home folder)) as string) & "Library/Scripts/"
 property installFolder : ((POSIX path of (path to home folder)) as string) & "Library/Scripts/Capture One Scripts/"
 
-property appIcon : false				-- true, false
-property appTesting : false				-- true, false
-property requiresCOrunning : true		-- true, false
-property requiresCOdocument : true		-- true, false, "catalog", "session"
+property installNames : {"Back To RAW"}
+property installType : ".scpt"
+property installIcon : false -- true, false
+
+property requiresCOrunning : true -- true, false
+property requiresCOdocument : true -- true, false, "catalog", "session"
+
+property appTesting : false -- true, false
+
+-- application specific properties below
 
 -- candidate source and target file name extensions
 -- https://www.file-extensions.org/filetype/extension/name/digital-camera-raw-files
@@ -30,22 +43,40 @@ property rawExtensions : {"ARW", "ARF", "ARQ", "CR3", "CR2", "CRW", "DCR", "DNG"
 
 property syncableItems : {"Everything", "Adjustments", "Keywords", "Labels", "Metadata", "Ratings"}
 
-on run
+-- application specific properties above
 
+##
+## use this to handle typical running from Capture One Scripts menu
+##
+
+on run
+	
+	-- set required base variables
+	set appName to my name
+	set appPath to path to me
+	
+	-- make sure the CO script library is loaded
+	set myLibrary to loadLibrary(appName)
+	if myLibrary is missing value then return
+	
 	-- do install if not running under app name
-	set appBase to my name as string
-	set pathToMe to path to me
-	if appNames does not contain appBase and not appTesting then
-		installMe(appBase, pathToMe, installFolder, appType, appNames, appIcon)
+	if installNames does not contain appName and not appTesting then
+		myLibrary's installMe(appName, appPath, installFolder, installType, installNames, installIcon)
 		return
 	end if
-
+	
 	-- verify Capture One is running and has a document open
-	if not meetsRequirements(appBase, requiresCOrunning, requiresCOdocument) then return
-
+	set readyToRun to myLibrary's meetsRequirements(appName, requiresCOrunning, requiresCOdocument)
+	if not readyToRun then return
+	
 	-- get path to Capture One's app icon
 	set coIcon to path to resource "AppIcon.icns" in bundle (path to application "Capture One")
-
+	
+	-- ensure we have permission to interact with other apps
+	myLibrary's activateUIScripting()
+	
+	-- application code goes below here
+	
 	-- select source file format
 	set sourceExts to choose from list rawExtensions with title "Choose a Source File Format"
 	if sourceExts is false then
@@ -53,9 +84,9 @@ on run
 		return
 	end if
 	set targetExts to {}
-
+	
 	set srcExt to first item in sourceExts
-
+	
 	if srcExt is first item in rawExtensions then set targetExts to items 2 thru end of rawExtensions
 	if srcExt is last item in rawExtensions then set targetExts to items 1 thru -2 of rawExtensions
 	if (count of targetExts) is 0 then
@@ -65,26 +96,26 @@ on run
 			end if
 		end repeat
 	end if
-
+	
 	set targetExts to choose from list targetExts with title "Choose One or More Target File Format(s)" with multiple selections allowed
 	if targetExts is false then
 		display alert "Target Format" message "You must choose at least one target file format."
 		return
 	end if
-
+	
 	set syncedItems to choose from list syncableItems with title "Choose What Items to Synchronize" with multiple selections allowed
 	if syncedItems is false then
 		display alert "Items to Synchronize" message "You must choose what items to synchronize."
 		return
 	end if
-
+	
 	set AppleScript's text item delimiters to ","
 	set alertResults to (display alert "Confirmation" message "Synchronizing " & (syncedItems as string) & " (" & sourceExts & " to " & targetExts & ")" buttons {"Cancel", "Continue"} default button "Continue" cancel button "Cancel" giving up after 10)
-
+	
 	if (gave up of alertResults) or (button returned of alertResults is "Cancel") then return
-
+	
 	set AppleScript's text item delimiters to ""
-
+	
 	tell application "Capture One"
 		-- initialize source and target lists
 		set sourceVariants to {}
@@ -93,12 +124,12 @@ on run
 		set targetDates to {}
 		set matchedVariants to {}
 		set skippedVariants to {}
-
+		
 		-- get all selected variants
 		set selectedVariants to variants where selected is true
-
-		tell me to progress_start(0, "Processing ...", "scanning")
-
+		
+		tell me to myLibrary's progress_start(0, "Processing ...", "scanning")
+		
 		-- divide selected variants into potential sources and targets
 		repeat with thisVariant in selectedVariants
 			set thisParent to thisVariant's parent image
@@ -118,15 +149,15 @@ on run
 				end if
 			end if
 		end repeat
-
+		
 		-- synchronize adjustments and metadata for matching sources and targets
 		set targetCount to length of targetVariants
 		repeat with targetItem from 1 to targetCount
-			tell me to progress_update(targetItem, targetCount, "")
-
+			tell me to myLibrary's progress_update(targetItem, targetCount, "")
+			
 			set targetDate to item targetItem of targetDates
 			set targetVariant to item targetItem of targetVariants
-
+			
 			-- look for target date in source dates
 			set sourceItem to my binarySearch(targetDate, sourceDates, 1, length of sourceDates)
 			-- display dialog (sourceItem as string) buttons {"Cancel", "Continue"} with icon coIcon
@@ -187,11 +218,11 @@ on run
 					set targetVariant's Getty parent MEID to sourceVariant's Getty parent MEID
 				end if
 			end if
-			tell me to progress_step(targetItem)
+			tell me to myLibrary's progress_step(targetItem)
 		end repeat
-
+		
 		set statusMessage to ""
-
+		
 		if (count of skippedVariants) > 0 then
 			set statusMessage to statusMessage & "Skipped " & (count of skippedVariants) & " variants.
 See \"BACK-to-RAW Skipped Variants\" User Collection.
@@ -206,7 +237,7 @@ See \"BACK-to-RAW Skipped Variants\" User Collection.
 				add inside skippedCollection variants skippedVariants
 			end tell
 		end if
-
+		
 		if (count of matchedVariants) > 0 then
 			set statusMessage to statusMessage & "Synchronized " & ((count of matchedVariants) / 2 as integer) & " Variant Pairs.
 See \"BACK-to-RAW Matched Variants\" User Collection.
@@ -223,14 +254,80 @@ See \"BACK-to-RAW Matched Variants\" User Collection.
 		else
 			set statusMessage to "No variants synchronized."
 		end if
-		tell me to progress_end()
-		set alertResults to (display alert "Synchronization Complete" message statusMessage buttons {"OK"} giving up after 10)
+		tell me to myLibrary's progress_end()
 	end tell
+	
+	set alertTitle to appName & " Finished"
+	set alertMessage to "Synchronization Complete" & return & return & statusMessage
+	
+	-- application code goes above here
+	
+	set alertResult to (display alert alertTitle message alertMessage buttons {"OK"} giving up after 10)
 end run
 
+##
+## download and install the latest CO script library
+##
 
-on installMe(appBase, pathToMe, installFolder, appType, appNames, appIcon)
+on loadLibrary(appName)
+	
+	set myLibrary to libraryFolder & "COscriptlibrary.scpt"
+	
+	tell application "Finder"
+		set libraryDownload to "curl -s -f https://raw.githubusercontent.com/walterrowe/capture-one-scripts/master/library/COscriptlibrary.applescript -o COscriptlibrary.applescript --output-dir " & libraryFolder
+		set libraryCompile to "osacompile -x -o " & (quoted form of myLibrary) & " " & libraryFolder & "COscriptlibrary.applescript"
+		try
+			do shell script libraryDownload
+			do shell script libraryCompile
+		on error errorText
+			set myLibrary to POSIX path of myLibrary
+			set alertResult to (display alert appName message "Unable to download and compile script library " & myLibrary & return & return & libraryDownload & return & return & libraryCompile & return & return & errorText buttons {"Quit"} giving up after 30)
+			return missing value
+		end try
+	end tell
+	
+	try
+		set myLibrary to load script myLibrary
+		return myLibrary
+	on error
+		set myLibrary to POSIX path of myLibrary
+		set alertResult to (display alert appName message "Unable to load script library " & myLibrary buttons {"Quit"} giving up after 30)
+		return missing value
+	end try
+	
+end loadLibrary
 
+
+on binarySearch(aValue, values, iLower, iUpper)
+	
+	set valueIndex to 0
+	
+	-- if search list is narrowed down to only 1 item
+	if (iUpper - iLower) ² 4 then
+		repeat with midIndex from iLower to iUpper
+			if aValue = (item midIndex of values) then
+				set valueIndex to midIndex
+			end if
+		end repeat
+		return valueIndex
+	end if
+	
+	set midIndex to (iLower + ((iUpper - iLower) div 2))
+	set midValue to item midIndex of values
+	
+	if midValue = aValue then
+		return midIndex
+	else if midValue > aValue then
+		return my binarySearch(aValue, values, iLower, midIndex)
+	else if midValue < aValue then
+		return my binarySearch(aValue, values, (midIndex + 1), iUpper)
+	end if
+	
+end binarySearch
+
+(*
+on installMe(appBase, pathToMe, installFolder, installType, installNames, installIcon)
+	
 	## Copyright 2024 Walter Rowe, Maryland, USA		No Warranty
 	## General purpose AppleScript Self-Installer
 	##
@@ -238,10 +335,10 @@ on installMe(appBase, pathToMe, installFolder, appType, appNames, appIcon)
 	##
 	## Displays an error when it cannot install the script
 	## Displays an alert when installation is successful
-
-	repeat with appName in appNames
+	
+	repeat with appName in installNames
 		set scriptSource to quoted form of POSIX path of pathToMe
-		set scriptTarget to quoted form of (installFolder & appName & appType)
+		set scriptTarget to quoted form of (installFolder & appName & installType)
 		set installCommand to "osacompile -x -o " & scriptTarget & " " & scriptSource
 		-- execute the shell command to install script
 		try
@@ -249,8 +346,8 @@ on installMe(appBase, pathToMe, installFolder, appType, appNames, appIcon)
 		on error errStr number errorNumber
 			set alertResult to (display alert "Install Script Error" message errStr & ": " & (errorNumber as text) & "on file " & scriptSource buttons {"Stop"} default button "Stop" as critical giving up after 10)
 		end try
-
-		if appIcon is true then
+		
+		if installIcon is true then
 			tell application "Finder" to set myFolder to (folder of (pathToMe)) as alias as string
 			set iconSource to POSIX path of (myFolder & "droplet.icns")
 			set iconTarget to scriptTarget & "/Contents/Resources/"
@@ -263,31 +360,31 @@ on installMe(appBase, pathToMe, installFolder, appType, appNames, appIcon)
 		end if
 	end repeat
 	set alertResult to (display alert "Installation Complete" buttons {"OK"} default button "OK")
-
+	
 end installMe
 
 on meetsRequirements(appBase, requiresCOrunning, requiresCOdocument)
 	set requirementsMet to true
-
+	
 	set requiresDoc to false
 	if class of requiresCOdocument is string then set requiresDoc to true
 	if class of requiresCOdocument is boolean and requiresCOdocument then set requiresDoc to true
-
+	
 	if requiresCOrunning then
-
+		
 		tell application "Capture One" to set isRunning to running
 		if not isRunning then
 			display alert "Alert" message "Capture One must be running." buttons {"Quit"}
 			set requirementsMet to false
 		end if
-
+		
 		if requiresDoc and requirementsMet then
 			tell application "Capture One" to set documentOpen to exists current document
 			if not documentOpen then
 				display alert appBase message "A Capture One Session or Catalog must be open." buttons {"Quit"}
 				set requirementsMet to false
 			end if
-
+			
 			if class of requiresCOdocument is string then
 				tell application "Capture One"
 					tell current document
@@ -302,9 +399,9 @@ on meetsRequirements(appBase, requiresCOrunning, requiresCOdocument)
 			end if
 		end if
 	end if
-
+	
 	return requirementsMet
-
+	
 end meetsRequirements
 
 -- --------------------
@@ -319,38 +416,38 @@ end meetsRequirements
 -- @param {string} descript		The initial text for the progress bar
 -- @param {string} descript_add 	Additional text for the progress bar
 -- @returns void
-on progress_start(steps, descript, descript_add)
+on myLibrary's progress_start(steps, descript, descript_add)
 	set progress total steps to steps
 	set progress completed steps to 0
 	set progress description to descript
 	set progress additional description to descript_add
-end progress_start
+end myLibrary's progress_start
 
 -- Update the progress bar. This goes inside your loop.
 -- @param {int} 	 n  			The current step number in the iteration
 -- @param {int} 	 steps  		The number of steps for the process
 -- @param {string} message   The progress update message
 -- @returns void
-on progress_update(n, steps, message)
+on myLibrary's progress_update(n, steps, message)
 	set progress additional description to message & n & " of " & steps
-end progress_update
+end myLibrary's progress_update
 
 -- Increment the step number of the progress bar.
 -- @param {int} 	 n            The current step number in the iteration
 -- @returns void
-on progress_step(n)
+on myLibrary's progress_step(n)
 	set progress completed steps to n
-end progress_step
+end myLibrary's progress_step
 
 -- Clear the progress bar values
 -- @returns void
-on progress_end()
+on myLibrary's progress_end()
 	-- Reset the progress information
 	set progress total steps to 0
 	set progress completed steps to 0
 	set progress description to ""
 	set progress additional description to ""
-end progress_end
+end myLibrary's progress_end
 
 
 -- A binary search that always use the complete values list and call itself
@@ -363,30 +460,4 @@ end progress_end
 -- @param	iLower		The lower index (intially 1)
 -- @param	iUpper		The upper index (initially count of values)
 -- @returns	0 or index	Return 0 for not found, index when found
-
-on binarySearch(aValue, values, iLower, iUpper)
-
-	set valueIndex to 0
-
-	-- if search list is narrowed down to only 1 item
-	if (iUpper - iLower) ² 4 then
-		repeat with midIndex from iLower to iUpper
-			if aValue = (item midIndex of values) then
-				set valueIndex to midIndex
-			end if
-		end repeat
-		return valueIndex
-	end if
-
-	set midIndex to (iLower + ((iUpper - iLower) div 2))
-	set midValue to item midIndex of values
-
-	if midValue = aValue then
-		return midIndex
-	else if midValue > aValue then
-		return my binarySearch(aValue, values, iLower, midIndex)
-	else if midValue < aValue then
-		return my binarySearch(aValue, values, (midIndex + 1), iUpper)
-	end if
-
-end binarySearch
+*)
