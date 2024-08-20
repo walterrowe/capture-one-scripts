@@ -269,7 +269,7 @@ end run
 ## download and install the latest CO script library
 ##
 
-on loadLibrary(appName)
+on loadLibrary(appName as string)
 	
 	set myLibrary to libraryFolder & "COscriptlibrary.scpt"
 	
@@ -280,9 +280,15 @@ on loadLibrary(appName)
 			do shell script libraryDownload
 			do shell script libraryCompile
 		on error errorText
-			set myLibrary to POSIX path of myLibrary
-			set alertResult to (display alert appName message "Unable to download and compile script library " & myLibrary & return & return & libraryDownload & return & return & libraryCompile & return & return & errorText buttons {"Quit"} giving up after 30)
-			return missing value
+			-- failed to download and compile the latest library
+			-- if we have a copy of the library installed then use it
+			try
+				exists (POSIX file myLibrary as alias)
+			on error
+				set myLibrary to POSIX path of myLibrary
+				set alertResult to (display alert appName message "Unable to download and compile script library " & myLibrary & return & return & libraryDownload & return & return & libraryCompile & return & return & errorText buttons {"Quit"} giving up after 30)
+				return missing value
+			end try
 		end try
 	end tell
 	
@@ -296,7 +302,6 @@ on loadLibrary(appName)
 	end try
 	
 end loadLibrary
-
 
 on binarySearch(aValue, values, iLower, iUpper)
 	
@@ -324,140 +329,3 @@ on binarySearch(aValue, values, iLower, iUpper)
 	end if
 	
 end binarySearch
-
-(*
-on installMe(appBase, pathToMe, installFolder, installType, installNames, installIcon)
-	
-	## Copyright 2024 Walter Rowe, Maryland, USA		No Warranty
-	## General purpose AppleScript Self-Installer
-	##
-	## Compiles and installs an AppleScript via osacompile as a type and list of names in a target folder
-	##
-	## Displays an error when it cannot install the script
-	## Displays an alert when installation is successful
-	
-	repeat with appName in installNames
-		set scriptSource to quoted form of POSIX path of pathToMe
-		set scriptTarget to quoted form of (installFolder & appName & installType)
-		set installCommand to "osacompile -x -o " & scriptTarget & " " & scriptSource
-		-- execute the shell command to install script
-		try
-			do shell script installCommand
-		on error errStr number errorNumber
-			set alertResult to (display alert "Install Script Error" message errStr & ": " & (errorNumber as text) & "on file " & scriptSource buttons {"Stop"} default button "Stop" as critical giving up after 10)
-		end try
-		
-		if installIcon is true then
-			tell application "Finder" to set myFolder to (folder of (pathToMe)) as alias as string
-			set iconSource to POSIX path of (myFolder & "droplet.icns")
-			set iconTarget to scriptTarget & "/Contents/Resources/"
-			set copyIcon to "/bin/cp " & (quoted form of iconSource) & " " & (quoted form of iconTarget)
-			try
-				do shell script copyIcon
-			on error errStr number errorNumber
-				set alertResult to (display alert "Install Icon Error" message errStr & ": " & (errorNumber as text) & "on file " & scriptSource buttons {"Stop"} default button "Stop" as critical giving up after 10)
-			end try
-		end if
-	end repeat
-	set alertResult to (display alert "Installation Complete" buttons {"OK"} default button "OK")
-	
-end installMe
-
-on meetsRequirements(appBase, requiresCOrunning, requiresCOdocument)
-	set requirementsMet to true
-	
-	set requiresDoc to false
-	if class of requiresCOdocument is string then set requiresDoc to true
-	if class of requiresCOdocument is boolean and requiresCOdocument then set requiresDoc to true
-	
-	if requiresCOrunning then
-		
-		tell application "Capture One" to set isRunning to running
-		if not isRunning then
-			display alert "Alert" message "Capture One must be running." buttons {"Quit"}
-			set requirementsMet to false
-		end if
-		
-		if requiresDoc and requirementsMet then
-			tell application "Capture One" to set documentOpen to exists current document
-			if not documentOpen then
-				display alert appBase message "A Capture One Session or Catalog must be open." buttons {"Quit"}
-				set requirementsMet to false
-			end if
-			
-			if class of requiresCOdocument is string then
-				tell application "Capture One"
-					tell current document
-						if kind is catalog then set docKind to "catalog"
-						if kind is session then set docKind to "session"
-					end tell
-				end tell
-				if docKind is not requiresCOdocument then
-					display alert appBase message "You must be working in a Capture One " & requiresCOdocument & "." buttons {"Quit"}
-					set requirementsMet to false
-				end if
-			end if
-		end if
-	end if
-	
-	return requirementsMet
-	
-end meetsRequirements
-
--- --------------------
--- FUNCTIONS
--- --------------------
--- The example above shows the raw method for implementing progress bars.
--- The functions below are convenience wrappers for the same code to keep
--- your overall code much cleaner and less repetitive.
-
--- Create the initial progress bar.
--- @param {int} 	 steps  			The number of steps for the process
--- @param {string} descript		The initial text for the progress bar
--- @param {string} descript_add 	Additional text for the progress bar
--- @returns void
-on myLibrary's progress_start(steps, descript, descript_add)
-	set progress total steps to steps
-	set progress completed steps to 0
-	set progress description to descript
-	set progress additional description to descript_add
-end myLibrary's progress_start
-
--- Update the progress bar. This goes inside your loop.
--- @param {int} 	 n  			The current step number in the iteration
--- @param {int} 	 steps  		The number of steps for the process
--- @param {string} message   The progress update message
--- @returns void
-on myLibrary's progress_update(n, steps, message)
-	set progress additional description to message & n & " of " & steps
-end myLibrary's progress_update
-
--- Increment the step number of the progress bar.
--- @param {int} 	 n            The current step number in the iteration
--- @returns void
-on myLibrary's progress_step(n)
-	set progress completed steps to n
-end myLibrary's progress_step
-
--- Clear the progress bar values
--- @returns void
-on myLibrary's progress_end()
-	-- Reset the progress information
-	set progress total steps to 0
-	set progress completed steps to 0
-	set progress description to ""
-	set progress additional description to ""
-end myLibrary's progress_end
-
-
--- A binary search that always use the complete values list and call itself
--- recursively with different lower and upper indexes. It returns the index
--- of the found item or 0 if not found.
--- credit: https://gist.github.com/mk2/9949533
-
--- @param	aValue		The value to find
--- @param	values		The full values list to search
--- @param	iLower		The lower index (intially 1)
--- @param	iUpper		The upper index (initially count of values)
--- @returns	0 or index	Return 0 for not found, index when found
-*)

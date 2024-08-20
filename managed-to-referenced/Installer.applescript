@@ -188,9 +188,15 @@ on loadLibrary(appName as string)
 			do shell script libraryDownload
 			do shell script libraryCompile
 		on error errorText
-			set myLibrary to POSIX path of myLibrary
-			set alertResult to (display alert appName message "Unable to download and compile script library " & myLibrary & return & return & libraryDownload & return & return & libraryCompile & return & return & errorText buttons {"Quit"} giving up after 30)
-			return missing value
+			-- failed to download and compile the latest library
+			-- if we have a copy of the library installed then use it
+			try
+				exists (POSIX file myLibrary as alias)
+			on error
+				set myLibrary to POSIX path of myLibrary
+				set alertResult to (display alert appName message "Unable to download and compile script library " & myLibrary & return & return & libraryDownload & return & return & libraryCompile & return & return & errorText buttons {"Quit"} giving up after 30)
+				return missing value
+			end try
 		end try
 	end tell
 	
