@@ -70,15 +70,17 @@ on installMe(appBase as string, pathToMe as string, installFolder as string, app
 		end try
 		
 		if appIcon is true then
-			tell application "Finder" to set myFolder to (folder of (pathToMe)) as alias as string
-			set iconSource to POSIX path of (myFolder & "droplet.icns")
-			set iconTarget to scriptTarget & "/Contents/Resources/"
-			set copyIcon to "/bin/cp " & (quoted form of iconSource) & " " & (quoted form of iconTarget)
-			try
-				do shell script copyIcon
-			on error errStr number errorNumber
-				set alertResult to (display alert "Install Icon Error" message errStr & ": " & (errorNumber as text) & "on file " & scriptSource buttons {"Stop"} default button "Stop" as critical giving up after 10)
-			end try
+			tell application "Finder"
+				tell application "Finder" to set myFolder to (folder of (pathToMe as alias)) as string
+				set iconSource to POSIX path of (myFolder & "droplet.icns")
+				set iconTarget to scriptTarget & "/Contents/Resources/"
+				set copyIcon to "/bin/cp " & iconSource & " " & iconTarget
+				try
+					do shell script copyIcon
+				on error errStr number errorNumber
+					set alertResult to (display alert "Install Icon Error" message errStr & ": " & (errorNumber as text) & "on file " & scriptSource buttons {"Stop"} default button "Stop" as critical giving up after 10)
+				end try
+			end tell
 		end if
 	end repeat
 	set alertResult to (display alert "Installation Complete" buttons {"OK"} default button "OK")
