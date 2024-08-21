@@ -1,6 +1,6 @@
-property name: "COscriptlibrary"
-property version: "1.0"
-property id: "COscriptlibrary"
+property name : "COscriptlibrary"
+property version : "1.0"
+property id : "COscriptlibrary"
 
 use AppleScript version "2.8"
 use scripting additions
@@ -71,7 +71,7 @@ on installMe(appBase as string, pathToMe as string, installFolder as string, app
 		
 		if appIcon is true then
 			tell application "Finder"
-				tell application "Finder" to set myFolder to (folder of (pathToMe as alias)) as string
+				set myFolder to (folder of (pathToMe as alias)) as string
 				set iconSource to POSIX path of (myFolder & "droplet.icns")
 				set iconTarget to scriptTarget & "/Contents/Resources/"
 				set copyIcon to "/bin/cp " & iconSource & " " & iconTarget
@@ -136,6 +136,9 @@ end meetsRequirements
 ##
 ## Ask the user to turn on UI scripting
 ##
+
+-- notice to display when UI Scripting is not enabled
+property UIScriptingNotice : "User Interface scripting is not enabled for Capture One. In order to continue it must be enabled." & return & return & "After clicking OK, the System Settings window will open. Enable Capture One in the list and enter your password when prompted, then try the app again."
 
 on activateUIScripting()
 	tell application "System Events"
