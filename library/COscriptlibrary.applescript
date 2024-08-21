@@ -1,3 +1,7 @@
+property name: "COscriptlibrary"
+property version: "1.0"
+property id: "COscriptlibrary"
+
 use AppleScript version "2.8"
 use scripting additions
 
