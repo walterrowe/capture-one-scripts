@@ -1,6 +1,8 @@
 # Select Image Layer
 
-**Donations**: if you like these scripts and want to support them [buy me a coffee](https://buymeacoffee.com/walterrowe).
+**Donations**: if you like to keep these scripts free please consider [buying me a coffee](https://buymeacoffee.com/walterrowe).
+
+## Description
 
 This script set the current layer to the base image layer for every selected variant. If no variants are selected then it sets the current layer for all variants in the current document.
 
@@ -10,7 +12,11 @@ Original: Zdeněk Macháček © 2022
 
 Modifed: Walter Rowe
 
-# Installation
+## Prerequisites
+
+None
+
+## Installation
 
 The script self-installs in your Capture One Scripts folder.
 
@@ -19,6 +25,13 @@ The script self-installs in your Capture One Scripts folder.
 1. Open Capture One and choose Scripts > Update Script Menu.
 1. You now can run the script from the Capture One Scripts menu.
 
-## UPDATEs
+## Compatibility
+
+The utility has been tested on:
+
+- macOS Sonoma (Intel and M3 MacBook Pro)
+- Capture One 16.4
+
+## ChangeLog
 
 - 13 Aug 2024 - enhanced installer and requirements checks

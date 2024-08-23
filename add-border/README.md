@@ -1,13 +1,10 @@
 # add-border
 
-**Donations**: if you like these scripts and want to support them [buy me a coffee](https://buymeacoffee.com/walterrowe).
+**Donations**: if you like to keep these scripts free please consider [buying me a coffee](https://buymeacoffee.com/walterrowe).
+
+## Description
 
 macOS AppleScript to add borders to image files. This works as a droplet with macOS Finder or with Capture One Pro when added to the Open With field in Output Recipes.
-
-| Role | Name | Year |
-| ---: | :--- | ---: |
-| Original | Kim Aldis | 2016 |
-| Modified | Walter Rowe | 2022 |
 
 ## How To Use This
 
@@ -68,3 +65,10 @@ This script originates from Apple’s Recursive Image File Processing Droplet te
 
 1. Open Apple ScriptEditor
 2. Navigate to menu option File > New from Template > Droplets > Recursive Image File Processing Droplet
+
+## ChangeLog
+
+| Role | Name | Year |
+| ---: | :--- | ---: |
+| Original | Kim Aldis | 2016 |
+| Modified | Walter Rowe | 2022 |

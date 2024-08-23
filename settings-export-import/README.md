@@ -2,6 +2,8 @@
 
 **Donations**: if you like these scripts and want to support them [buy me a coffee](https://buymeacoffee.com/walterrowe).
 
+## Description
+
 This AppleScript creates two scripts in the Capture One scripts menu. The scripts back up and restore the transportable contents of these folders under ~/Library:
 
 - Application Support/Capture One: tool presets, styles, keyboard maps, workspaces, export recipes, etc
@@ -14,7 +16,11 @@ If you are viewing this in GitLab click the script name to see the source of the
 
 They DO NOT back up and restore application preferences as it includes non-transportable content. Sadly this also means they do not back up and restore naming templates, current tool tab configuration, navigation bar settings, and other items stored in application preferences.
 
-# Installation
+## Prerequisites
+
+None
+
+## Installation
 
 The script self-installs in your Capture One Scripts folder.
 
@@ -23,15 +29,16 @@ The script self-installs in your Capture One Scripts folder.
 1. Open Capture One and choose Scripts > Update Script Menu.
 1. You now can run the script from the Capture One Scripts menu.
 
+## Compatibility
 
-## Notes
+The utility has been tested on:
 
-- System specific subfolders are skipped.
-- Application Preferences is NOT backed up and restored - it contains non-transportable information.
-- You must quit and restart Capture One after running settings-import for the application to recognize your restored tool presets, styles, keyboard maps, workspaces, export recipes, scripts menu content, etc.
+- macOS Sonoma (Intel and M3 MacBook Pro)
+- Capture One 16.4
 
-## UPDATEs
+## ChangeLog
 
+- 21 Aug 2024 - converted to use COscriptlibrary handler library
 - 13 Aug 2024 - enhanced installer and requirements checks
 - 26 Jun 2024 - Updated this README.md
 - 16 Dec 2023 - Added folder and file choosers

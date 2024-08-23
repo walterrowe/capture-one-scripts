@@ -1,9 +1,6 @@
 # Monochrome Keywords
 
-Auth: Walter Rowe<br>
-Date: June 2020
-
-**Donations**: if you like these scripts and want to support them [buy me a coffee](https://buymeacoffee.com/walterrowe).
+**Donations**: if you like to keep these scripts free please consider [buying me a coffee](https://buymeacoffee.com/walterrowe).
 
 ## Description
 
@@ -14,7 +11,11 @@ There are two scripts in this directory.
 
 These script will run on the currently selected document and collection. It should honor any filters on the view.
 
-# Installation
+## Prerequisites
+
+None
+
+## Installation
 
 The script self-installs in your Capture One Scripts folder.
 
@@ -23,7 +24,9 @@ The script self-installs in your Capture One Scripts folder.
 1. Open Capture One and choose Scripts > Update Script Menu.
 1. You now can run the script from the Capture One Scripts menu.
 
-## Monochrome Image Criteria
+## How To Use
+
+### Monochrome Image Criteria
 
 The criteria for identifying monochrome images are:
 
@@ -32,19 +35,19 @@ The criteria for identifying monochrome images are:
 
 You may ask why the script only looks at the background layer for the saturation adjustment value of -100. The background layer contains no mask. It applies the adjustment globally to the entire image. Other layers may have masks that do not affect the entire image. We cannot assume these other layers result in a monochrome image.
 
-## Apply Monochrome Keywords
+### Apply Monochrome Keywords
 
 For each variant matching the above criteria, it adds each of the keywords in the list ```bwKeywords```.
 
 **NOTICE**: RGB grayscale color profile images will not be identified as monochrome. No keywords will be applied. You will have to visually identify and tag these images manually.
 
-## Remove Monochrome Keywords
+### Remove Monochrome Keywords
 
 For each variant NOT matching the above criteria, AND having one of the keywords in the list ```bwKeywords```, the requisite keyword is removed.
 
 **NOTICE**: RGB grayscale color profile images will not be identified as monochrome. Monochrome keywords WILL be removed because they will not match the criteria above. Filter your collection view to exclude these image to avoid this.
 
-## Change The Keywords
+### Change The Keywords
 
 The default list includes ```Monochrome``` and ```Black & White```.
 
@@ -56,18 +59,14 @@ set bwKeywords to { "Black & White", "Monochrome" }
 
 and changing the list of keywords to words of your choosing for your monochrome images. Remember that each keyword must be in double quotes, the list must be comma-separated, and there must be curly braces enclosing the list as shown here.
 
-## Usage
+## Compatibility
 
-Follow these steps to execute this script:
+The utility has been tested on:
 
-1. Download the scripts or repository to your macOS system.
-2. Open the Capture One catalog you want to update and select the All Images collection.
-3. Open the script you wish to run in Apple ScriptEditor.
-4. Make any desired changes to the list of keywords.
-5. Run the script by pressing the "Run" button (looks like a "Play" button).
+- macOS Sonoma (Intel and M3 MacBook Pro)
+- Capture One 16.4
+- Moving to internal and external storage
 
-When the script is completed, it will show a list of image names in the results window. If no images are changed, a message will appear indicating so.
-
-## UPDATEs
+## ChangeLog
 
 - 13 Aug 2024 - enhanced installer and requirements checks

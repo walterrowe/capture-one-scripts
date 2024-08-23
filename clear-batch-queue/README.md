@@ -1,6 +1,8 @@
 # Clear Batch Queue
 
-**Donations**: if you like these scripts and want to support them [buy me a coffee](https://buymeacoffee.com/walterrowe).
+**Donations**: if you like to keep these scripts free please consider [buying me a coffee](https://buymeacoffee.com/walterrowe).
+
+## Description
 
 This AppleScript utility helps keep the batch queue and its corresponding folder clean.
 
@@ -15,10 +17,14 @@ It then asks the user for confirmation to continue or to exit.
 - If the user continues, the above actions are taken.
 - If the user chooses to exit, no action is taken.
 
-The utility has been tested on:
+Some items to note:
 
-- macOS Sonoma (Intel and M3 MacBook Pro)
-- Capture One 16.4
+- The batch history will not reflect being empty until Capture One is restarted.
+- You may have to enable Extensions in System Settings.
+
+## Prerequisites
+
+None
 
 # Installation
 
@@ -29,12 +35,14 @@ The script self-installs in your Capture One Scripts folder.
 1. Open Capture One and choose Scripts > Update Script Menu.
 1. You now can run the script from the Capture One Scripts menu.
 
-## NOTES
+## Compatibility
 
-- The batch history will not reflect being empty until Capture One is restarted.
-- You may have to enable Extensions in System Settings as one user found.
+The utility has been tested on:
 
-## UPDATEs
+- macOS Sonoma (Intel and M3 MacBook Pro)
+- Capture One 16.4
+
+## ChangeLog
 
 - 13 Aug 2024 - enhanced installer and requirements checks
 - 08 Aug 2024 - initial version
