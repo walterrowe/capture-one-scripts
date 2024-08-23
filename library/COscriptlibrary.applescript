@@ -1,3 +1,26 @@
+(*
+	AUTHOR
+
+	Author: Walter Rowe
+	Contact: walter@walterrowe.com
+
+	Created: 16-Aug-2024
+	Updated: 23-Aug-2024
+
+	DESCRIPTION
+
+	COscriptlibrary - a library of utility handlers for Capture One scripting
+	Use templates/AppTemplate.applescript for new apps that use this library
+
+	- some handlers are from the Apple AppleScript Language Guide
+	- some handlers are credited to other AppleScript developers
+	- some handlers are written by me based on examples and need
+
+	PREREQUISITES
+
+	None
+*)
+
 property name : "COscriptlibrary"
 property version : "1.0"
 property id : "COscriptlibrary"
@@ -5,43 +28,17 @@ property id : "COscriptlibrary"
 use AppleScript version "2.8"
 use scripting additions
 
+## performs a self-install of the library into ~/Library/Scripts/COscriptlibrary.scpt
 ##
-## COscriptlibrary - a library of utility handlers for Capture One scripting
-##
-## - some handlers came from the Apple AppleScript Language Guide
-## - some handlers are credited to other AppleScript developers
-##
-## how to use this library
-##
-## 1) open COscriptlibrary.applescript in Script Editor
-## 2) run the script to self-install the library
-## 3) add code similar to this to your Apple Script
-##
-## on run
-##		set appBase to my name
-## 		try
-## 			set myLibrary to ((path to home folder as alias) as string) & "Library:Scripts:COscriptlibrary.scpt" as alias
-## 			set myLibrary to load script (myLibrary)
-## 		on error
-## 			set myLibrary to POSIX path of (((path to home folder as alias) as string) & "Library:Scripts:COscriptlibrary.scpt")
-## 			set alertResult to (display alert appBase message "Unable to load script library " & myLibrary buttons {"Quit"} giving up after 30)
-## 			return
-## 		end try
-##
-## 		set readyToRun to myLibrary's meetsRequirements("fake script", true, "catalog")
-## end run
-##
+## *** useful if you are working offline ***
 
-##
-## this performs a self-install of the library into ~/Library/Scripts/COscriptlibrary.scpt
-##
 on run
 	set appName to my name
 	set pathToMe to path to me
-	set installFolder to ((POSIX path of (path to home folder)) as string) & "Library/Scripts/"
+	set libraryFolder to ((POSIX path of (path to home folder)) as string) & "Library/Scripts/"
 	set appType to ".scpt"
 	
-	installMe(appName, pathToMe, installFolder, appType, appName as list, false)
+	installMe(appName, pathToMe, libraryFolder, appType, appName as list, false)
 end run
 
 ##
@@ -75,7 +72,7 @@ on installMe(appBase as string, pathToMe as string, installFolder as string, app
 				set iconSource to myFolder & "droplet.icns"
 				set iconTarget to POSIX file (scriptTarget & "/Contents/Resources/") as alias as string
 				try
-					duplicate file iconSource to folder iconTarget with replacing
+					duplicate file iconSource to folder iconTarget with replacing and exact copy
 				on error errStr number errorNumber
 					set alertResult to (display alert "Install Icon Error" message errStr & ": " & (errorNumber as text) & "on file " & scriptSource buttons {"Stop"} default button "Stop" as critical giving up after 10)
 				end try
@@ -224,38 +221,6 @@ on myAlert(alertHeading as string, alertMessage as string, alertGiveUp as intege
 end myAlert
 
 ##
-## trim specified leading/trailing characters from a string
-##
-
-on trimString(theSource as string, theTrimmer as string)
-	local theResult
-	
-	set strBegin to 1
-	set strEnd to length of theSource
-	
-	-- find first char after theTrimmer
-	if theSource starts with theTrimmer then
-		repeat while ((strBegin < strEnd) and (item strBegin of theSource is theTrimmer))
-			set strBegin to strBegin + 1
-		end repeat
-	end if
-	
-	-- find last char before theTrimmer
-	if theSource ends with theTrimmer then
-		repeat while ((strEnd > strBegin) and (item strEnd of theSource is theTrimmer))
-			set strEnd to strEnd - 1
-		end repeat
-	end if
-	
-	set theResult to characters strBegin thru strEnd of theSource as string
-	if theResult = theTrimmer then
-		return ""
-	else
-		return theResult
-	end if
-end trimString
-
-##
 ## join a list into a string based on a specific delimiter
 ##
 
@@ -393,7 +358,7 @@ on flatten(listOfLists as list)
 end flatten
 
 ## get a collection's parent path
-## adapted from eric valk's function
+## inspired by eric valk
 
 on getCollectionPath(theColl)
 	tell application "Capture One"
@@ -420,6 +385,64 @@ on getCollectionPath(theColl)
 	end tell
 	return collPath
 end getCollectionPath
+
+## get contents of a collection and its children
+## inspired by eric valk
+## returns a list of records
+## - name : collection name
+## - path : collection path relative to start collection
+## - type : collection type (album, smart album)
+## - vars : list of variants in collection
+
+on getCollections(theCollection, parentPath)
+	
+	set groupTypes to {"group", "project"}
+	set albumTypes to {"album", "smart album"}
+	
+	-- construct colon-separated path string
+	if parentPath is not "" then set parentPath to parentPath & ":"
+	
+	set myType to myLibrary's getCOtype(theCollection)
+	
+	-- display dialog myType
+	set myName to ""
+	if class of theCollection is not list then
+		tell application "Capture One" to tell current document to set myName to ((name of theCollection) as string)
+	end if
+	if class of theCollection is list then
+		set theSubColls to {}
+		repeat with subColl in theCollection
+			set end of theSubColls to getCollections(subColl, parentPath)
+		end repeat
+		return theSubColls
+	end if
+	
+	-- display dialog myName & return & parentPath & return & myType
+	
+	-- if we find a group type, search for and traverse the children
+	if myType is in groupTypes then
+		tell application "Capture One" to tell current document to set subCollections to every collection of theCollection
+		if (count of subCollections) > 0 then
+			set theSubColls to {}
+			repeat with subColl in subCollections
+				set thisColl to my getCollections(subColl, parentPath & myName)
+				if class of thisColl is record then set end of theSubColls to (thisColl as record)
+				if class of thisColl is list then set theSubColls to theSubColls & thisColl
+			end repeat
+			return theSubColls
+		end if
+	end if
+	
+	-- if we find an album type, return a record with name, parent path, type, list of variants
+	if myType is in albumTypes then
+		tell application "Capture One"
+			tell current document
+				set collContents to every variant of theCollection
+				return {collectionName:myName, collectionPath:parentPath, collectionType:myType, CollectionVars:collContents} as record
+			end tell
+		end tell
+	end if
+end getCollections
 
 # collection of string handlers that leverage JavaScript
 # https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String
