@@ -56,9 +56,9 @@ on installMe(appBase as string, pathToMe as string, installFolder as string, app
 	## Displays an alert when installation is successful
 	
 	repeat with appName in appNames
-		set scriptSource to quoted form of POSIX path of pathToMe
+		set scriptSource to POSIX path of pathToMe
 		set scriptTarget to (installFolder & appName & appType)
-		set installCommand to "osacompile -x -o " & quoted form of scriptTarget & " " & scriptSource
+		set installCommand to "osacompile -x -o " & quoted form of scriptTarget & " " &  quoted form of scriptSource
 		-- execute the shell command to install script
 		try
 			do shell script installCommand
