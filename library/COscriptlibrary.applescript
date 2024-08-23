@@ -57,8 +57,8 @@ on installMe(appBase as string, pathToMe as string, installFolder as string, app
 	
 	repeat with appName in appNames
 		set scriptSource to quoted form of POSIX path of pathToMe
-		set scriptTarget to quoted form of (installFolder & appName & appType)
-		set installCommand to "osacompile -x -o " & scriptTarget & " " & scriptSource
+		set scriptTarget to (installFolder & appName & appType)
+		set installCommand to "osacompile -x -o " & quoted form of scriptTarget & " " & scriptSource
 		-- execute the shell command to install script
 		try
 			do shell script installCommand
