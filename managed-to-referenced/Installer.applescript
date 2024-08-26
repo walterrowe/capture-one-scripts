@@ -73,6 +73,8 @@ on run
 	
 	tell application "Capture One"
 		
+		tell current document to set docPath to its path
+
 		-- get all selected variants user wants to move
 		set variantsToMove to get selected variants
 		if (count of variantsToMove) < 1 then
