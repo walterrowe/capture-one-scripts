@@ -166,10 +166,10 @@ on run
 				set matchedVariants to matchedVariants & {sourceVariant, targetVariant}
 				-- display dialog sourceName & " => " & targetName buttons "Dismiss" with icon coIcon
 				if syncedItems contains "Everything" or syncedItems contains "Adjustments" then
-					set targetVariant's crop to sourceVariant's crop
 					copy adjustments sourceVariant
 					reset adjustments targetVariant
 					apply adjustments targetVariant
+					set targetVariant's crop to sourceVariant's crop
 				end if
 				if syncedItems contains "Everything" or syncedItems contains "Keywords" then
 					repeat with sourceKeyword in sourceVariant's keywords
