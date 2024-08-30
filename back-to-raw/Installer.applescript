@@ -5,7 +5,7 @@
 	Contact: walter@walterrowe.com
 
 	Created: 08-Apr-2023
-	Updated: 20-Aug-2024
+	Updated: 30-Aug-2024
 
 	DESCRIPTION
 
@@ -19,6 +19,8 @@
 	* exiftool must be installed
 
 *)
+
+property version : "2.0"
 
 use AppleScript version "2.8"
 use scripting additions
@@ -90,9 +92,9 @@ on run
 	if srcExt is first item in rawExtensions then set targetExts to items 2 thru end of rawExtensions
 	if srcExt is last item in rawExtensions then set targetExts to items 1 thru -2 of rawExtensions
 	if (count of targetExts) is 0 then
-		repeat with i from 1 to count of rawExtensions
-			if srcExt is item i of rawExtensions then
-				set targetExts to (items 1 thru (i - 1) of rawExtensions) & (items (i + 1) thru end of rawExtensions) as list
+		repeat with thisExt in rawExtensions
+			if srcExt is not thisExt then
+				set end of targetExts to thisExt
 			end if
 		end repeat
 	end if
@@ -126,7 +128,7 @@ on run
 		set skippedVariants to {}
 		
 		-- get all selected variants
-		set selectedVariants to variants where selected is true
+		set selectedVariants to get selected variants
 		
 		tell me to myLibrary's progress_start(0, "Processing ...", "scanning")
 		
@@ -135,20 +137,24 @@ on run
 			set thisParent to thisVariant's parent image
 			set thisFile to quoted form of POSIX path of (thisParent's file as alias)
 			set thisName to thisParent's name as string
-			set thisDate to do shell script "eval $(/usr/libexec/path_helper -s); exiftool -DateTimeOriginal " & thisFile & "|  cut -c35-"
+			set thisDate to do shell script "eval $(/usr/libexec/path_helper -s); exiftool -DateTimeOriginal " & thisFile & " |  cut -c35-"
+			-- display dialog "Date: [" & thisDate & "]" & return & thisFile
 			if thisDate is "" then
 				set skippedVariants to skippedVariants & {thisVariant}
 			else
-				if thisVariant's parent image's extension is in sourceExts then
-					set sourceVariants to sourceVariants & {thisVariant}
-					set sourceDates to sourceDates & {thisDate}
+				-- display dialog thisParent's name & return & thisParent's extension
+				if thisParent's extension is in sourceExts then
+					set end of sourceVariants to thisVariant
+					set end of sourceDates to thisDate
 				end if
-				if thisVariant's parent image's extension is in targetExts then
-					set targetVariants to targetVariants & {thisVariant}
-					set targetDates to targetDates & {thisDate}
+				if thisParent's extension is in targetExts then
+					set end of targetVariants to thisVariant
+					set end of targetDates to thisDate
 				end if
 			end if
 		end repeat
+		
+		-- display dialog "Sources (" & myLibrary's joinText(sourceExts, ",") & "): " & (count of sourceVariants) & return & "Targets (" & myLibrary's joinText(targetExts, ",") & "): " & (count of targetVariants)
 		
 		-- synchronize adjustments and metadata for matching sources and targets
 		set targetCount to length of targetVariants
@@ -169,7 +175,15 @@ on run
 					copy adjustments sourceVariant
 					reset adjustments targetVariant
 					apply adjustments targetVariant
+					-- these are not included in adjustments
 					set targetVariant's crop to sourceVariant's crop
+					-- set targetVariant's crop outside image to sourceVariant's crop outside image
+					-- set targetVariant's styles to sourceVariant's styles
+					-- set targetVariant's lens correction to sourceVariant's lens correction
+					-- set targetVariant's LCC color cast to sourceVariant's LCC color cast
+					-- set targetVariant's LCC dust removal to sourceVariant's LCC dust removal
+					-- set targetVariant's LCC uniform light to sourceVariant's LCC uniform light
+					-- set targetVariant's LCC uniform light amount to sourceVariant's LCC uniform light amount
 				end if
 				if syncedItems contains "Everything" or syncedItems contains "Keywords" then
 					repeat with sourceKeyword in sourceVariant's keywords
