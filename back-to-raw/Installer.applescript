@@ -43,7 +43,7 @@ property appTesting : false -- true, false
 -- https://www.file-extensions.org/filetype/extension/name/digital-camera-raw-files
 property rawExtensions : {"ARW", "ARF", "ARQ", "CR3", "CR2", "CRW", "DCR", "DNG", "FPX", "IIQ", "JPG", "JPEG", "MRW", "NEF", "ORF", "PEF", "PSD", "PTX", "RAF", "RAW", "RW2", "RWL", "SRF", "SR2", "TIFF"}
 
-property syncableItems : {"Everything", "Adjustments", "Keywords", "Labels", "Metadata", "Ratings"}
+property syncableItems : {"Everything", "Adjustments", "Crop", "Keywords", "Labels", "Metadata", "Ratings"}
 
 -- application specific properties above
 
@@ -56,6 +56,24 @@ on run
 	-- set required base variables
 	set appName to my name
 	set appPath to path to me
+	
+	
+	-- confirm we have exiftool installed
+	set exiftool to ""
+	tell application "Finder"
+		try
+			set exiftool to (POSIX file "/usr/local/bin/exiftool" as alias)
+		on error
+			try
+				set exiftool to (POSIX file "/opt/homebrew/bin/exiftool" as alias)
+			end try
+		end try
+	end tell
+	if exiftool is "" then
+		display alert appName message "This utility requires exiftool." buttons {"Quit"}
+		return
+	end if
+	set exiftool to POSIX path of (exiftool as string)
 	
 	-- make sure the CO script library is loaded
 	set myLibrary to loadLibrary(appName)
@@ -85,13 +103,14 @@ on run
 		display alert "Source Format" message "You must choose a source file format."
 		return
 	end if
-	set targetExts to {}
 	
+	-- filter source extensions out of target extension choices
+	set targetExts to {}
 	set srcExt to first item in sourceExts
 	
 	if srcExt is first item in rawExtensions then set targetExts to items 2 thru end of rawExtensions
 	if srcExt is last item in rawExtensions then set targetExts to items 1 thru -2 of rawExtensions
-	if (count of targetExts) is 0 then
+	if targetExts is {} then
 		repeat with thisExt in rawExtensions
 			if srcExt is not thisExt then
 				set end of targetExts to thisExt
@@ -104,6 +123,8 @@ on run
 		display alert "Target Format" message "You must choose at least one target file format."
 		return
 	end if
+	
+	display alert appName message "On the next dialog you will choose what to sychronize." & return & return & "If your source and target files are different sizes (dimensions) DO NOT select 'Everything' or 'Crop'." & return & return & "Including 'Crop' when syncing files of different sizes produces undesirable crops on the target images."
 	
 	set syncedItems to choose from list syncableItems with title "Choose What Items to Synchronize" with multiple selections allowed
 	if syncedItems is false then
@@ -137,7 +158,7 @@ on run
 			set thisParent to thisVariant's parent image
 			set thisFile to quoted form of POSIX path of (thisParent's file as alias)
 			set thisName to thisParent's name as string
-			set thisDate to do shell script "eval $(/usr/libexec/path_helper -s); exiftool -DateTimeOriginal " & thisFile & " |  cut -c35-"
+			set thisDate to do shell script "eval $(/usr/libexec/path_helper -s); " & exiftool & " -DateTimeOriginal " & thisFile & " |  cut -c35-"
 			-- display dialog "Date: [" & thisDate & "]" & return & thisFile
 			if thisDate is "" then
 				set skippedVariants to skippedVariants & {thisVariant}
@@ -175,15 +196,9 @@ on run
 					copy adjustments sourceVariant
 					reset adjustments targetVariant
 					apply adjustments targetVariant
-					-- these are not included in adjustments
+				end if
+				if syncedItems contains "Everything" or syncedItems contains "Crop" then
 					set targetVariant's crop to sourceVariant's crop
-					-- set targetVariant's crop outside image to sourceVariant's crop outside image
-					-- set targetVariant's styles to sourceVariant's styles
-					-- set targetVariant's lens correction to sourceVariant's lens correction
-					-- set targetVariant's LCC color cast to sourceVariant's LCC color cast
-					-- set targetVariant's LCC dust removal to sourceVariant's LCC dust removal
-					-- set targetVariant's LCC uniform light to sourceVariant's LCC uniform light
-					-- set targetVariant's LCC uniform light amount to sourceVariant's LCC uniform light amount
 				end if
 				if syncedItems contains "Everything" or syncedItems contains "Keywords" then
 					repeat with sourceKeyword in sourceVariant's keywords
