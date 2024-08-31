@@ -25,6 +25,7 @@ The script self-installs in your Capture One Scripts folder.
 
 Select a batch of pictures in Capture One and run the script. Choose the source file extension, choose one or more target file extensions, and choose what attributes you want to sychronize. After confirming your choices, the script will search the selection for matching pairs of files between source and target extensions. When matching pairs are found, it will copy your chosen attributes from the source file to the matching target file(s).
 
+- Do not include 'Crop' when source and targets differ in dimensions or you get undesirable crops on the targets.
 - Matched pairs of files will be added to a User Collection called "BACK-to-RAW Matched Variants".
 - Skipped files will be added to a User Collection called "BACK-to-RAW Skipped Variants".
 
