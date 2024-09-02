@@ -191,26 +191,76 @@ on run
 			if sourceItem > 0 then
 				set sourceVariant to item sourceItem of sourceVariants
 				set matchedVariants to matchedVariants & {sourceVariant, targetVariant}
+				
 				-- display dialog sourceName & " => " & targetName buttons "Dismiss" with icon coIcon
+				
 				if syncedItems contains "Everything" or syncedItems contains "Adjustments" then
+				
+					-- sync adjustments
 					copy adjustments sourceVariant
 					reset adjustments targetVariant
 					apply adjustments targetVariant
+					
+					-- sync styles applied to background layer
+					set sourceVariantstyles to styles of sourceVariant
+					if (length of sourceVariantstyles) > 0 then
+						repeat with theStyle in sourceVariantstyles
+							-- display dialog "Applying style " & theStyle
+							tell targetVariant to apply style first layer named theStyle
+						end repeat
+					end if
+					
+					-- sync LCC settings
+					(*
+					-- this code fails so comment it out for now
+					if applied LCC name of sourceVariant is not missing value then
+						apply LCC sourceVariant to targetVariant
+						set LCC color cast of targetVariant to LCC color cast of sourceVariant
+						set LCC dust removal of targetVariant to LCC dust removal of sourceVariant
+						set LCC uniform light of targetVariant to LCC uniform light of sourceVariant
+						set LCC uniform light amount of targetVariant to LCC uniform light amount of sourceVariant
+					end if
+					*)
+					
+					-- sync lens correction settings (raw files only -- need an 'if' clause here)
+					(*
+					set lens profile of lens correction of targetVariant to lens profile of lens correction of sourceVariant
+					set chromatic aberration of lens correction of targetVariant to chromatic aberration of lens correction of sourceVariant
+					set custom chromatic aberration of lens correction of targetVariant to custom chromatic aberration of lens correction of sourceVariant
+					set diffraction correction of lens correction of targetVariant to diffraction correction of lens correction of sourceVariant
+					set hide distorted areas of lens correction of targetVariant to hide distorted areas of lens correction of sourceVariant
+					set distortion of lens correction of targetVariant to distortion of lens correction of sourceVariant
+					set sharpness falloff of lens correction of targetVariant to sharpness falloff of lens correction of sourceVariant
+					set light falloff of lens correction of targetVariant to light falloff of lens correction of sourceVariant
+					set focal length of lens correction of targetVariant to focal length of lens correction of sourceVariant
+					set aperture of lens correction of targetVariant to aperture of lens correction of sourceVariant
+					set tilt of lens correction of targetVariant to tilt of lens correction of sourceVariant
+					set tilt direction of lens correction of targetVariant to tilt direction of lens correction of sourceVariant
+					set shift of lens correction of targetVariant to shift of lens correction of sourceVariant
+					set shift direction of lens correction of targetVariant to shift direction of lens correction of sourceVariant
+					set shift x of lens correction of targetVariant to shift x of lens correction of sourceVariant
+					set shift y of lens correction of targetVariant to shift y of lens correction of sourceVariant
+					*)
 				end if
+				
 				if syncedItems contains "Everything" or syncedItems contains "Crop" then
 					set targetVariant's crop to sourceVariant's crop
 				end if
+				
 				if syncedItems contains "Everything" or syncedItems contains "Keywords" then
 					repeat with sourceKeyword in sourceVariant's keywords
 						apply keyword sourceKeyword to {targetVariant}
 					end repeat
 				end if
+				
 				if syncedItems contains "Everything" or syncedItems contains "Labels" then
 					set targetVariant's color tag to sourceVariant's color tag
 				end if
+				
 				if syncedItems contains "Everything" or syncedItems contains "Ratings" then
 					set targetVariant's rating to sourceVariant's rating
 				end if
+				
 				if syncedItems contains "Everything" or syncedItems contains "Metadata" then
 					set targetVariant's contact creator to sourceVariant's contact creator
 					set targetVariant's contact creator job title to sourceVariant's contact creator job title
