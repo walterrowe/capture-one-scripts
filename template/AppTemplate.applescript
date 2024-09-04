@@ -21,6 +21,8 @@
 	None
 *)
 
+property version : "1.0"
+
 use AppleScript version "2.8"
 use scripting additions
 
