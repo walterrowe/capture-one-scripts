@@ -38,8 +38,10 @@ property appTesting : false -- if true, run in script editor, and if false insta
 
 -- application specific properties below
 
-property mapsKey : "YOUR GOOGLE MAPS PROJECT API KEY"
-property mapsURL : "https://maps.googleapis.com/maps/api/geocode/json?key=" & mapsKey & "&latlng="
+property propertyFile : ((POSIX path of (path to home folder)) as string) & "Library/Preferences/location_from_gps.plist"
+
+property mapsKeyProperty : "Google Maps API Key" as text
+property mapsURL : ""
 
 -- application specific properties above
 
@@ -69,11 +71,21 @@ on run
 	-- ensure we have permission to interact with other apps
 	myLibrary's activateUIScripting()
 	
-	-- make sure there is a maps API key
-	if mapsKey starts with "YOUR" then
-		display alert appBase message "You need to provide a Google Maps API Key before installing the script. Look for this text in the Installer.applescript and replace it with your key." & return & return & mapsKey & return
-		return
+	-- check for property list file and read Google Maps API Key
+	set mapsAPIkey to myLibrary's readProperty(propertyFile, mapsKeyProperty)
+	if mapsAPIkey is missing value then
+		display alert appName message "We were unable to find the Google Maps API Key in the property list file. You will be prompted to enter your key so it can be stored for you. The property list file is called:" & return & return & propertyFile & return & return & "In the future the key will be read from the property list file automatically." buttons {"Continue"}
+		try
+			set mapsAPIkey to text returned of (display dialog "Enter Google Maps API Key:" default answer "" with icon coIcon buttons {"Cancel", "Continue"} default button "Continue")
+		on error
+			return
+		end try
+		myLibrary's storeProperty(propertyFile, mapsKeyProperty, mapsAPIkey)
 	end if
+	
+	-- set the Google Maps API URL prefix with the maps API key
+	set mapsURL to "https://maps.googleapis.com/maps/api/geocode/json?key=" & mapsAPIkey & "&latlng="
+	
 	
 	tell application "Capture One"
 		set startTime to current date
