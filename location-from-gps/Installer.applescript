@@ -21,6 +21,8 @@
 	* Google Maps API Key
 *)
 
+property version : "3.0"
+
 use AppleScript version "2.8"
 use scripting additions
 
@@ -38,7 +40,7 @@ property appTesting : false -- if true, run in script editor, and if false insta
 
 -- application specific properties below
 
-property propertyFile : ((POSIX path of (path to home folder)) as string) & "Library/Preferences/location_from_gps.plist"
+property mapsPropertyFile : ((POSIX path of (path to home folder)) as string) & "Library/Preferences/location_from_gps.plist"
 
 property mapsKeyProperty : "Google Maps API Key" as text
 property mapsURL : ""
@@ -71,22 +73,26 @@ on run
 	-- ensure we have permission to interact with other apps
 	myLibrary's activateUIScripting()
 	
+	-- APPLICATION CODE GOES BELOW HERE
+	
 	-- check for property list file and read Google Maps API Key
-	set mapsAPIkey to myLibrary's readProperty(propertyFile, mapsKeyProperty)
+	set mapsAPIkey to myLibrary's readProperty(mapsPropertyFile, mapsKeyProperty)
+	
+	-- if plist file or maps API key are not found, get it from user and store it
 	if mapsAPIkey is missing value then
-		display alert appName message "We were unable to find the Google Maps API Key in the property list file. You will be prompted to enter your key so it can be stored for you. The property list file is called:" & return & return & propertyFile & return & return & "In the future the key will be read from the property list file automatically." buttons {"Continue"}
+		display alert appName message "We were unable to find the Google Maps API Key in the property list file. You will be prompted to enter your key so it can be stored for you. The property list file is called:" & return & return & mapsPropertyFile & return & return & "In the future the key will be read from the property list file automatically." buttons {"Continue"}
 		try
 			set mapsAPIkey to text returned of (display dialog "Enter Google Maps API Key:" default answer "" with icon coIcon buttons {"Cancel", "Continue"} default button "Continue")
 		on error
 			return
 		end try
-		myLibrary's storeProperty(propertyFile, mapsKeyProperty, mapsAPIkey)
+		myLibrary's storeProperty(mapsPropertyFile, mapsKeyProperty, mapsAPIkey)
 	end if
 	
-	-- set the Google Maps API URL prefix with the maps API key
+	-- set the Google Maps API URL prefix with our maps API key
 	set mapsURL to "https://maps.googleapis.com/maps/api/geocode/json?key=" & mapsAPIkey & "&latlng="
 	
-	
+	-- process images
 	tell application "Capture One"
 		set startTime to current date
 		set imageSel to get selected variants
@@ -171,16 +177,22 @@ on run
 			
 		end repeat
 		
-		tell me to myLibrary's progress_end()
-		
-		tell me to set noGPScount to ((count of noGPS) as string)
-		tell me to set timeTaken to ((current date) - startTime)
-		set timeTaken to ((timeTaken / 60 as integer) as string) & ":" & (text -1 thru -2 of ("0" & (timeTaken mod 60 as integer) as string))
-		tell me to set imgsUpdated to imgCount - noGPScount
-		
-		set alertResult to (display alert appName message "Updated " & imgsUpdated & " images in " & timeTaken & " (mm:ss)." & return & return & "There were " & noGPScount & " images with no GPS data." buttons {"Exit"} giving up after 10)
-		
 	end tell
+	
+	myLibrary's progress_end()
+	
+	set timeTaken to ((current date) - startTime)
+	set timeTaken to ((timeTaken / 60 as integer) as string) & ":" & (text -1 thru -2 of ("0" & (timeTaken mod 60 as integer) as string))
+	
+	set noGPScount to (count of noGPS)
+	set imgsUpdated to imgCount - noGPScount
+	
+	set alertMessage to "Processed " & (imgCount as text) & " images." & return & return & "Updated: " & imgsUpdated & return & "Skipped: " & (noGPScount as text) & return & return & "Time Elapsed: " & timeTaken & " (mm:ss)."
+	
+	-- APPLICATION CODE GOES ABOVE HERE
+	
+	set alertResult to (display alert appName message alertMessage buttons {"OK"} giving up after 10)
+	
 end run
 
 
