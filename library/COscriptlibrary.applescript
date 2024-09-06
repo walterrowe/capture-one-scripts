@@ -58,7 +58,7 @@ on installMe(appBase as string, pathToMe as string, installFolder as string, app
 	repeat with appName in appNames
 		set scriptSource to POSIX path of pathToMe
 		set scriptTarget to (installFolder & appName & appType)
-		set installCommand to "osacompile -x -o " & quoted form of scriptTarget & " " &  quoted form of scriptSource
+		set installCommand to "osacompile -x -o " & quoted form of scriptTarget & " " & quoted form of scriptSource
 		-- execute the shell command to install script
 		try
 			do shell script installCommand
@@ -512,3 +512,52 @@ on lastIndexOf(_subject as string, _string as string, _start as integer)
 	if _result is null or _result is missing value then return {}
 	return _result
 end lastIndexOf
+
+##
+## store a property in a property list file
+## create property list file if it doesn't exist
+##
+## (crafted from https://developer.apple.com/library/archive/documentation/LanguagesUtilities/Conceptual/MacAutomationScriptingGuide/WorkwithPropertyListFiles.html)
+##
+on storeProperty(propertyFile as string, propertyName as string, propertyValue)
+	
+	tell application "System Events"
+		
+		-- create or get property list file
+		if not (exists property list file propertyFile) then
+			-- Create an empty property list dictionary item
+			set theParentDictionary to make new property list item with properties {kind:record}
+			set propertyListFile to make new property list file Â
+			with properties {contents:theParentDictionary, name:propertyFile}
+		else
+			set propertyListFile to get property list file propertyFile
+		end if
+		
+		-- create or update property list item
+		tell property list items of propertyListFile
+			if not (exists property list item propertyName) then
+				make new property list item at end Â
+					with properties {kind:class of propertyValue, name:propertyName, value:propertyValue}
+			else
+				set value of property list item propertyName to propertyValue
+			end if
+		end tell
+		
+	end tell
+end storeProperty
+
+##
+## read a property from a property list file
+## return missing value if plist file doesn't exist
+##
+## (crafted from https://developer.apple.com/library/archive/documentation/LanguagesUtilities/Conceptual/MacAutomationScriptingGuide/WorkwithPropertyListFiles.html)
+##
+on readProperty(propertyFile as string, propertyName as string)
+	tell application "System Events"
+		if not (exists property list file propertyFile) then return missing value
+		tell property list file propertyFile
+			if not (exists property list item propertyName) then return missing value
+			return (value of property list item propertyName)
+		end tell
+	end tell
+end readProperty
