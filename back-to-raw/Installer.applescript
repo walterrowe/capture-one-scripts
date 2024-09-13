@@ -152,7 +152,11 @@ on run
 				set thisDate to (|DateTimeOriginal| of thisExifData)
 				-- if SubsecTimeOriginal tag exists append it for more accuracy
 				if exifTags contains "SubsecTimeOriginal" then
-					set thisDate to thisDate & "." & (|SubsecTimeOriginal| of thisExifData)
+					if length of (|SubsecTimeOriginal| of thisExifData) > 1 then
+						set thisDate to thisDate & "." & (|SubsecTimeOriginal| of thisExifData)
+					else
+						set thisDate to thisDate & ".0" & (|SubsecTimeOriginal| of thisExifData)
+					end if
 				end if
 				-- display dialog thisName & return & thisDate
 				if thisParent's extension is in sourceExts then
