@@ -16,14 +16,16 @@
 
 	PREREQUISITES
 	
-	* exiftool must be installed
+	None
 
 *)
 
-property version : "2.0"
+property version : "3.0"
 
 use AppleScript version "2.8"
 use scripting additions
+use framework "Foundation"
+use framework "AppKit" -- for extracting EXIF from the image files
 
 property libraryFolder : ((POSIX path of (path to home folder)) as string) & "Library/Scripts/"
 property installFolder : ((POSIX path of (path to home folder)) as string) & "Library/Scripts/Capture One Scripts/"
@@ -56,24 +58,6 @@ on run
 	-- set required base variables
 	set appName to my name
 	set appPath to path to me
-	
-	
-	-- confirm we have exiftool installed
-	set exiftool to ""
-	tell application "Finder"
-		try
-			set exiftool to (POSIX file "/usr/local/bin/exiftool" as alias)
-		on error
-			try
-				set exiftool to (POSIX file "/opt/homebrew/bin/exiftool" as alias)
-			end try
-		end try
-	end tell
-	if exiftool is "" then
-		display alert appName message "This utility requires exiftool." buttons {"Quit"}
-		return
-	end if
-	set exiftool to POSIX path of (exiftool as string)
 	
 	-- make sure the CO script library is loaded
 	set myLibrary to loadLibrary(appName)
@@ -157,13 +141,20 @@ on run
 		repeat with thisVariant in selectedVariants
 			set thisParent to thisVariant's parent image
 			set thisFile to quoted form of POSIX path of (thisParent's file as alias)
+			set thisFile to POSIX path of (thisParent's file as alias)
 			set thisName to thisParent's name as string
-			set thisDate to do shell script "eval $(/usr/libexec/path_helper -s); " & exiftool & " -DateTimeOriginal " & thisFile & " |  cut -c35-"
-			-- display dialog "Date: [" & thisDate & "]" & return & thisFile
-			if thisDate is "" then
-				set skippedVariants to skippedVariants & {thisVariant}
-			else
-				-- display dialog thisParent's name & return & thisParent's extension
+			
+			set thisExifData to my readEXIFFromImage(thisFile)
+			set exifTags to my getExifTags(thisExifData)
+			
+			-- if DateTimeOriginal tag exists use it
+			if exifTags contains "DateTimeOriginal" then
+				set thisDate to (|DateTimeOriginal| of thisExifData)
+				-- if SubsecTimeOriginal tag exists append it for more accuracy
+				if exifTags contains "SubsecTimeOriginal" then
+					set thisDate to thisDate & "." & (|SubsecTimeOriginal| of thisExifData)
+				end if
+				-- display dialog thisName & return & thisDate
 				if thisParent's extension is in sourceExts then
 					set end of sourceVariants to thisVariant
 					set end of sourceDates to thisDate
@@ -172,6 +163,8 @@ on run
 					set end of targetVariants to thisVariant
 					set end of targetDates to thisDate
 				end if
+			else
+				set skippedVariants to skippedVariants & {thisVariant}
 			end if
 		end repeat
 		
@@ -195,7 +188,7 @@ on run
 				-- display dialog sourceName & " => " & targetName buttons "Dismiss" with icon coIcon
 				
 				if syncedItems contains "Everything" or syncedItems contains "Adjustments" then
-				
+					
 					-- sync adjustments
 					copy adjustments sourceVariant
 					reset adjustments targetVariant
@@ -382,14 +375,42 @@ on loadLibrary(appName as string)
 	
 end loadLibrary
 
+## return names of EXIF tags extracted from image file
+
+on getExifTags(exifData)
+	set thisExifDict to (current application's NSDictionary's dictionaryWithDictionary:exifData)
+	set exifTags to thisExifDict's allKeys() as list
+	return exifTags
+end getExifTags
+
+## use AppKit framework to extract exifdata from image file
+## credit to "Shane_Stanley" on macscripter.net for this code
+## https://www.macscripter.net/t/getting-exif-metadata-from-image-files/69297/7
+
+on readEXIFFromImage(POSIXPath as string)
+	set theImageRep to current application's NSBitmapImageRep's imageRepWithContentsOfFile:POSIXPath
+	set theExifData to theImageRep's valueForProperty:(current application's NSImageEXIFData)
+	try
+		set theExifs to theExifData as record
+	on error
+		# Here if theExifDatas is missing value.
+		set theExifs to {}
+	end try
+	return theExifs as record
+end readEXIFFromImage
+
+##
+## perform recursive binary search on list for value
+##
+
 on binarySearch(aValue, values, iLower, iUpper)
 	
 	set valueIndex to 0
 	
-	-- if search list is narrowed down to only 1 item
+	-- if search list is narrowed down to 4 items just brute force search
 	if (iUpper - iLower) ² 4 then
 		repeat with midIndex from iLower to iUpper
-			if aValue = (item midIndex of values) then
+			if (aValue starts with (item midIndex of values)) or ((item midIndex of values) starts with aValue) then
 				set valueIndex to midIndex
 			end if
 		end repeat
@@ -399,7 +420,7 @@ on binarySearch(aValue, values, iLower, iUpper)
 	set midIndex to (iLower + ((iUpper - iLower) div 2))
 	set midValue to item midIndex of values
 	
-	if midValue = aValue then
+	if (midValue starts with aValue) or (aValue starts with midValue) then
 		return midIndex
 	else if midValue > aValue then
 		return my binarySearch(aValue, values, iLower, midIndex)
