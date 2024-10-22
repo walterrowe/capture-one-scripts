@@ -73,13 +73,19 @@ on run
 	
 	-- application code goes below here
 	
+	if appTesting then set appName to item 1 of (choose from list installNames)
+	
 	set updateCount to 0
 	
 	tell application "Capture One"
 		
 		if appName starts with "Apply" then
 			-- get list of variants with black & white enabled or background saturation set to -100
-			set monoVariants to (get variants where ((black and white of adjustments is true) or (saturation of adjustments is -100.0)))
+			if (count of selected variants) > 0 then
+				set monoVariants to (get variants where ((selected is true) and (black and white of adjustments is true) or (saturation of adjustments is -100.0)))
+			else
+				set monoVariants to (get variants where ((black and white of adjustments is true) or (saturation of adjustments is -100.0)))
+			end if
 			if (count of monoVariants) > 0 then
 				repeat with bwKeyword in bwKeywords
 					tell current document
@@ -93,18 +99,28 @@ on run
 						apply keyword monoKW to monoVariants
 					end tell
 				end repeat
+				repeat with monoVariant in monoVariants
+					tell monoVariant to set status job identifier to "-BW"
+				end repeat
 				set updateCount to (count of monoVariants)
 			end if
 		end if
 		
 		if appName starts with "Remove" then
+			set updatedVariants to {}
 			repeat with thisKeyword in bwKeywords
-				set monoVariants to (variants where (thisKeyword is in name of keywords) and (saturation of adjustments is not -100.0) and (black and white of adjustments is false))
+				if (count of selected variants) > 0 then
+					set monoVariants to (get variants where ((selected is true) and (thisKeyword is in name of keywords)))
+				else
+					set monoVariants to (get variants where (thisKeyword is in name of keywords))
+				end if
 				repeat with thisVariant in monoVariants
+					if updatedVariants does not contain (id of thisVariant) then set end of updatedVariants to (id of thisVariant)
+					tell thisVariant to set status job identifier to ""
 					delete (every keyword of thisVariant whose name is thisKeyword)
 				end repeat
-				set updateCount to updateCount + (count of monoVariants)
 			end repeat
+			set updateCount to (count of updatedVariants)
 		end if
 		
 	end tell
