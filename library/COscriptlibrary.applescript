@@ -63,7 +63,7 @@ on installMe(appBase as string, pathToMe as string, installFolder as string, app
 		try
 			do shell script installCommand
 		on error errStr number errorNumber
-			set alertResult to (display alert "Install Script Error" message errStr & ": " & (errorNumber as text) & "on file " & scriptSource buttons {"Stop"} default button "Stop" as critical giving up after 10)
+			set alertResult to (display alert "Install Script Error" message errStr & ": " & (errorNumber as text) & "on file " & scriptSource & return & return & installCommand buttons {"Stop"} default button "Stop" as critical giving up after 10)
 		end try
 		
 		if appIcon is true then
@@ -134,7 +134,7 @@ end meetsRequirements
 ##
 
 -- notice to display when UI Scripting is not enabled
-property UIScriptingNotice : "User Interface scripting is not enabled for Capture One. In order to continue it must be enabled." & return & return & "After clicking OK, the System Settings window will open. Enable Capture One in the list and enter your password when prompted, then try the app again."
+property UIScriptingNotice : "User Interface scripting is not enabled. In order to continue it must be enabled." & return & return & "After clicking OK, the System Settings window will open. Enable Capture One in the list and enter your password when prompted, then try the app again."
 
 on activateUIScripting()
 	tell application "System Events"
@@ -528,7 +528,7 @@ on storeProperty(propertyFile as string, propertyName as string, propertyValue)
 			-- Create an empty property list dictionary item
 			set theParentDictionary to make new property list item with properties {kind:record}
 			set propertyListFile to make new property list file Â
-			with properties {contents:theParentDictionary, name:propertyFile}
+				with properties {contents:theParentDictionary, name:propertyFile}
 		else
 			set propertyListFile to get property list file propertyFile
 		end if
@@ -561,3 +561,20 @@ on readProperty(propertyFile as string, propertyName as string)
 		end tell
 	end tell
 end readProperty
+
+##
+## delete a property from a property list file (doesn't work)
+## return missing value if plist file doesn't exist
+##
+## (crafted from https://developer.apple.com/library/archive/documentation/LanguagesUtilities/Conceptual/MacAutomationScriptingGuide/WorkwithPropertyListFiles.html)
+##
+on deleteProperty(propertyFile as string, propertyName as string)
+	tell application "System Events"
+		if not (exists property list file propertyFile) then return missing value
+		tell property list file propertyFile
+			if not (exists property list item propertyName) then return true
+			delete property list item propertyName
+			return true
+		end tell
+	end tell
+end deleteProperty
