@@ -5,12 +5,16 @@
 	Contact: walter@walterrowe.com
 
 	Created: 08-Apr-2023
-	Updated: 30-Aug-2024
+	Updated: 25-Oct-2024
 
 	DESCRIPTION
 
-	Synchronize adjustments, labels, ratings, keywords, metadata
-	for selected images use chosen sources to find matching targets
+	Synchronize names, adjustments, labels, ratings, keywords, metadata
+	for selected images use chosen sources to find matching targets.
+	
+	When name syncing is chosen, the source file will have "-synced"
+	appended to its base name to avoid name collisions that result in
+	target files having numbers added (e.g. "name 1", "name 2").
 
 	User chooses source file type, target file types, and what to sync
 
@@ -20,7 +24,7 @@
 
 *)
 
-property version : "3.0"
+property version : "3.1"
 
 use AppleScript version "2.8"
 use scripting additions
@@ -45,7 +49,11 @@ property appTesting : false -- true, false
 -- https://www.file-extensions.org/filetype/extension/name/digital-camera-raw-files
 property rawExtensions : {"ARW", "ARF", "ARQ", "CR3", "CR2", "CRW", "DCR", "DNG", "FPX", "IIQ", "JPG", "JPEG", "MRW", "NEF", "ORF", "PEF", "PSD", "PTX", "RAF", "RAW", "RW2", "RWL", "SRF", "SR2", "TIFF"}
 
-property syncableItems : {"Everything", "Adjustments", "Crop", "Keywords", "Labels", "Metadata", "Ratings"}
+property syncableItems : {"Everything", "Name", "Adjustments", "Crop", "Keywords", "Labels", "Metadata", "Ratings"}
+
+property collectionMatched : "BACK-to-RAW Matched Variants"
+property collectionUnmatched : "BACK-to-RAW Unmatched Variants"
+property collectionSkipped : "BACK-to-RAW Skipped Variants"
 
 -- application specific properties above
 
@@ -130,7 +138,11 @@ on run
 		set targetVariants to {}
 		set targetDates to {}
 		set matchedVariants to {}
+		set matchedCount to 0
 		set skippedVariants to {}
+		set skippedCount to 0
+		set unmatchedVariants to {}
+		set unmatchedCount to 0
 		
 		-- get all selected variants
 		set selectedVariants to get selected variants
@@ -138,6 +150,7 @@ on run
 		tell me to myLibrary's progress_start(0, "Processing ...", "scanning")
 		
 		-- divide selected variants into potential sources and targets
+		set startTime to current date
 		repeat with thisVariant in selectedVariants
 			set thisParent to thisVariant's parent image
 			set thisFile to quoted form of POSIX path of (thisParent's file as alias)
@@ -152,11 +165,14 @@ on run
 				set thisDate to (|DateTimeOriginal| of thisExifData)
 				-- if SubsecTimeOriginal tag exists append it for more accuracy
 				if exifTags contains "SubsecTimeOriginal" then
+					(*
 					if length of (|SubsecTimeOriginal| of thisExifData) > 1 then
 						set thisDate to thisDate & "." & (|SubsecTimeOriginal| of thisExifData)
 					else
 						set thisDate to thisDate & ".0" & (|SubsecTimeOriginal| of thisExifData)
 					end if
+					*)
+					set thisDate to thisDate & "." & (|SubsecTimeOriginal| of thisExifData)
 				end if
 				-- display dialog thisName & return & thisDate
 				if thisParent's extension is in sourceExts then
@@ -168,9 +184,12 @@ on run
 					set end of targetDates to thisDate
 				end if
 			else
-				set skippedVariants to skippedVariants & {thisVariant}
+				set end of skippedVariants to thisVariant
+				set skippedCount to skippedCount + 1
 			end if
 		end repeat
+		
+		-- display dialog "Sources: " & (count of sourceVariants) & return & "Targets: " & (count of targetVariants) & return & "Skipped: " & (count of skippedVariants)
 		
 		-- display dialog "Sources (" & myLibrary's joinText(sourceExts, ",") & "): " & (count of sourceVariants) & return & "Targets (" & myLibrary's joinText(targetExts, ",") & "): " & (count of targetVariants)
 		
@@ -187,9 +206,23 @@ on run
 			-- display dialog (sourceItem as string) buttons {"Cancel", "Continue"} with icon coIcon
 			if sourceItem > 0 then
 				set sourceVariant to item sourceItem of sourceVariants
-				set matchedVariants to matchedVariants & {sourceVariant, targetVariant}
+				set end of matchedVariants to sourceVariant
+				set end of matchedVariants to targetVariant
+				set matchedCount to matchedCount + 1
 				
 				-- display dialog sourceName & " => " & targetName buttons "Dismiss" with icon coIcon
+				
+				if syncedItems contains "Everything" or syncedItems contains "Name" then
+					set sourceImage to parent image of sourceVariant
+					set targetImage to parent image of targetVariant
+					-- if the name was already synced don't do it again
+					set theName to name of sourceImage
+					if theName does not contain "-synced" then
+						-- add "-synced" to source image name to avoid collisions that result in numeric suffixes (e.g. "name 1")
+						set name of sourceImage to (theName & "-synced")
+						set name of targetImage to theName
+					end if
+				end if
 				
 				if syncedItems contains "Everything" or syncedItems contains "Adjustments" then
 					
@@ -293,42 +326,57 @@ on run
 					set targetVariant's Getty original filename to sourceVariant's Getty original filename
 					set targetVariant's Getty parent MEID to sourceVariant's Getty parent MEID
 				end if
+			else
+				set end of unmatchedVariants to targetVariant
+				set unmatchedCount to unmatchedCount + 1
 			end if
 			tell me to myLibrary's progress_step(targetItem)
 		end repeat
 		
-		set statusMessage to ""
+		set endTime to current date
+		
+		set statusMessage to "Started: " & startTime & return & "Ended: " & endTime & return & return
 		
 		if (count of skippedVariants) > 0 then
-			set statusMessage to statusMessage & "Skipped " & (count of skippedVariants) & " variants.
-See \"BACK-to-RAW Skipped Variants\" User Collection.
-
-"
+			set statusMessage to statusMessage & "Skipped " & skippedCount & " variants." & return & "See " & collectionSkipped & " User Collection." & return
 			tell current document
-				if exists collection "BACK-to-RAW Skipped Variants" then
-					set skippedCollection to collection "BACK-to-RAW Skipped Variants"
-				else
-					set skippedCollection to make new collection with properties {kind:album, name:"BACK-to-RAW Skipped Variants"}
-				end if
+				try
+					set skippedCollection to collection collectionSkipped
+				on error
+					set skippedCollection to make new collection with properties {kind:album, name:collectionSkipped}
+				end try
 				add inside skippedCollection variants skippedVariants
 			end tell
+		else
+			set statusMessage to statusMessage & "No variants skipped." & return
 		end if
 		
 		if (count of matchedVariants) > 0 then
-			set statusMessage to statusMessage & "Synchronized " & ((count of matchedVariants) / 2 as integer) & " Variant Pairs.
-See \"BACK-to-RAW Matched Variants\" User Collection.
-
-"
+			set statusMessage to statusMessage & "Synchronized " & (matchedCount) & " Variant Pairs." & return & "See " & collectionMatched & " User Collection." & return
 			tell current document
-				if exists collection "BACK-to-RAW Matched Variants" then
-					set matchedCollection to collection "BACK-to-RAW Matched Variants"
-				else
-					set matchedCollection to make new collection with properties {kind:album, name:"BACK-to-RAW Matched Variants"}
-				end if
+				try
+					set matchedCollection to collection collectionMatched
+				on error
+					set matchedCollection to make new collection with properties {kind:album, name:collectionMatched}
+				end try
 				add inside matchedCollection variants matchedVariants
 			end tell
 		else
-			set statusMessage to "No variants synchronized."
+			set statusMessage to statusMessage & "No variants synchronized." & return
+		end if
+		
+		if (count of unmatchedVariants) > 0 then
+			set statusMessage to statusMessage & "Umatched " & unmatchedCount & " Variants." & return & "See " & collectionUnmatched & " User Collection." & return
+			tell current document
+				try
+					set unmatchedCollection to collection collectionUnmatched
+				on error
+					set unmatchedCollection to make new collection with properties {kind:album, name:collectionUnmatched}
+				end try
+				add inside unmatchedCollection variants unmatchedVariants
+			end tell
+		else
+			set statusMessage to statusMessage & "No variants unmatched." & return
 		end if
 		tell me to myLibrary's progress_end()
 	end tell
@@ -407,14 +455,15 @@ end readEXIFFromImage
 ## perform recursive binary search on list for value
 ##
 
-on binarySearch(aValue, values, iLower, iUpper)
+on binarySearchx(aValue, values, iLower, iUpper)
 	
 	set valueIndex to 0
 	
-	-- if search list is narrowed down to 4 items just brute force search
+	-- if search list is narrowed down to 10 items just brute force search
 	if (iUpper - iLower) ² 4 then
 		repeat with midIndex from iLower to iUpper
-			if (aValue starts with (item midIndex of values)) or ((item midIndex of values) starts with aValue) then
+			set midValue to item midIndex of values
+			if (aValue starts with midValue) or (midValue starts with aValue) then
 				set valueIndex to midIndex
 			end if
 		end repeat
@@ -431,5 +480,22 @@ on binarySearch(aValue, values, iLower, iUpper)
 	else if midValue < aValue then
 		return my binarySearch(aValue, values, (midIndex + 1), iUpper)
 	end if
+	
+end binarySearchx
+
+
+on binarySearch(aValue, itemValues, iLower, iUpper)
+	
+	set valueIndex to 0
+	set totalItems to count of itemValues
+	
+	repeat with itemIndex from 1 to totalItems
+		set itemValue to item itemIndex of itemValues
+		if (aValue starts with itemValue) or (itemValue starts with aValue) then
+			return valueIndex
+		end if
+	end repeat
+	
+	return valueIndex
 	
 end binarySearch
