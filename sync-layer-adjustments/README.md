@@ -4,7 +4,7 @@
 
 ## Description
 
-This utility provides two operations. It lets you sync adjustments between two layers across selected variants, or sync a single layer across selected variants.
+This utility provides two operations. It lets you sync adjustments between two layers across selected variants, or sync a single layer across selected variants. These utilities do NOT synchronize layer masks. They ONLY sychronizes adjustments, luma masks, and opacity.
 
 
 - Sync Between Layers: Syncs adjustments between two layers of the same variant for a selection of variants. This simplifies syncing adjustments from existing adjustment layers to new dynamic masking layers. You can choose to disable the source layer after adjustments are copied. If a variant does not have either the source or target layer that variant is skipped.
