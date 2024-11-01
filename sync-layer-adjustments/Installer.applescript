@@ -40,7 +40,7 @@ property installIcon : false -- if true must have a droplet.icns icon file in th
 property requiresCOrunning : true -- true if capture one is required to be running
 property requiresCOdocument : true -- true, false, "catalog", "session"
 
-property appTesting : false -- if true, run in script editor, and if false install the script
+property appTesting : true -- if true, run in script editor, and if false install the script
 
 -- application specific properties below -- properties are constants at compile time
 
@@ -64,6 +64,16 @@ on run
 	if installNames does not contain appName and not appTesting then
 		myLibrary's installMe(appName, appPath, installFolder, installType, installNames, installIcon)
 		return
+	end if
+	
+	if appTesting is true then
+		if (count of installNames) > 1 then
+			set appName to choose from list installNames with prompt "Choose Target Layer To Sync"
+			if appName is false then return
+			set appName to first item of appName
+		else
+			set appName to item 1 of installNames
+		end if
 	end if
 	
 	-- verify Capture One is running and has a document open
@@ -167,13 +177,13 @@ on syncBetweenLayers(myLibrary, appName as text)
 		
 		-- choose names of layers to sync
 		set sourceLayerName to choose from list layerNames with prompt "Choose Source Layer To Sync"
-		if sourceLayerName is false then return
+		if sourceLayerName is false then return "Cancelled"
 		
 		set targetLayerName to choose from list layerNames with prompt "Choose Target Layer To Sync"
-		if targetLayerName is false then return
+		if targetLayerName is false then return "Cancelled"
 		
 		set disableSourceLayer to (display alert "Disable Source Layer" message "Do you want to disable the source layer?" buttons {"Cancel", "No", "Yes"})
-		if button returned of disableSourceLayer is "Cancel" then return
+		if button returned of disableSourceLayer is "Cancel" then return "Cancelled"
 		if button returned of disableSourceLayer is "Yes" then
 			set disableSourceLayer to true
 		else
@@ -182,10 +192,7 @@ on syncBetweenLayers(myLibrary, appName as text)
 		
 		-- make sure source and target differ
 		if sourceLayerName is targetLayerName then
-			set alertTitle to appName & " Alert"
-			set alertMessage to "Source and Target layers must be different."
-			set alertResult to (display alert alertTitle message alertMessage buttons {"OK"} giving up after 10)
-			return
+			return "Source and Target layers must be different."
 		end if
 		
 		-- sync chosen layers across all selected variants
@@ -233,8 +240,7 @@ on syncLayerAcrossImages(myLibrary, appName as text)
 		
 		-- have to select more than one variant for this operation
 		if (count of selectedVariants) is 1 then
-			display alert appName message "You must select more than one variant."
-			return
+			return "You must select more than one variant."
 		end if
 		
 		-- collect names of layers from the primary variant
@@ -246,13 +252,12 @@ on syncLayerAcrossImages(myLibrary, appName as text)
 			end if
 		end repeat
 		if (count of layerNames) ­ (count of invertedLayers) then
-			display alert appName message "Multiple layers have the same name. Please rename one."
-			return
+			return "Multiple layers have the same name. Please rename one."
 		end if
 		
 		-- choose name of the layer to sync across images
 		set sourceLayerName to choose from list layerNames with prompt "Choose Layer To Sync Across Images"
-		if sourceLayerName is false then return
+		if sourceLayerName is false then return "Cancelled"
 		set sourceLayer to (every layer of primaryVariant where name is sourceLayerName)
 		set sourceLayer to first item of sourceLayer
 		
