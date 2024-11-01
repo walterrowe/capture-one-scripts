@@ -40,7 +40,7 @@ property installIcon : false -- if true must have a droplet.icns icon file in th
 property requiresCOrunning : true -- true if capture one is required to be running
 property requiresCOdocument : true -- true, false, "catalog", "session"
 
-property appTesting : true -- if true, run in script editor, and if false install the script
+property appTesting : false -- if true, run in script editor, and if false install the script
 
 -- application specific properties below -- properties are constants at compile time
 
