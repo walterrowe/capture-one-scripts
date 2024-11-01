@@ -52,6 +52,17 @@ on run
 		return
 	end if
 	
+	-- if app testing and we have multiple install names choose what action to perform
+	if appTesting is true then
+		if (count of installNames) > 1 then
+			set appName to choose from list installNames with prompt "Choose Target Layer To Sync"
+			if appName is false then return
+			set appName to first item of appName
+		else
+			set appName to item 1 of installNames
+		end if
+	end if
+	
 	-- verify Capture One is running and has a document open
 	set readyToRun to myLibrary's meetsRequirements(appName, requiresCOrunning, requiresCOdocument)
 	if not readyToRun then return
