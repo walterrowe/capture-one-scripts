@@ -462,8 +462,8 @@ on synchronizeLayers(sourceLayer, targetLayer)
 			if dehaze amount of adjustments of sourceLayer is not missing value then
 				set dehaze amount of adjustments of targetLayer to dehaze amount of adjustments of sourceLayer
 			end if
-			if dehaze color of adjustments of sourceLayer is not missing value then
-				set dehaze color of adjustments of targetLayer to dehaze color of adjustments of sourceLayer
+			if dehaze color of adjustments of sourceLayer is not {0, 0, 0} then
+				set dehaze color of adjustments of targetLayer to (dehaze color of adjustments of sourceLayer as RGB color)
 			end if
 			
 			if sharpening amount of adjustments of sourceLayer is not missing value then
