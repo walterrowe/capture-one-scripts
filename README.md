@@ -10,6 +10,7 @@ Brief summary of the available scripts.  Details provided in the README files in
 * **[Back To Raw](back-to-raw/)** - synchronize one or more of adjustments, ratings, labels, keywords, metadata from a source file type to target file types.
 * **[Clear Batch Queue](clear-batch-queue/)** - empty batch queue, delete old batch folders, and clean out current batch queue folder.
 * **[Copy Labels to Finder](copy-labels-to-finder/)** - copy capture one color tags to macos finder color labels.
+* **[Delete Selected Layers](delete-selected-layers/)** - delete selected layers from multiple variants.
 * **[dt-on-set-scripts](dt-on-set-scripts/)** - A collection of scripts for DigiTechs to use on set via keyboard shortcuts.
 * **[Export / Import Settings](export-import-settings/)** - Export / Import your Capture One presets, styles, export recipes, etc.
 * **[find-offline-files](find-offline-files/)** - Find all offline files in a catalog.
@@ -19,6 +20,7 @@ Brief summary of the available scripts.  Details provided in the README files in
 * **[Monochrome Keywords](monochrome-keywords/)** - apply monochrome keywords to or remove monochrome keywords from images.
 * **[Smart Album Search by Month](search-by-month/)** - create a smart album to search for images created in the same month across a range of years.
 * **[Select Image Layer](select-image-layer/)** - set current layer of selected variants (or all of none selected) to background (image layer).
+* **[Synchronize Layers](sync-layer-adjustments/)** - synchronize adjustments between two layers across images, or sync one layer's adjustments to multiple images.
 
 ## Warranty
 
