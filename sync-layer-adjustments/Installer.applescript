@@ -325,6 +325,10 @@ on synchronizeLayers(sourceLayer, targetLayer)
 				set saturation of adjustments of targetLayer to saturation of adjustments of sourceLayer
 			end if
 			
+			if color editor settings of adjustments of sourceLayer is not missing value then
+				set color editor settings of adjustments of targetLayer to color editor settings of adjustments of sourceLayer
+			end if
+			
 			if color balance master hue of adjustments of sourceLayer is not missing value then
 				set color balance master hue of adjustments of targetLayer to color balance master hue of adjustments of sourceLayer
 			end if
