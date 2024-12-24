@@ -96,7 +96,7 @@ on run
 	
 	try
 		set sYear to text returned of (display dialog "Enter Start Year:" default answer "" with icon coIcon buttons {"Continue", "Cancel"} default button "Continue")
-		set eYear to text returned of (display dialog "Enter Start Year:" default answer "" with icon coIcon buttons {"Continue", "Cancel"} default button "Continue")
+		set eYear to text returned of (display dialog "Enter End Year:" default answer "" with icon coIcon buttons {"Continue", "Cancel"} default button "Continue")
 	on error
 		return
 	end try
