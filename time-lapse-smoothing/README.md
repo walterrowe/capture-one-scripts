@@ -12,13 +12,13 @@ In a time lapse sequence the ambient light and the light color temperature chang
 
 If you take a 300-frame time lapse sequence and increase or decrease the exposure time (shutter speed) by 1/3rd of a stop every 10 frames, you end up with 30 sets of 10 frames each. Each frame in a frame set will have the same exposure. The exposure time in each successive frame set will change by the increment programmed into the camera until the entire time lapse sequence has been captured. Where the camera's exposure setting changes at each new frame set you see a dramatic jump or drop in light when you view the images on your computer.
 
-The script steps through every frame in the time lapse sequence and sets the Capture One exposure of each frame to linearly smooth out this jump or drop to match how the natural light changes.
+The script steps through every frame in the time lapse sequence, setting the Capture One exposure of each frame to linearly smooth out this jump or drop to match how the natural light changes.
 
 ### White Balance Smoothing
 
-As the sun rises or sets the white balance also changes. You set the correct white balance for the first and last frame of the entire time lapse sequence in Capture One. This script will divide the temperature difference between the first and last frame by the number of total frames in the time lapse sequence.
+As the sun rises or sets, the camera's white balance must change to match the changing light. We can't program the camera to do that so we must do it in post processing. Prior to running this script you will set the correct white balance for the first and last frame of the time lapse sequence. The script gets the difference in temperature between the first and last frame and divides it by the total number of frames in the sequence. This gives you a temperature delta to apply frame to frame starting with the first frame's temperature all the way to the last frame's temperature.
 
-Imagine you set the white balance temperature of first frame to 5200 Kelvin and the last frame to 3100 Kelvin. The difference is 2100 Kelvin. If you have a 300 frame sequence, then 2100 Kelvin divided by 300 frames it 70 Kelvin per frame we need to adjust from first to last frame. Starting with the white balance temperature of the first frame, the script steps through all the frames of the time lapse sequence, adjusting the Capture One white balance temperature by this calculated delta per frame, as it progresses toward the temperature of the last frame of the time lapse sequence.
+Imagine you set the white balance temperature of the first frame to 5200 Kelvin and the last frame to 3100 Kelvin. The difference is 2100 Kelvin. If you have a 300-frame sequence, and divide 2100 Kelvin by 300 frames, you get 70 Kelvin per frame you need to apply linearly from first to last frame. The first frame will have no WB change (5100K). The second frame will have the WB of the first frame adjusted by -70 (5030K). The third frame will have the WB of the second frame adjusted by -70 (4960K). This progresses across the entire sequence down to the last frame's 3100K.
 
 This smooths out the white balance temperature of the time lapse sequence to match how the natural light changes.
 
