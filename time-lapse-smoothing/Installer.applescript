@@ -63,6 +63,8 @@ property appTesting : true -- if true, run in script editor, and if false instal
 
 -- application specific properties below
 
+property shutterSpeedIncrements : {-1.0, -0.67, -0.5, -0.3, 0.3, 0.5, 0.67, 1.0}
+
 -- application specific properties above
 
 ##
@@ -135,26 +137,27 @@ on run
 		set tempStart to temperature of adjustments of firstVariant
 		set tempEnd to temperature of adjustments of lastVariant
 		
+		# get difference in temperature of first and last frame
 		set tempRange to tempEnd - tempStart
 		
-		# set WB temperature increment
+		# calculate WB temperature increment (divide temperature difference by total # of frames)
 		# increment across one fewer than sequence length so last frame retains current WB temp
 		set tempStep to tempRange / (sequenceLength - 1)
 		
-		# try to determine the batch set size by looking for where shutter speed changes
+		# estimate the exposure set size by looking for shutter speed change
 		set firstShutterSpeed to EXIF shutter speed of (parent image of firstVariant)
 		repeat with frameSet from 1 to sequenceLength
 			if EXIF shutter speed of parent image of (item frameSet of timeLapseList) is not firstShutterSpeed then exit repeat
 		end repeat
 		set frameSet to frameSet - 1
 		
-		# get batch set size
+		# get confirmation of exposure set size (N frames per exposure)
 		set frameSet to (text returned of (display dialog "Confirm the # of frames per incremental exposure set in your time lapse sequence:" default answer frameSet with icon coIcon buttons {"Continue", "Cancel"} default button "Continue")) as integer
 		
 		# if the user pressed cancel then exit
 		if frameSet is false then return
 		
-		# ensure batch size evenly divides into number of frames of time lapse sequence
+		# ensure exposure set size evenly divides into number of frames of time lapse sequence
 		if (sequenceLength mod frameSet) is not 0 then
 			set alertTitle to appName & " ERROR"
 			set alertMessage to "Your time lapse sequence of " & sequenceLength & " frames is not a multiple of your batch set (" & frameSet & ")."
@@ -163,36 +166,40 @@ on run
 		end if
 		
 		# get exposure increment per batch set
-		set exposureStep to (choose from list {-1, -0.67, -0.5, -0.3, 0.3, 0.5, 0.67, 1})
+		set exposureStep to (choose from list shutterSpeedIncrements)
 		
 		# if the user pressed cancel then exit
 		if exposureStep is false then return
 		
 		# calculate list exposure smoothing adjustments per sequence batch
-		# if batch size is 10 and exposure step is 0.3, then increment is 0.3 / 10 (.03)
+		# if batch size is 10 and exposure step is 0.3, then increment is 0.3 Ö 10 (.03)
 		# list would be { 0.27, 0.24, 0.21, 0.18, 0.15, 0.12, 0.09, 0.06, 0.03, 0.0 }
-		# it is a repeating pattern for each batch set so calculate it one time
+		# it is the same repeating pattern for each exposure set so calculate it one time
 		set smoothingExpIncrement to (exposureStep / (frameSet as number)) as number
-		set smoothingExpIncrements to {}
 		
+		# build list of exposure values per exposure set
+		set smoothingExpIncrements to {}
 		repeat with batchStep from (frameSet - 1) to 0 by -1
 			set end of smoothingExpIncrements to batchStep * smoothingExpIncrement
 		end repeat
-		
 		
 		# loop through time lapse sequence smoothing white balance temp and exposure
 		repeat with timeLapseCount from 1 to sequenceLength by frameSet
 			repeat with batchFrame from 1 to frameSet
 				
+				# calculate which frame # in the time lapse sequence
 				set timeLapseFrame to timeLapseCount + (batchFrame - 1)
+				
+				# get the Capture One variant from the time lapse sequence
 				set thisFrame to item timeLapseFrame of timeLapseList
 				
-				# set smoothing temperature
+				# calculate the smoothing white balance temperature for this frame
 				set thisTemp to tempStart + (tempStep * (timeLapseFrame - 1))
+				
+				# apply the smoothing white balance temperature to this variant
 				set temperature of adjustments of thisFrame to thisTemp
 				
 				# set smoothing exposure starting with second frame set
-				set thisExposure to item batchFrame of smoothingExpIncrements
 				if timeLapseFrame > frameSet then
 					set exposure of adjustments of thisFrame to item batchFrame of smoothingExpIncrements
 				end if
@@ -200,11 +207,13 @@ on run
 			end repeat -- batch loop
 		end repeat -- time lapse loop
 		
-		set timeTaken to ((current date) - startTime)
-		set timeTaken to ((timeTaken / 60 as integer) as string) & ":" & (text -1 thru -2 of ("0" & (timeTaken mod 60 as integer) as string))
-		
 	end tell
 	
+	# calculate the time it took to smooth the sequence
+	set timeTaken to ((current date) - startTime)
+	set timeTaken to ((timeTaken / 60 as integer) as string) & ":" & (text -1 thru -2 of ("0" & (timeTaken mod 60 as integer) as string))
+	
+	# craft the final alert message that we are done
 	set alertMessage to "Elapsed Time: " & timeTaken & " (mm:ss)" & return & return & "Time Lapse: " & sequenceLength & " frames."
 	
 	-- application code goes above here
