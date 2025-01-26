@@ -21,6 +21,7 @@ Brief summary of the available scripts.  Details provided in the README files in
 * **[Smart Album Search by Month](search-by-month/)** - create a smart album to search for images created in the same month across a range of years.
 * **[Select Image Layer](select-image-layer/)** - set current layer of selected variants (or all of none selected) to background (image layer).
 * **[Synchronize Layers](sync-layer-adjustments/)** - synchronize adjustments between two layers across images, or sync one layer's adjustments to multiple images.
+* **[Time Lapse Smoothing](time-lapse-smoothing/)** - Smooth the exposure and white balance temperature progression across every exposure set of a full time lapse sequence.
 
 ## Warranty
 
