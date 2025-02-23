@@ -31,10 +31,10 @@ The contributors test their scripts to the best of their ability. Any errors or 
 
 ## Contributors
 
-* Emory Dunn
-* Eric Valk
-* Rick Allen
-* Walter Rowe
+* [Emory Dunn](https://github.com/emorydunn/CaptureOneScripts)
+* [Eric Valk](https://github.com/EricNepean)
+* [Rick Allen](https://github.com/rick-allen)
+* [Walter Rowe](https://github.com/walterrowe)
 
 ## Other Script Repositories
 
