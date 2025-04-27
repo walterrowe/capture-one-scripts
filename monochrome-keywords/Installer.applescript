@@ -111,7 +111,7 @@ on run
 					end tell
 				end repeat
 				repeat with monoVariant in monoVariants
-					tell monoVariant to set status job identifier to "-BW"
+					if (status job identifier of monoVariant) is "" then tell monoVariant to set status job identifier to "-BW"
 				end repeat
 				set updateCount to (count of monoVariants)
 			end if
