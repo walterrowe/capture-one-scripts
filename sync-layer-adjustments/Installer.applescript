@@ -525,9 +525,7 @@ on synchronizeLayers(sourceLayer, targetLayer)
 		
 		-- copy layer opacity
 		if exists opacity of sourceLayer then
-			if opacity of sourceLayer < 100.0 then
 				set opacity of targetLayer to opacity of sourceLayer
-			end if
 		end if
 	end tell
 end synchronizeLayers
