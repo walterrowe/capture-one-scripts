@@ -224,9 +224,9 @@ end myAlert
 ## join a list into a string based on a specific delimiter
 ##
 
-on joinText(theText as string, theDelimiter as string)
+on joinText(theText as text, theDelimiter as text)
 	set AppleScript's text item delimiters to theDelimiter
-	set theTextItems to every text item of theText as string
+	set theTextItems to every text item of theText as text
 	set AppleScript's text item delimiters to ""
 	return theTextItems
 end joinText
