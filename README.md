@@ -22,6 +22,7 @@ Brief summary of the available scripts.  Details provided in the README files in
 * **[Select Image Layer](select-image-layer/)** - set current layer of selected variants (or all of none selected) to background (image layer).
 * **[Synchronize Layers](sync-layer-adjustments/)** - synchronize adjustments between two layers across images, or sync one layer's adjustments to multiple images.
 * **[Time Lapse Smoothing](time-lapse-smoothing/)** - Smooth the exposure and white balance temperature progression across every exposure set of a full time lapse sequence.
+* **[Find Variants In Common](variants-in-common/)** - Find variants in common between two catalogs, add them to dedicated albums in both catalogs, and enable filter for Adjusted to show which ones were adjusted.
 
 ## Warranty
 

@@ -4,8 +4,10 @@
 	Author: Walter Rowe
 	Contact: walter@walterrowe.com
 
-	Created: 13 June 2025
-	Updated: <updated date>
+	Copyright: © 2025 Walter Rowe
+
+	Created: 16 June 2025
+	Updated: 16 June 2025
 
 	1. Set installNames
 	2. Develop code
