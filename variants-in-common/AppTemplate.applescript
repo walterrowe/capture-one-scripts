@@ -273,8 +273,8 @@ on run
 		
 	end tell
 	
-	set fileMessage to ((count of c1FileVariants) as text) & " file(s) in common." & return
-	set nameMessage to ((count of c1NameVariants) as text) & " name(s) in common." & return
+	set fileMessage to ((count of c1FileVariants) as text) & " variant file(s) in common." & return
+	set nameMessage to ((count of c1NameVariants) as text) & " variant name(s) in common." & return
 	set alertMessage to fileMessage & nameMessage
 	
 	-- application code goes above here
