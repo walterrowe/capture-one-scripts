@@ -50,8 +50,8 @@ property appTesting : false -- if true, run in script editor, and if false insta
 
 -- application specific properties below
 
-property albumFilesPrefix : "Variant Files in Common with "
-property albumNamesPrefix : "Variant Names in Common with "
+property albumFilePrefix : "Variant Files in Common with "
+property albumNamePrefix : "Variant Names in Common with "
 property adjustedFilterYes : "Adjusted|YES"
 property adjustedFilterNo : "Adjusted|NO"
 
@@ -100,10 +100,13 @@ on run
 	
 	-- application code goes below here
 	
+	set startTime to current date
+	
 	tell application "Capture One"
 		set docKind to myLibrary's getCOtype(current document)
 		tell current document to set docName to name
 		tell current document to set docPath to POSIX path of (path as alias) as string
+		
 		
 		-- get document list and kind of documents
 		set documentList to (get every document)
@@ -119,169 +122,158 @@ on run
 			return
 		end if
 		
-		-- album name that will contain common variants
-		set c1FilesAlbum to albumFilesPrefix & name of document 2
-		set c1NamesAlbum to albumNamesPrefix & name of document 2
-		set c2FilesAlbum to albumFilesPrefix & name of document 1
-		set c2NamesAlbum to albumNamesPrefix & name of document 1
+		-- set sourceDoc based on least number of variants
+		set sourceCount to 10000000 -- arbitrary 10 million
+		set sourceDoc to missing value
+		repeat with thisDoc from 1 to (count of documentList)
+			tell item thisDoc of documentList
+				set current collection to collection named "All Images"
+				set thisCount to (count of (get every variant))
+				if thisCount < sourceCount then
+					set sourceCount to thisCount
+					copy item thisDoc of documentList to sourceDoc
+				end if
+			end tell
+		end repeat
+		log sourceDoc
 		
-		-- get all the variants in both catalogs and prep catalogs for comparison
-		tell document 1
-			set c1current to current collection
-			set current collection to collection named "All Images"
-			set variants1 to (get every variant)
-			-- delete any prior instance of collections of common variants
-			repeat with theAlbum in {c1FilesAlbum, c1NamesAlbum}
+		-- set targetDoc
+		if first item of documentList is sourceDoc then
+			set targetDoc to last item of documentList
+		else
+			set targetDoc to first item of documentList
+		end if
+		
+		-- build albums to store found variants
+		set sourceDocName to (name of sourceDoc) as text
+		set targetDocName to (name of targetDoc) as text
+		
+		set sourceFileAlbum to albumFilePrefix & targetDocName
+		set sourceNameAlbum to albumNamePrefix & targetDocName
+		set targetFileAlbum to albumFilePrefix & sourceDocName
+		set targetNameAlbum to albumNamePrefix & sourceDocName
+		
+		log "creating albums in " & sourceDocName & " and " & targetDocName
+		
+		-- create target albums in source doc
+		set sourceFileAlbum to albumFilePrefix & targetDocName
+		set sourceNameAlbum to albumNamePrefix & targetDocName
+		log "creating albums " & sourceFileAlbum & " and " & sourceNameAlbum & " in " & sourceDocName
+		set current document to sourceDoc
+		tell sourceDoc
+			repeat with theAlbum in {sourceFileAlbum, sourceNameAlbum}
 				if exists collection named theAlbum then
 					delete collection named theAlbum
 					repeat until not (exists collection named theAlbum)
 						delay 0.2
 					end repeat
 				end if
+				make new collection with properties {kind:album, name:theAlbum}
+				repeat until exists collection named theAlbum
+					delay 0.2
+				end repeat
 			end repeat
 		end tell
 		
-		tell document 2
-			set c1current to current collection
-			set current collection to collection named "All Images"
-			set variants2 to (get every variant)
-			-- delete any prior instance of collections of common variants
-			repeat with theAlbum in {c2FilesAlbum, c2NamesAlbum}
+		-- create source albums in target doc
+		set targetFileAlbum to albumFilePrefix & sourceDocName
+		set targetNameAlbum to albumNamePrefix & sourceDocName
+		log "creating albums " & targetFileAlbum & " and " & targetNameAlbum & " in " & targetDocName
+		set current document to targetDoc
+		tell targetDoc
+			repeat with theAlbum in {targetFileAlbum, targetNameAlbum}
 				if exists collection named theAlbum then
 					delete collection named theAlbum
 					repeat until not (exists collection named theAlbum)
 						delay 0.2
 					end repeat
 				end if
+				make new collection with properties {kind:album, name:theAlbum}
+				repeat until exists collection named theAlbum
+					delay 0.2
+				end repeat
 			end repeat
 		end tell
 		
-		-- list of variants in common
-		set c1FileVariants to {}
-		set c1NameVariants to {}
-		set c2FileVariants to {}
-		set c2NameVariants to {}
+		-- find names of common variants
+		tell sourceDoc to set sourceVariants to (get name of every variant of collection named "All Images")
+		tell targetDoc to set targetVariants to (get name of every variant of collection named "All Images")
 		
-		-- brute force find all variants common between catalogs
-		repeat with v1 in variants1
-			repeat with v2 in variants2
-				if (file of v1) is (file of v2) then
-					set end of c1FileVariants to v1
-					set end of c2FileVariants to v2
-				else if (name of v1) is (name of v2) then
-					set end of c1NameVariants to v1
-					set end of c2NameVariants to v2
+		set sourceNames to {}
+		repeat with theVariant in sourceVariants
+			set end of sourceNames to (theVariant as text)
+		end repeat
+		
+		set targetNames to {}
+		repeat with theVariant in targetVariants
+			set end of targetNames to (theVariant as text)
+		end repeat
+		
+		tell me to myLibrary's progress_start(0, "Scanning ... ", count of sourceNames)
+		set commonVariants to {}
+		set searchCounter to 0
+		repeat with sourceName in sourceNames
+			set searchCounter to searchCounter + 1
+			set progress to ((searchCounter as number) / ((count of sourceNames) as number) * 100) as integer
+			tell me to myLibrary's progress_update(progress, 100, "")
+			if targetNames contains sourceName then set end of commonVariants to sourceName
+		end repeat
+		
+		-- set up progress status
+		set searchCounter to 0
+		set commonCount to (count of commonVariants)
+		tell me to myLibrary's progress_start(searchCounter, "Comparing ... ", 100)
+		
+		-- cycle through smallest doc comparing to other open docs
+		set current document to sourceDoc
+		set foundFiles to 0
+		set foundNames to 0
+		tell sourceDoc
+			repeat with sourceName in commonVariants
+				set sourceVariant to first item of (get every variant of collection named "All Images" where its name is sourceName)
+				set searchCounter to searchCounter + 1
+				set progress to ((searchCounter as number) / (commonCount as number) * 100) as integer
+				tell me to myLibrary's progress_update(progress, 100, "")
+				set sourceFile to (file of sourceVariant) as text
+				set sourceName to (name of sourceVariant) as text
+				
+				-- ask the target doc if it has a variant with this file or name
+				tell targetDoc
+					set theFiles to (get every variant of collection named "All Images" where its file is sourceFile)
+					set theNames to (get every variant of collection named "All Images" where its name is sourceName)
+				end tell
+				if theFiles is not {} then
+					tell targetDoc to add inside collection named targetFileAlbum variants theFiles
+					tell sourceDoc to add inside collection named sourceFileAlbum variants {sourceVariant}
+					set foundFiles to foundFiles + (count of theFiles)
+				else if theNames is not {} then
+					tell targetDoc to add inside collection named targetNameAlbum variants theNames
+					tell sourceDoc to add inside collection named sourceNameAlbum variants {sourceVariant}
+					set foundNames to foundNames + (count of theNames)
 				end if
 			end repeat
-		end repeat
-		
-		-- create common variants album in catalog 1
-		repeat with theValues in {{c1FileVariants, c1FilesAlbum}, {c1NameVariants, c1NamesAlbum}}
-			set theVariants to first item of theValues
-			set albumName to last item of theValues
-			if (count of theVariants) > 0 then
-				set current document to document 1
-				select document 1
-				tell document 1
-					
-					-- create common variants album
-					if exists collection named albumName then
-						set theAlbum to collection named albumName
-					else
-						set theAlbum to make new collection with properties {kind:album, name:albumName}
-					end if
-					
-					-- wait for common variants album to be created
-					repeat until exists collection named albumName
-						delay 0.2
-					end repeat
-					
-					-- add common variants to album
-					add inside theAlbum variants theVariants
-					
-					-- select common variants album
-					set current collection to collection id (id of theAlbum)
-					repeat until (id of current collection) is (id of theAlbum)
-						delay 0.2
-					end repeat
-					
-					-- clear all filters
-					set filters to {}
-					repeat until filters is {}
-						delay 0.2
-					end repeat
-					
-					-- enable filter for variants with adjustments
-					-- have to wait for the filter to become available
-					repeat until (available filters contains adjustedFilterYes) or (available filters contains adjustedFilterNo)
-						delay 0.2
-					end repeat
-					if available filters contains adjustedFilterYes then
-						set filters to adjustedFilterYes
-					end if
-				end tell
-			end if
-		end repeat
-		
-		-- create common variants album in catalog 2
-		repeat with theValues in {{c2FileVariants, c2FilesAlbum}, {c2NameVariants, c2NamesAlbum}}
-			set theVariants to first item of theValues
-			set albumName to last item of theValues
-			if (count of theVariants) > 0 then
-				set current document to document 2
-				select document 2
-				tell document 2
-					
-					-- create common variants album
-					if exists collection named albumName then
-						set theAlbum to collection named albumName
-					else
-						set theAlbum to make new collection with properties {kind:album, name:albumName}
-					end if
-					
-					-- wait for common variants album to be created
-					repeat until exists collection named albumName
-						delay 0.2
-					end repeat
-					
-					-- add common variants to album
-					add inside theAlbum variants theVariants
-					
-					-- select common variants album
-					set current collection to collection id (id of theAlbum)
-					repeat until (id of current collection) is (id of theAlbum)
-						delay 0.2
-					end repeat
-					
-					-- clear all filters
-					set filters to {}
-					repeat until filters is {}
-						delay 0.2
-					end repeat
-					
-					-- enable filter for variants with adjustments
-					-- have to wait for the filter to become available
-					repeat until (available filters contains adjustedFilterYes) or (available filters contains adjustedFilterNo)
-						delay 0.2
-					end repeat
-					if available filters contains adjustedFilterYes then
-						set filters to adjustedFilterYes
-					end if
-				end tell
-			end if
-		end repeat
+			tell me to myLibrary's progress_step(searchCounter)
+			
+		end tell
 		
 	end tell
 	
-	set fileMessage to ((count of c1FileVariants) as text) & " variant file(s) in common." & return
-	set nameMessage to ((count of c1NameVariants) as text) & " variant name(s) in common." & return
-	set alertMessage to fileMessage & nameMessage
+	tell me to myLibrary's progress_end()
+	
+	set endTime to current date
+	set timeTaken to (endTime - startTime)
+	set timeTaken to ((timeTaken / 60 as integer) as string) & ":" & (text -1 thru -2 of ("0" & (timeTaken mod 60 as integer) as string)) & " (mm:ss)" 
+	
+	set fileMessage to (foundFiles as text) & " variant(s) with file(s) in common." & return
+	set nameMessage to (foundNames as text) & " variant(s) with name(s) in common." & return
+	set doneMessage to return & timeTaken& return & return & "This dialog will close in 30 secs" & return
+	set alertMessage to fileMessage & nameMessage & doneMessage
 	
 	-- application code goes above here
 	
 	set alertTitle to appName & " Finished"
 	
-	set alertResult to (display alert alertTitle message alertMessage buttons {"OK"} giving up after 10)
+	set alertResult to (display alert alertTitle message alertMessage buttons {"OK"} giving up after 30)
 	
 end run
 
