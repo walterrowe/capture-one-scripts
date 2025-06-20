@@ -262,18 +262,18 @@ on run
 	
 	set endTime to current date
 	set timeTaken to (endTime - startTime)
-	set timeTaken to ((timeTaken / 60 as integer) as string) & ":" & (text -1 thru -2 of ("0" & (timeTaken mod 60 as integer) as string)) & " (mm:ss)" 
+	set timeTaken to ((timeTaken / 60 as integer) as string) & ":" & (text -1 thru -2 of ("0" & (timeTaken mod 60 as integer) as string))
 	
 	set fileMessage to (foundFiles as text) & " variant(s) with file(s) in common." & return
 	set nameMessage to (foundNames as text) & " variant(s) with name(s) in common." & return
-	set doneMessage to return & timeTaken& return & return & "This dialog will close in 30 secs" & return
+	set doneMessage to return & "Completed in " & timeTaken & " (mm:ss)" & return
 	set alertMessage to fileMessage & nameMessage & doneMessage
 	
 	-- application code goes above here
 	
 	set alertTitle to appName & " Finished"
 	
-	set alertResult to (display alert alertTitle message alertMessage buttons {"OK"} giving up after 30)
+	set alertResult to (display alert alertTitle message alertMessage buttons {"OK"})
 	
 end run
 
