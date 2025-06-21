@@ -256,6 +256,37 @@ on run
 			
 		end tell
 		
+		
+		-- if any of the new albums has adjusted images enable that filter
+		tell sourceDoc
+			repeat with theAlbum in {sourceFileAlbum, sourceNameAlbum}
+				set current collection to collection named theAlbum
+				repeat until name of current collection is theAlbum
+					delay 0.2
+				end repeat
+				repeat until (available filters contains adjustedFilterYes) or (available filters contains adjustedFilterNo)
+					delay 0.2
+				end repeat
+				if available filters contains adjustedFilterYes then
+					set filters to {adjustedFilterYes}
+				end if
+			end repeat
+		end tell
+		tell targetDoc
+			repeat with theAlbum in {targetFileAlbum, targetNameAlbum}
+				set current collection to collection named theAlbum
+				repeat until name of current collection is theAlbum
+					delay 0.2
+				end repeat
+				repeat until (available filters contains adjustedFilterYes) or (available filters contains adjustedFilterNo)
+					delay 0.2
+				end repeat
+				if available filters contains adjustedFilterYes then
+					set filters to {adjustedFilterYes}
+				end if
+			end repeat
+		end tell
+		
 	end tell
 	
 	tell me to myLibrary's progress_end()
