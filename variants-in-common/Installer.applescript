@@ -264,11 +264,16 @@ on run
 				repeat until name of current collection is theAlbum
 					delay 0.2
 				end repeat
-				repeat until (available filters contains adjustedFilterYes) or (available filters contains adjustedFilterNo)
-					delay 0.2
-				end repeat
-				if available filters contains adjustedFilterYes then
-					set filters to {adjustedFilterYes}
+
+				-- if catalogs have no variants in common, there are no adjusted filters
+				set variantCount to count of (every variant of current collection)
+				if variantCount > 0 then
+					repeat until (available filters contains adjustedFilterYes) or (available filters contains adjustedFilterNo)
+						delay 0.2
+					end repeat
+					if available filters contains adjustedFilterYes then
+						set filters to {adjustedFilterYes}
+					end if
 				end if
 			end repeat
 		end tell
@@ -278,11 +283,16 @@ on run
 				repeat until name of current collection is theAlbum
 					delay 0.2
 				end repeat
-				repeat until (available filters contains adjustedFilterYes) or (available filters contains adjustedFilterNo)
-					delay 0.2
-				end repeat
-				if available filters contains adjustedFilterYes then
-					set filters to {adjustedFilterYes}
+
+				-- if catalogs have no variants in common, there are no adjusted filters
+				set variantCount to count of (every variant of current collection)
+				if variantCount > 0 then
+					repeat until (available filters contains adjustedFilterYes) or (available filters contains adjustedFilterNo)
+						delay 0.2
+					end repeat
+					if available filters contains adjustedFilterYes then
+						set filters to {adjustedFilterYes}
+					end if
 				end if
 			end repeat
 		end tell
