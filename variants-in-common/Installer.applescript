@@ -264,7 +264,7 @@ on run
 				repeat until name of current collection is theAlbum
 					delay 0.2
 				end repeat
-
+				
 				-- if catalogs have no variants in common, there are no adjusted filters
 				set variantCount to count of (every variant of current collection)
 				if variantCount > 0 then
@@ -283,7 +283,7 @@ on run
 				repeat until name of current collection is theAlbum
 					delay 0.2
 				end repeat
-
+				
 				-- if catalogs have no variants in common, there are no adjusted filters
 				set variantCount to count of (every variant of current collection)
 				if variantCount > 0 then
