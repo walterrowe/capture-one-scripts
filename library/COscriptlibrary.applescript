@@ -87,7 +87,7 @@ end installMe
 ## confirm if capture one is running and has an open document (if required)
 ##
 
-on meetsRequirements(appBase as string, requiresCOrunning as boolean, requiresCOdocument)
+on meetsRequirements(appBase as string, requiresCOrunning as boolean, requiresCOdocument as boolean)
 	
 	set requirementsMet to true
 	
