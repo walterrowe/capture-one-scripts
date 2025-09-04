@@ -39,6 +39,7 @@ on run
 	set appType to ".scpt"
 	
 	installMe(appName, pathToMe, libraryFolder, appType, appName as list, false)
+	
 end run
 
 ##
@@ -97,7 +98,7 @@ on meetsRequirements(appBase as string, requiresCOrunning as boolean, requiresCO
 	
 	if requiresCOrunning then
 		
-		tell application "Capture One" to set isRunning to running
+		set isRunning to (application "Capture One" is running)
 		if not isRunning then
 			display alert "Alert" message "Capture One must be running." buttons {"Quit"}
 			set requirementsMet to false
