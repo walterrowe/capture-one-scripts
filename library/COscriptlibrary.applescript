@@ -567,7 +567,8 @@ end readProperty
 ## delete a property from a property list file (doesn't work)
 ## return missing value if plist file doesn't exist
 ##
-## crafted from developer.apple.com/library/archive/documentation/LanguagesUtilities/Conceptual/MacAutomationScriptingGuide/WorkwithPropertyListFiles.html
+## crafted from developer.apple.com
+## /library/archive/documentation/LanguagesUtilities/Conceptual/MacAutomationScriptingGuide/WorkwithPropertyListFiles.html
 ##
 on deleteProperty(propertyFile as string, propertyName as string)
 	tell application "System Events"
