@@ -5,7 +5,7 @@
 	Contact: walter@walterrowe.com
 
 	Created: Oct 8, 2025
-	Updated: 
+	Updated: Oct 9, 2025
 
 	1. Set installNames
 	2. Develop code
@@ -105,18 +105,20 @@ on run
 	
 	-- delete all capture one acceleration kernel folders
 	if (class of metalFolders is list) and (length of metalFolders) > 0 then
-		tell application "System Events"
+		tell application "Finder"
 			repeat with metalFolder in metalFolders
-				delete disk item metalFolder
+				set metalFolder to metalFolder as POSIX file
+				delete metalFolder
 			end repeat
 		end tell
 	end if
 	
 	-- delete all ImageCore folders
 	if (class of imageCoreFolders is list) and (length of imageCoreFolders) > 0 then
-		tell application "System Events"
+		tell application "Finder"
 			repeat with imageCoreFolder in imageCoreFolders
-				delete disk item (imageCoreParent & imageCoreFolder)
+				set imageCoreFolder to (imageCoreParent & imageCoreFolder) as POSIX file
+				delete imageCoreFolder
 			end repeat
 		end tell
 	end if
