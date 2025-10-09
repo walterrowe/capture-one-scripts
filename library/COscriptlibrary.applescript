@@ -48,7 +48,8 @@ end run
 
 on installMe(appBase as string, pathToMe as string, installFolder as string, appType as string, appNames as list, appIcon as boolean)
 	
-	## Copyright 2024 Walter Rowe, Maryland, USA		No Warranty
+	## Copyright 2024 Walter Rowe, Maryland, USA
+	## No Warranty
 	## General purpose AppleScript Self-Installer
 	##
 	## Compiles and installs an AppleScript via osacompile as a type and list of names in a target folder
