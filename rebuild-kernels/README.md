@@ -24,7 +24,7 @@ The script self-installs in your Capture One Scripts folder.
 
 ## How To Use
 
-Launch the utility from the Capture One Scripts folder. It will notify via a pop-up when its done to let you know it is going to restart Capture One. If you don't press the OK button the pop-up dialog will automatically restart Capture One after 10 seconds.
+After installation you run the utility from the Capture One Scripts folder. The utility will pop-up a dialog letting you know what found and whether or not it needs to restart Capture One. If you don't press the OK button the pop-up dialog will automatically go away after 10 seconds and will restart Capture One if needed. There is no way to avoid restarting Capture One if it found kernels to be deleted and cannot run without a restart.
 
 ## Compatibility
 

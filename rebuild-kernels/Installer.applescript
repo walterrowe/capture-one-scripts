@@ -43,6 +43,7 @@ property appTesting : false -- if true, run in script editor, and if false insta
 
 -- application specific properties below
 
+property imageCoreParent : (POSIX path of (path to home folder)) & "Library/Application Support/Capture One/ImageCore/"
 -- application specific properties above
 
 ##
@@ -91,13 +92,16 @@ on run
 	-- get a list of all existing capture one acceleration kernel folders
 	set metalFolders to (do shell script "find /private/var/folders -type d -path '*captureone*' -name 'com.apple.metal*' 2>/dev/null || true")
 	
-	set imageCorePath to (POSIX path of (path to home folder)) & "Library/Application Support/Capture One/ImageCore"
+	set imageCoreFolders to (do shell script "ls -1 \"" & imageCoreParent & "\" 2>/dev/null || true")
 	
 	-- split returned text into a list of paths
 	set cDelims to text item delimiters
 	set text item delimiters to return
 	set metalFolders to every text item of metalFolders as list
+	set imageCoreFolders to every text item of imageCoreFolders as list
+	set imageCorePaths to imageCoreFolders as text
 	set text item delimiters to cDelims
+	
 	
 	-- delete all capture one acceleration kernel folders
 	if (class of metalFolders is list) and (length of metalFolders) > 0 then
@@ -109,32 +113,50 @@ on run
 	end if
 	
 	-- delete all ImageCore folders
-	tell application "System Events"
-		if disk item imageCorePath exists then delete disk item imageCorePath
-	end tell
+	if (class of imageCoreFolders is list) and (length of imageCoreFolders) > 0 then
+		tell application "System Events"
+			repeat with imageCoreFolder in imageCoreFolders
+				delete disk item (imageCoreParent & imageCoreFolder)
+			end repeat
+		end tell
+	end if
 	
+	-- display status message before restarting Capture One	
+	set alertMessage to ""
+	set kernelCount to (count of metalFolders) + (count of imageCoreFolders)
+	if (count of metalFolders) > 0 then
+		set alertMessage to "Deleted " & ((count of metalFolders) as text) & " kernels." & return & return
+	end if
+	if (count of imageCoreFolders) > 0 then
+		set alertMessage to alertMessage & "Deleted these ImageCore folders:" & return & return & imageCorePaths & return & return
+	end if
 	
-	set alertMessage to "Capture One acceleration kernels have been deleted." & return & return & "Capture One will now restart to rebuild the kernels."
+	if kernelCount > 0 then
+		set alertMessage to alertMessage & "Capture One will now restart."
+	else
+		set alertMessage to alertMessage & "No kernels were found." & return & return & "No need to restart Capture One."
+	end if
 	
 	set alertTitle to appName & " Finished"
 	
 	set alertResult to (display alert alertTitle message alertMessage buttons {"OK"} giving up after 10)
 	
 	-- restart capture one
-	set coWasRunning to false
-	tell application "System Events"
-		if application process "Capture One Beta" exists then
-			set coWasRunning to true
-			tell application "Capture One Beta"
-				quit
-				repeat while running
-					delay 0.1 -- Wait for the app to fully close
-				end repeat
-			end tell
-		end if
-	end tell
-	
-	if coWasRunning then tell application "Capture One Beta" to activate
+	if kernelCount > 0 then
+		set coWasRunning to false
+		tell application "System Events"
+			if application process "Capture One Beta" exists then
+				set coWasRunning to true
+				tell application "Capture One Beta"
+					quit
+					repeat while running
+						delay 0.1 -- Wait for the app to fully close
+					end repeat
+				end tell
+			end if
+		end tell
+		if coWasRunning then tell application "Capture One Beta" to activate
+	end if
 	
 	-- application code goes above here
 	
