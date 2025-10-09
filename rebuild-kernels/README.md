@@ -26,6 +26,8 @@ The script self-installs in your Capture One Scripts folder.
 
 After installation you run the utility from the Capture One Scripts folder. The utility will pop-up a dialog letting you know what it found and whether or not it needs to restart Capture One. If you don't press the OK button the pop-up dialog will automatically go away after 10 seconds and will restart Capture One if needed. There is no way to avoid restarting Capture One if it found kernels to be deleted and cannot run without a restart.
 
+The utility uses Finder to delete the found kernel folders. This moves them to the Trash.
+
 ## Compatibility
 
 The utility has been tested on:
