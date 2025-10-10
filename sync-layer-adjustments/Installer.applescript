@@ -82,12 +82,12 @@ on run
 	if not readyToRun then return
 	
 	-- get path to Capture One's app icon
-	set coIcon to path to resource "AppIcon.icns" in bundle (path to application "Capture One")
+	set coIcon to path to resource "AppIcon.icns" in bundle (path to application "Capture One Beta")
 	
 	-- ensure we have permission to interact with other apps
 	myLibrary's activateUIScripting()
 	
-	tell application "Capture One"
+	tell application "Capture One Beta"
 		set docKind to myLibrary's getCOtype(current document)
 		tell current document to set docName to name
 		tell current document to set docPath to POSIX path of (path as alias) as string
@@ -160,7 +160,7 @@ end loadLibrary
 
 on syncBetweenLayers(myLibrary, appName as text)
 	
-	tell application "Capture One"
+	tell application "Capture One Beta"
 		set layerNames to {}
 		set theVariants to selected variants
 		
@@ -215,7 +215,7 @@ on syncBetweenLayers(myLibrary, appName as text)
 				set sourceLayer to first item of sourceLayer
 				set targetLayer to first item of targetLayer
 				
-				my synchronizeLayers(sourceLayer, targetLayer)
+				my synchronizeLayers(theVariant, sourceLayer, theVariant, targetLayer)
 				
 				-- disable source layer
 				if disableSourceLayer then set enabled of sourceLayer to false
@@ -234,7 +234,7 @@ on syncBetweenLayers(myLibrary, appName as text)
 end syncBetweenLayers
 
 on syncLayerAcrossImages(myLibrary, appName as text)
-	tell application "Capture One"
+	tell application "Capture One Beta"
 		-- get primary and selected variants
 		set primaryVariant to primary variant
 		set selectedVariants to selected variants
@@ -270,8 +270,8 @@ on syncLayerAcrossImages(myLibrary, appName as text)
 		
 		set syncedVariants to 0
 		set skippedVariants to 0
-		repeat with theVariant in targetVariants
-			set targetLayer to (every layer of theVariant where name is sourceLayerName)
+		repeat with targetVariant in targetVariants
+			set targetLayer to (every layer of targetVariant where name is sourceLayerName)
 			set targetLayers to count of targetLayer
 			
 			-- variant must have exactly one source and one target layer
@@ -281,7 +281,7 @@ on syncLayerAcrossImages(myLibrary, appName as text)
 				set syncedVariants to syncedVariants + 1
 				set targetLayer to first item of targetLayer
 				
-				my synchronizeLayers(sourceLayer, targetLayer)
+				my synchronizeLayers(primaryVariant, sourceLayer, targetVariant, targetLayer)
 			end if
 		end repeat
 	end tell
@@ -296,22 +296,28 @@ on syncLayerAcrossImages(myLibrary, appName as text)
 	
 end syncLayerAcrossImages
 
-on synchronizeLayers(sourceLayer, targetLayer)
+on synchronizeLayers(sourceVariant, sourceLayer, targetVariant, targetLayer)
 	
-	tell application "Capture One"
+	tell application "Capture One Beta"
 		
 		-- copy layer adjustments
 		if exists adjustments of sourceLayer then
+			-- if using a white balance preset, don't copy individual temp/tint
 			if white balance preset of adjustments of sourceLayer is not missing value then
 				set white balance preset of adjustments of targetLayer to white balance preset of adjustments of sourceLayer
+			else
+				-- if temp/tint of source layer matches source base layer, then make target layer match target base layer
+				if temperature of adjustments of sourceLayer is temperature of adjustments of sourceVariant then
+					set temperature of adjustments of targetLayer to temperature of adjustments of targetVariant
+				else
+					set temperature of adjustments of targetLayer to temperature of adjustments of sourceLayer
+				end if
+				if tint of adjustments of sourceLayer is tint of adjustments of sourceVariant then
+					set tint of adjustments of targetLayer to tint of adjustments of targetVariant
+				else
+					set tint of adjustments of targetLayer to tint of adjustments of sourceLayer
+				end if
 			end if
-			if temperature of adjustments of sourceLayer is not missing value then
-				set temperature of adjustments of targetLayer to temperature of adjustments of sourceLayer
-			end if
-			if tint of adjustments of sourceLayer is not missing value then
-				set tint of adjustments of targetLayer to tint of adjustments of sourceLayer
-			end if
-			
 			if exposure of adjustments of sourceLayer is not missing value then
 				set exposure of adjustments of targetLayer to exposure of adjustments of sourceLayer
 			end if
@@ -525,7 +531,7 @@ on synchronizeLayers(sourceLayer, targetLayer)
 		
 		-- copy layer opacity
 		if exists opacity of sourceLayer then
-				set opacity of targetLayer to opacity of sourceLayer
+			set opacity of targetLayer to opacity of sourceLayer
 		end if
 	end tell
 end synchronizeLayers
