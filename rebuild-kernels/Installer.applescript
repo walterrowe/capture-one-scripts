@@ -82,7 +82,7 @@ on run
 	if not readyToRun then return
 	
 	-- get path to Capture One's app icon
-	set coIcon to path to resource "AppIcon.icns" in bundle (path to application "Capture One Beta")
+	set coIcon to path to resource "AppIcon.icns" in bundle (path to application "Capture One")
 	
 	-- ensure we have permission to interact with other apps
 	myLibrary's activateUIScripting()
@@ -147,9 +147,9 @@ on run
 	if kernelCount > 0 then
 		set coWasRunning to false
 		tell application "System Events"
-			if application process "Capture One Beta" exists then
+			if application process "Capture One" exists then
 				set coWasRunning to true
-				tell application "Capture One Beta"
+				tell application "Capture One"
 					quit
 					repeat while running
 						delay 0.1 -- Wait for the app to fully close
@@ -157,7 +157,7 @@ on run
 				end tell
 			end if
 		end tell
-		if coWasRunning then tell application "Capture One Beta" to activate
+		if coWasRunning then tell application "Capture One" to activate
 	end if
 	
 	-- application code goes above here
