@@ -4,14 +4,24 @@
 
 ## Description
 
-This AppleScript utility moves Capture One Enhanced Denoise proxies in the current document to the System Trash.
+Enhanced Denoise is a new feature provided by Capture One 16.8. When enabled Capture One creates "noise reduced" proxies of the original raw files. These proxies are stored in the same folder as image previews with a ".conoisereduced" extension. The format of the filename is the full camera original raw file name on disk plus this extension (e.g. "WPR-20260503-9437.NEF.conoisereduced"). These files are approximately the same size as the original raw file. Enabling this feature on large numbers of files will dramatically increase the amount of space required to store your catalog or session.
 
-- If variants are selected then only denoise proxies for those variants are moved to Trash
-- If no variants are selected then ALL denoise proxies found in the current document are moved to Trash
+In my experimentation if these files are removed Capture One will regenerate them as needed much like normal previews. In order to minimize the impact on space required for this feature I wrote this utility to find and remove the noised reduced proxies. The utility purges these proxies by moving the to the System Trash.
 
-The user is shown the number of proxies and total space consumed and asked for confirmation to proceed. If the user proceeds, then the proxies are moved to the System Trash and a confirmation is given when complete.
+When executed the script searches for all of the denoise proxies in the current document (session or catalog). You will be shown the number of proxies found and total space consumed, and then asked for confirmation to proceed.
 
-You can "Put Back" any proxies from the System Trash.
+![](assets/Purge-Denoise-Confirm.png)
+
+If you proceed, then the proxies are moved to the System Trash and a confirmation is given when complete.
+
+![](assets/Purge-Denoise-Complete.png)
+
+- If any variants are selected then only the selected variants denoise proxies are included and moved to Trash
+- If no variants are selected then ALL denoise proxies that are found are included and moved to Trash
+
+All of the "deleted" proxies are moved to the System Trash via Finder. You open the Trash and "Put Back" any proxies you wish. The space will not be truly reclaimed until you permanently delete the proxies from the System Trash.
+
+**SUGGESTION**: Enable Enhanced Denoise only on your best images that truly benefit from it. Apply your adjustments and export all your finished work. Once you have delivered your work and no longer need to export from the raw files you can safely remove the noise reduced proxies until you need them again.
 
 ## Prerequisites
 
