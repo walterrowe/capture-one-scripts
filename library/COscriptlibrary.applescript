@@ -22,11 +22,12 @@
 *)
 
 property name : "COscriptlibrary"
-property version : "1.0"
+property version : "2.0"
 property id : "COscriptlibrary"
 
 use AppleScript version "2.8"
 use scripting additions
+use framework "Foundation"
 
 ## performs a self-install of the library into ~/Library/Scripts/COscriptlibrary.scpt
 ##
@@ -35,7 +36,7 @@ use scripting additions
 on run
 	set appName to my name
 	set pathToMe to path to me
-	set libraryFolder to ((POSIX path of (path to home folder)) as string) & "Library/Scripts/"
+	set libraryFolder to ((POSIX path of (path to home folder)) as text) & "Library/Scripts/"
 	set appType to ".scpt"
 	
 	installMe(appName, pathToMe, libraryFolder, appType, appName as list, false)
@@ -46,7 +47,7 @@ end run
 ## applescript self-installer function
 ##
 
-on installMe(appBase as string, pathToMe as string, installFolder as string, appType as string, appNames as list, appIcon as boolean)
+on installMe(appBase as text, pathToMe as text, installFolder as text, appType as text, appNames as list, appIcon as boolean)
 	
 	## Copyright 2024 Walter Rowe, Maryland, USA
 	## No Warranty
@@ -70,9 +71,9 @@ on installMe(appBase as string, pathToMe as string, installFolder as string, app
 		
 		if appIcon is true then
 			tell application "Finder"
-				set myFolder to (folder of (pathToMe as alias)) as string
+				set myFolder to (folder of (pathToMe as alias)) as text
 				set iconSource to myFolder & "droplet.icns"
-				set iconTarget to POSIX file (scriptTarget & "/Contents/Resources/") as alias as string
+				set iconTarget to POSIX file (scriptTarget & "/Contents/Resources/") as alias as text
 				try
 					duplicate file iconSource to folder iconTarget with replacing and exact copy
 				on error errStr number errorNumber
@@ -89,7 +90,7 @@ end installMe
 ## confirm if capture one is running and has an open document (if required)
 ##
 
-on meetsRequirements(appBase as string, requiresCOrunning as boolean, requiresCOdocument)
+on meetsRequirements(appBase as text, requiresCOrunning as boolean, requiresCOdocument)
 	
 	set requirementsMet to true
 	
@@ -213,7 +214,7 @@ end getCOtype
 ## @returns false if gave up or cancel button pressed
 ## @returns button returned value
 
-on myAlert(alertHeading as string, alertMessage as string, alertGiveUp as integer, alertButtons as list, alertCancel as string)
+on myAlert(alertHeading as text, alertMessage as text, alertGiveUp as integer, alertButtons as list, alertCancel as text)
 	set alertResult to (display alert alertHeading message alertMessage as critical buttons alertButtons giving up after alertGiveUp)
 	if (gave up of alertResult) or (button returned of alertResult is alertCancel) then
 		return false
@@ -237,7 +238,7 @@ end joinText
 ## split a string into a list based on a specific delimiter
 ##
 
-on splitText(theText as string, theDelimiter as string)
+on splitText(theText as text, theDelimiter as text)
 	set AppleScript's text item delimiters to theDelimiter
 	set theTextItems to every text item of theText
 	set AppleScript's text item delimiters to ""
@@ -248,7 +249,7 @@ end splitText
 ## use text item delimiters to find and replace text in a string
 ##
 
-on findReplace(t as string, toFind as string, toReplace as string)
+on findReplace(t as text, toFind as text, toReplace as text)
 	set {tid, text item delimiters} to {text item delimiters, toFind}
 	set t to text items of t
 	set text item delimiters to toReplace
@@ -285,6 +286,25 @@ on sortList(theList as list)
 end sortList
 
 ##
+## Use NSByteCountFormatter to get a display friendly size in KB, MB, GB, etc
+##
+
+on displayFriendlyByteCount(byteCount as number)
+	-- get a handle to an instance of NSByteCountFormatter class
+	set formatter to current application's NSByteCountFormatter's alloc()'s init()
+	
+	-- Enables KB, MB, GB labels rather than raw byte counts
+	formatter's setAllowedUnits:(current application's NSByteCountFormatterUseAll)
+	
+	-- Formats for natural display
+	formatter's setCountStyle:(current application's NSByteCountFormatterCountStyleFile)
+	
+	-- convert the value to friendly string format
+	return ((formatter's stringFromByteCount:(byteCount)) as text)
+end displayFriendlyByteCount
+
+
+##
 ## progress status functions
 ## original: https://github.com/iconifyit/applescript-examples
 ##
@@ -294,7 +314,7 @@ end sortList
 -- @param {string} descript		The initial text for the progress bar
 -- @param {string} descript_add 	Additional text for the progress bar
 -- @returns void
-on progress_start(steps as integer, descript as string, descript_add as string)
+on progress_start(steps as integer, descript as text, descript_add as text)
 	set progress total steps to steps
 	set progress completed steps to 0
 	set progress description to descript
@@ -306,7 +326,7 @@ end progress_start
 -- @param {int} 	 steps  		The number of steps for the process
 -- @param {string} message   The progress update message
 -- @returns void
-on progress_update(n as integer, steps as integer, message as string)
+on progress_update(n as integer, steps as integer, message as text)
 	set progress additional description to message & n & " of " & steps
 end progress_update
 
@@ -409,7 +429,7 @@ on getCollections(theCollection, parentPath)
 	-- display dialog myType
 	set myName to ""
 	if class of theCollection is not list then
-		tell application "Capture One" to tell current document to set myName to ((name of theCollection) as string)
+		tell application "Capture One" to tell current document to set myName to ((name of theCollection) as text)
 	end if
 	if class of theCollection is list then
 		set theSubColls to {}
@@ -449,7 +469,7 @@ end getCollections
 # collection of string handlers that leverage JavaScript
 # https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String
 
-on match(_subject as string, _regex as string)
+on match(_subject as text, _regex as text)
 	set handlerName to "match"
 	set _js to "(new String(`" & _subject & "`)).match(" & _regex & ")"
 	set _result to run script _js in "JavaScript"
@@ -457,7 +477,7 @@ on match(_subject as string, _regex as string)
 	return _result
 end match
 
-on replace(_subject as string, _regex as string, _replace as string)
+on replace(_subject as text, _regex as text, _replace as text)
 	set handlerName to "replace"
 	set _js to "(new String(`" & _subject & "`)).replace(" & _regex & ",\"" & _replace & "\")"
 	set _result to run script _js in "JavaScript"
@@ -465,7 +485,7 @@ on replace(_subject as string, _regex as string, _replace as string)
 	return _result
 end replace
 
-on split(_subject as string, _split as string)
+on split(_subject as text, _split as text)
 	set handlerName to "split"
 	set _js to "(new String(`" & _subject & "`)).split(" & _split & ")"
 	set _result to run script _js in "JavaScript"
@@ -473,7 +493,7 @@ on split(_subject as string, _split as string)
 	return _result
 end split
 
-on trim(_subject as string)
+on trim(_subject as text)
 	set handlerName to "trim"
 	set _js to "(new String(`" & _subject & "`)).trim()"
 	set _result to run script _js in "JavaScript"
@@ -481,7 +501,7 @@ on trim(_subject as string)
 	return _result
 end trim
 
-on slice(_subject as string, _start as integer, _chars as integer)
+on slice(_subject as text, _start as integer, _chars as integer)
 	set handlerName to "slice"
 	if (_start < 1) and (_chars < 1) then error handlerName & " parameters must be source string [,start pos[,num of chars]]"
 	if (_start + _chars) > length of _subject then error handlerName & " parameters must be source string [,start pos[,num of chars]]"
@@ -493,7 +513,7 @@ on slice(_subject as string, _start as integer, _chars as integer)
 	return _result
 end slice
 
-on indexOf(_subject as string, _string as string, _start as integer)
+on indexOf(_subject as text, _string as text, _start as integer)
 	set handlerName to "indexOf"
 	set _indexOf to "\"" & _string & "\""
 	if _start is not 0 then set _indexOf to _indexOf & "," & _start
@@ -504,7 +524,7 @@ on indexOf(_subject as string, _string as string, _start as integer)
 	return _result
 end indexOf
 
-on lastIndexOf(_subject as string, _string as string, _start as integer)
+on lastIndexOf(_subject as text, _string as text, _start as integer)
 	set handlerName to "indexOf"
 	set _lastindexOf to "\"" & _string & "\""
 	if _start is not 0 then set _lastindexOf to _lastindexOf & "," & _start
@@ -521,7 +541,7 @@ end lastIndexOf
 ##
 ## (crafted from https://developer.apple.com/library/archive/documentation/LanguagesUtilities/Conceptual/MacAutomationScriptingGuide/WorkwithPropertyListFiles.html)
 ##
-on storeProperty(propertyFile as string, propertyName as string, propertyValue)
+on storeProperty(propertyFile as text, propertyName as text, propertyValue)
 	
 	tell application "System Events"
 		
@@ -554,7 +574,7 @@ end storeProperty
 ##
 ## (crafted from https://developer.apple.com/library/archive/documentation/LanguagesUtilities/Conceptual/MacAutomationScriptingGuide/WorkwithPropertyListFiles.html)
 ##
-on readProperty(propertyFile as string, propertyName as string)
+on readProperty(propertyFile as text, propertyName as text)
 	tell application "System Events"
 		if not (exists property list file propertyFile) then return missing value
 		tell property list file propertyFile
@@ -571,7 +591,7 @@ end readProperty
 ## crafted from developer.apple.com
 ## /library/archive/documentation/LanguagesUtilities/Conceptual/MacAutomationScriptingGuide/WorkwithPropertyListFiles.html
 ##
-on deleteProperty(propertyFile as string, propertyName as string)
+on deleteProperty(propertyFile as text, propertyName as text)
 	tell application "System Events"
 		if not (exists property list file propertyFile) then return missing value
 		tell property list file propertyFile
