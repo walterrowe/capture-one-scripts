@@ -100,16 +100,14 @@ on run
 	set nrProxies to text items of nrProxies as list
 	set text item delimiters to tid
 	
+	-- see if we have any proxies to move to trash
 	set proxyCount to count of nrProxies
-	
-	
 	if proxyCount = 0 then
 		set alertTitle to item 1 of installNames
 		set alertMessage to "No denoise proxies found."
 		set alertResult to (display alert alertTitle message alertMessage buttons {"OK"} giving up after 10)
 		return
 	end if
-	
 	
 	-- determine which noise reduced proxies to delete
 	set proxiesToDelete to {}
