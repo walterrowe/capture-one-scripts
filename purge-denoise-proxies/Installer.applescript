@@ -142,6 +142,7 @@ on run
 		end if
 	end if
 	
+	set proxyCount to count of proxiesToDelete
 	set sizeReclaimedString to myLibrary's displayFriendlyByteCount(sizeReclaimed)
 	
 	-- give the user an opportunity to stop before deleting
