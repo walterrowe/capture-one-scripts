@@ -19,8 +19,8 @@ use AppleScript version "2.8"
 use scripting additions
 use framework "Foundation"
 
-property libraryFolder : ((POSIX path of (path to home folder)) as string) & "Library/Scripts/"
-property installFolder : ((POSIX path of (path to home folder)) as string) & "Library/Scripts/Capture One Scripts/"
+property libraryFolder : ((POSIX path of (path to home folder)) as text) & "Library/Scripts/"
+property installFolder : ((POSIX path of (path to home folder)) as text) & "Library/Scripts/Capture One Scripts/"
 
 property installNames : {"Purge Denoise Proxies"}
 property installType : ".scpt"
@@ -29,7 +29,7 @@ property installIcon : false -- if true there must be a droplet.icns icon file i
 property requiresCOrunning : true -- true if capture one is required to be running
 property requiresCOdocument : true -- true if capture one is required to have an open document
 
-property appTesting : false -- if true, run in script editor, and if false install the script
+property appTesting : false -- if true, run in script editor. if false, install the script.
 
 -- application specific properties below
 
@@ -142,14 +142,7 @@ on run
 		end if
 	end if
 	
-	-- format the sizeReclaimed into a user friendly format (ie. KB, MB, GB)
-	set formatter to current application's NSByteCountFormatter's alloc()'s init()
-	-- Enables KB, MB, GB labels rather than raw byte counts
-	formatter's setAllowedUnits:(current application's NSByteCountFormatterUseAll)
-	-- Formats for natural display
-	formatter's setCountStyle:(current application's NSByteCountFormatterCountStyleFile)
-	-- convert the value to friendly string format
-	set sizeReclaimedString to (formatter's stringFromByteCount:(sizeReclaimed)) as text
+	set sizeReclaimedString to myLibrary's displayFriendlyByteCount(sizeReclaimed)
 	
 	-- give the user an opportunity to stop before deleting
 	set alertTitle to item 1 of installNames
@@ -183,7 +176,7 @@ end run
 ## download and install the latest CO script library
 ##
 
-on loadLibrary(appName as string)
+on loadLibrary(appName as text)
 	
 	set myLibrary to libraryFolder & "COscriptlibrary.scpt"
 	
