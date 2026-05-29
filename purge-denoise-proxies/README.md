@@ -6,7 +6,7 @@
 
 Enhanced Denoise is a new feature provided by Capture One 16.8. When enabled Capture One creates "noise reduced" proxies of the original raw files. These proxies are stored in the same folder as image previews with a ".conoisereduced" extension. The format of the filename is the full camera original raw file name on disk plus this extension (e.g. "WPR-20260503-9437.NEF.conoisereduced"). These files are approximately the same size as the original raw file. Enabling this feature on large numbers of files will dramatically increase the amount of space required to store your catalog or session.
 
-In my experimentation if these files are removed Capture One will regenerate them as needed much like normal previews. In order to minimize the impact on space required for this feature I wrote this utility to find and remove the noised reduced proxies. The utility purges these proxies by moving the to the System Trash.
+In my experimentation if these files are removed Capture One will regenerate them as needed much like normal previews. In order to minimize the impact on space required for this feature I wrote this utility to find and remove the noised reduced proxies. The utility purges these proxies by moving them to the System Trash.
 
 When executed the script searches for all of the denoise proxies in the current document (session or catalog). You will be shown the number of proxies found and total space consumed, and then asked for confirmation to proceed.
 
