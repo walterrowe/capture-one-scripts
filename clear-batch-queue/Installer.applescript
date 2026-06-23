@@ -17,6 +17,7 @@
 
 use AppleScript version "2.8"
 use scripting additions
+use framework "Foundation"
 
 property libraryFolder : ((POSIX path of (path to home folder)) as string) & "Library/Scripts/"
 property installFolder : ((POSIX path of (path to home folder)) as string) & "Library/Scripts/Capture One Scripts/"
@@ -111,13 +112,16 @@ on run
 			
 			set end of queueFiles to (count of theFiles) as string
 			set end of queueSizes to folderSize
+			set sizeReclaimedString to myLibrary's displayFriendlyByteCount(folderSize)
 			
-			set queueMessage to (queueMessage & (((name of item idx of queueFolders & " (" & item idx of queueFiles as string) & " files, " & ((item idx of queueSizes) / 1024 / 1024 as integer) as string) & "MB)") & return)
+			set queueMessage to (queueMessage & (name of item idx of queueFolders & " (" & item idx of queueFiles as string) & " files, " & sizeReclaimedString & ")" & return)
 			
 		end repeat
 	end tell
 	
-	set alertMessage to ((queueMessage & return & "Total Space: " & queueTotalFiles as string) & " files, " & (queueTotalSizes / 1024 / 1024 as integer) & "MB" & return & return & "Batch Queue: " & batchEnabled & " (" & batchCount as string) & " jobs)" & return
+	set sizeTotalReclaimedString to myLibrary's displayFriendlyByteCount(queueTotalSizes)
+	
+	set alertMessage to ((queueMessage & return & "Total Space: " & queueTotalFiles as string) & " files, " & sizeTotalReclaimedString & return & return & "Batch Queue: " & batchEnabled & " (" & batchCount as string) & " jobs)" & return
 	
 	-- inform user of what we plan to do and offer to cancel or continue
 	try
@@ -156,7 +160,7 @@ on run
 	tell application "Capture One" to tell current document to set batchCount to count of every job
 	
 	set alertTitle to appName & " Finished"
-	set alertMessage to ((queueMessage & return & "Total Space: " & queueTotalFiles as string) & " files, " & (queueTotalSizes / 1024 / 1024 as integer) & "MB" & return & return & "Batch Queue: " & batchEnabled & " (" & batchCount as string) & " jobs)" & return
+	set alertMessage to ((queueMessage & return & "Total Space: " & queueTotalFiles as string) & " files, " & sizeTotalReclaimedString & return & return & "Batch Queue: " & batchEnabled & " (" & batchCount as string) & " jobs)" & return
 	
 	-- application code goes above here
 	
