@@ -91,7 +91,7 @@ on run
 	tell application "Finder" to set docPath to POSIX path of (docPath as text)
 	
 	-- build and execute the "find" command	
-	set findCommand to "find " & docPath & " -name '*.conoisereduced' -print"
+	set findCommand to "find " & (quoted form of docPath) & " -name '*.conoisereduced' -print"
 	set nrProxies to do shell script findCommand
 	
 	-- split the results of the find command into a list	
