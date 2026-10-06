@@ -1,0 +1,53 @@
+# Auto Keyword
+
+**Donations**: if you like to keep these scripts free please consider [buying me a coffee](https://buymeacoffee.com/walterrowe).
+
+## DISCLAIMER
+
+This most valuable functionality of this script was written largely with assistance from Google
+Gemini. It wrote the bits that call the Vision ML methods and processes the returned values.
+
+## Description
+
+This script uses Apple's Vision machine learning model to classify the content of selected images.
+
+The model analyzes an image and returns keywords that the script applies.
+
+- The script applies known keywords first and only creates new keywords when necessary.
+- The script prioritizes hierarchical keywords over top-level keywords.
+  If Baseball and Sport|Baseball both exist, only Sport|Baseball will be applied.
+
+Each image is analyzed and keywords are applied individually including multiple variants of the
+same image.
+
+## Prerequisites
+
+macOS 15 (Sequoia) or later
+
+## Installation
+
+The script self-installs in your Capture One Scripts folder.
+
+1. Open the AppleScript file in macOS Script Editor.
+1. Click the "Run this script" (&#9654;) button.
+1. Open Capture One and choose Scripts > Update Script Menu.
+1. You now can run the script from the Capture One Scripts menu.
+
+## How To Use
+
+Select images in your Capture One session or catalog, open the Scripts menu, and select "Auto Keyword".
+
+When the script is running there will be a gear icon in the macOS top right menu bar. Clicking that icon
+will show progress by image count (e.g. "Keywording 3 of 30").
+
+## Compatibility
+
+The utility has been tested on:
+
+- macOS 26 (Tahoe)
+- macOS 27 (Golden Gate)
+- Capture One 16.8
+
+## ChangeLog
+
+- 06 Oct 2026 - initial version
