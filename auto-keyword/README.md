@@ -45,7 +45,7 @@ The script self-installs in your Capture One Scripts folder.
 Select images in your Capture One session or catalog, open the Scripts menu, and select "Auto Keyword".
 
 When the script is running there will be a gear icon in the macOS top right menu bar. Clicking that icon
-will show progress by image count (e.g. "Keywording 3 of 30").
+will show progress by image count (e.g. "Keywording (3 of 30)").
 
 ## Compatibility
 
