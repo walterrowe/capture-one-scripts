@@ -16,13 +16,16 @@ See https://www.apple.com/legal/ai-regulations/training-data/ on Apple's website
 
 ## Description
 
-This script uses Apple's Vision machine learning model to classify the content of selected images.
+This script uses Apple's Vision machine learning model to classify the content of selected images. The Vision model analyzes an image, returns keywords, and the script applies them.
 
-The model analyzes an image and returns keywords that the script applies.
-
+- Each keyword returned has a confidence rating (in percent).
+- Only keywords rating 20% or higher are applied.
+- A maximum of 50 keywords per image are applied.
+- Testing has shown there is usually under a dozen per image.
 - The script applies known keywords first and only creates new keywords when necessary.
 - The script prioritizes hierarchical keywords over top-level keywords.
-  If Baseball and Sport|Baseball both exist, only Sport|Baseball will be applied.
+
+    If Baseball and Sport | Baseball both exist, only Sport | Baseball will be applied.
 
 Each image is analyzed and keywords are applied individually including multiple variants of the
 same image.
