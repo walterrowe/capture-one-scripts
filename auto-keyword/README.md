@@ -7,6 +7,13 @@
 This most valuable functionality of this script was written largely with assistance from Google
 Gemini. It wrote the bits that call the Vision ML methods and processes the returned values.
 
+## PRIVACY STATEMENT
+
+* Your images NEVER leave your machine.
+* Your images are not used to train Apple's models.
+
+See https://www.apple.com/legal/ai-regulations/training-data/ on Apple's website.
+
 ## Description
 
 This script uses Apple's Vision machine learning model to classify the content of selected images.
