@@ -8,16 +8,18 @@ This script was developed with assistance from Google Gemini to interface with A
 
 ## PRIVACY STATEMENT
 
-* **LOCAL PROCESSING** - Your images NEVER leave your machine.
-* **DATA SECURITY** - Your images are not used to train Apple's models.
+* **LOCAL EXECUTION**: Your images **NEVER** leave your machine.
+* **DATA PROTECTION**: Your images are **NOT** used to train Apple's AI/ML models.
 
-See [Apple's AI & Privacy Statement](https://www.apple.com/legal/ai-regulations/training-data/) on Apple's website.
+See [Apple's AI Training Data Policy](https://www.apple.com/legal/ai-regulations/training-data/) for details.
 
 ## Description
 
-This script leverages Apple's native Vision machine learning model to automatically classify content, detect human subjects and poses, recognize text (OCR), parse barcodes, and evaluate image aesthetics for selected images in Capture One.
+**Auto Keyword** analyzes selected variants in Capture One using Apple's native Vision framework to automatically classify content, detect human subjects and poses, recognize text (OCR), parse barcodes, and evaluate image aesthetics for selected images in Capture One.
 
-### Key Capabilities
+Progress can be monitored by clicking the rotating gear icon ( :gear: ) in the top right of the menu bar while **Auto Keyword** is running. When the script completes it will pop up a dialog showing how many images were updated and how long it took (in mm:ss format).
+
+### Vision Analysis Capabilities
 
 - **Multi-Request Vision ML Processing**:
   - **Classification**: Generates content labels filtered at a $\ge 20\%$ confidence threshold.
@@ -27,12 +29,13 @@ This script leverages Apple's native Vision machine learning model to automatica
   - **Barcode / QR Code Parsing**: Extracts payload values and sanitizes strings into usable tags.
   - **Horizon & Tilt Detection**: Measures horizon angles and identifies images with a $> 2.5^\circ$ tilt (*Tilted Horizon*).
   - **Aesthetics & Exposure Evaluation**: Evaluates overall aesthetic scores ($> 0.6$ assigned *High Quality*) and flags *Underexposed* or *Overexposed* frames.
+
+## Keyword Application & Hierarchy Rules
+
 - **Smart Vocabulary & Hierarchy Matching**:
   - Matches returned Vision tags against the open Capture One document's existing vocabulary.
   - Prioritizes hierarchical leaf keywords over root/flat keywords (e.g., if both `Sport` and `Sport|Baseball` exist, `Sport|Baseball` is applied).
   - Handles singular/plural variations automatically before adding new keywords.
-- **Performance & Progress Integration**:
-  - Uses native Capture One progress updates and macOS system status.
   - Limits keyword application to a configurable maximum (default: 50 keywords per image).
 
 ## Prerequisites
