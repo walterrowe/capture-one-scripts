@@ -24,7 +24,7 @@ This script uses Apple's Vision machine learning model to classify the content o
 - Testing has shown there is usually under a dozen per image.
 - The script applies known keywords first and only creates new keywords when necessary.
 - The script prioritizes hierarchical keywords over top-level keywords.<br>
-  Baseball and Sport|Baseball both exist, only Sport|Baseball is applied.
+  **Example**: Baseball and Sport|Baseball both exist, only Sport|Baseball is applied.
 
 Each image is analyzed and keywords are applied individually including multiple variants of the
 same image.
