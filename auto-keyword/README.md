@@ -34,7 +34,7 @@ Progress can be monitored by clicking the rotating gear icon ( :gear: ) in the t
 
 - **Smart Vocabulary & Hierarchy Matching**:
   - Matches returned Vision tags against the open Capture One document's existing vocabulary.
-  - Prioritizes hierarchical leaf keywords over root/flat keywords (e.g., if both `Baseball` and `Sport|Baseball` exist, `Sport|Baseball` is applied).
+  - Prioritizes hierarchical leaf keywords over root/flat keywords<BR>(e.g., if both `Baseball` and `Sport|Baseball` exist, `Sport|Baseball` is applied).
   - Handles singular/plural variations automatically before adding new keywords.
   - Limits keyword application to a configurable maximum (default: 50 keywords per image).
 
