@@ -8,8 +8,8 @@ This script was developed with assistance from Google Gemini to interface with A
 
 ## PRIVACY STATEMENT
 
-* Your images NEVER leave your machine.
-* Your images are not used to train Apple's models.
+* **LOCAL PROCESSING** - Your images NEVER leave your machine.
+* **DATA SECURITY** - Your images are not used to train Apple's models.
 
 See [Apple's AI & Privacy Statement](https://www.apple.com/legal/ai-regulations/training-data/) on Apple's website.
 
@@ -60,8 +60,8 @@ The script self-installs into your local Capture One Scripts folder on first run
 
 Tested and validated on:
 
-- macOS 15 (Sequoia) / macOS 16 (Tahoe) / macOS 17 (Golden Gate)
-- Capture One 16.8+
+- macOS 26 (Tahoe) / macOS 27 (Golden Gate)
+- Capture One 16.8+ (should work on prior versions of Capture One)
 
 ## ChangeLog
 
