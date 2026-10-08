@@ -7,6 +7,7 @@ This repository is a collection of user-contributed utilities for the Capture On
 These utilities were written by Walter Rowe. Details are provided in the README files in the script directories.
 
 * **[Add Border](add-border/)** - Add borders to exported images.  Works in Process Recipes using Open With, or in macOS Finder.
+* **[Auto Keywords](auto-keyword/)** - Automatically identify image content and apply stock keywords using Apple's Vision ML models.
 * **[Back To Raw](back-to-raw/)** - synchronize one or more of adjustments, ratings, labels, keywords, metadata from a source file type to target file types.
 * **[Clear Batch Queue](clear-batch-queue/)** - empty batch queue, delete old batch folders, and clean out current batch queue folder.
 * **[Copy Labels to Finder](copy-labels-to-finder/)** - copy capture one color tags to macos finder color labels.
