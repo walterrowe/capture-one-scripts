@@ -16,12 +16,13 @@ None
 
 ## Installation
 
-The script self-installs in your Capture One Scripts folder.
+The script self-installs into your local Capture One Scripts folder on first run.
 
-1. Open the AppleScript file in macOS Script Editor.
-1. Click the "Run this script" (&#9654;) button.
-1. Open Capture One and choose Scripts > Update Script Menu.
-1. You now can run the script from the Capture One Scripts menu.
+1. Open `Auto Keyword.applescript` (or `.scpt`) in macOS **Script Editor**.
+2. Make sure that ScriptEditor shows "AppleScript" (**NOT JavaScript**).
+3. Click the **Run** button (&#9654;). The script will automatically download and compile the required `COscriptlibrary` library into `~/Library/Scripts/Capture One Scripts/`.
+4. Open Capture One and navigate to **Scripts > Update Script Menu**.
+5. You can now execute **Move Managed To Referenced** directly from Capture One's **Scripts** menu.
 
 ## Compatibility
 
