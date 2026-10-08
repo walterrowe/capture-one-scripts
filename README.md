@@ -39,7 +39,7 @@ All of the scripts self-install into your local Capture One Scripts folder on fi
 
 3. Click the **Run** button (&#9654;). The script will automatically download and compile the required `COscriptlibrary` library into `~/Library/Scripts/Capture One Scripts/`.
 4. Open Capture One and navigate to **Scripts > Update Script Menu**.
-5. You can now execute **Find Variants In Common** directly from Capture One's **Scripts** menu.
+5. You can now execute the installed script(s) directly from Capture One's **Scripts** menu.
 
 ## Warranty
 
