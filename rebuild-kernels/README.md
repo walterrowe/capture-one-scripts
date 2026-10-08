@@ -17,8 +17,11 @@ None
 
 The script self-installs into your local Capture One Scripts folder on first run.
 
-1. Open `Auto Keyword.applescript` (or `.scpt`) in macOS **Script Editor**.
+1. Open `Installer.applescript` (or `.scpt`) in macOS **Script Editor**.
 2. Make sure that ScriptEditor shows "AppleScript" (**NOT JavaScript**).
+    
+    <img width=300px border=1 src="../assets/script-editor-applescript.png">
+
 3. Click the **Run** button (&#9654;). The script will automatically download and compile the required `COscriptlibrary` library into `~/Library/Scripts/Capture One Scripts/`.
 4. Open Capture One and navigate to **Scripts > Update Script Menu**.
 5. You can now execute **Rebuild Kernels** directly from Capture One's **Scripts** menu.
